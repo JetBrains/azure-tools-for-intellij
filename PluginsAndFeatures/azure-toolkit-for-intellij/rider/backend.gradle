@@ -3,6 +3,7 @@ import groovy.io.FileType
 def backendGroup = 'backend'
 
 ext.nugetConfigPath = new File(projectDir, 'NuGet.Config')
+ext.testDataNugetConfigPath = new File(projectDir, 'testData/NuGet.Config')
 ext.riderSdkVersionPropsPath = new File(resharperPluginPath, 'RiderSdkPackageVersion.props')
 
 // https://www.nuget.org/packages/JetBrains.Rider.SDK/
@@ -38,6 +39,7 @@ task prepareNuGetConfig {
 </configuration>
 """
         writeTextIfChanged(nugetConfigPath, configText)
+        writeTextIfChanged(testDataNugetConfigPath, configText)
     }
 }
 
