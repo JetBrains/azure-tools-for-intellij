@@ -35,7 +35,9 @@ import com.intellij.ui.EditorNotifications
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.jetbrains.rd.util.firstOrNull
 import com.jetbrains.rdclient.util.idea.pumpMessages
+import com.jetbrains.rider.nuget.RiderNuGetFacade
 import com.jetbrains.rider.nuget.RiderNuGetHost
+import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import com.jetbrains.rider.projectView.workspace.containingProjectEntity
 import com.jetbrains.rider.projectView.workspace.getId
 import com.jetbrains.rider.projectView.workspace.getProjectModelEntities
@@ -90,54 +92,47 @@ class AzureCoreToolsMissingNupkgNotificationProvider : EditorNotifications.Provi
     override fun createNotificationPanel(file: VirtualFile, fileEditor: FileEditor, project: Project): EditorNotificationPanel? {
         if (PropertiesComponent.getInstance().getBoolean(AzureRiderSettings.DISMISS_NOTIFICATION_AZURE_FUNCTIONS_MISSING_NUPKG)) return null
 
-        if (hasKnownFileSuffix(file)) {
-            val fileContent = LoadTextUtil.loadText(file, 4096)
+        if (!hasKnownFileSuffix(file)) return null
 
-            // Check for known marker words
-            val knownMarker = markerToTriggerMap.filter { fileContent.contains(it.key, true) }.firstOrNull()
-            if (knownMarker != null) {
-                // Determine project(s) to install into
-                val installableProjects = WorkspaceModel.getInstance(project)
-                        .getProjectModelEntities(file, project)
-                        .mapNotNull { it.containingProjectEntity() }
+        val fileContent = LoadTextUtil.loadText(file, 4096)
 
-                if (installableProjects.isEmpty()) return null
+        // Check for known marker words
+        val knownMarker = markerToTriggerMap.filter { fileContent.contains(it.key, true) }.firstOrNull() ?: return null
 
-                // For every known trigger name, verify required dependencies are installed
-                for ((triggerName, dependency) in knownMarker.value) {
-                    if (fileContent.contains(triggerName, true)) {
-                        for (installableProject in installableProjects) {
-                            val riderNuGetFacade = RiderNuGetHost.getInstance(project)
-                                    .facade
+        // Determine project(s) to install into
+        val installableProjects = WorkspaceModel.getInstance(project)
+                .getProjectModelEntities(file, project)
+                .mapNotNull { it.containingProjectEntity() }
 
-                            fun isInstalled() = riderNuGetFacade.host.nuGetProjectModel
-                                    .projects[installableProject.getId(project)]
-                                    ?.explicitPackages?.any { it.id.equals(dependency.id, ignoreCase = true) }
-                                    ?: false
+        if (installableProjects.isEmpty()) return null
 
-                            if (!isInstalled()) {
-                                val panel = EditorNotificationPanel()
-                                        .text(RiderAzureBundle.message("notification.function_app.missing_nupkg.title", dependency.id))
+        // For every known trigger name, verify required dependencies are installed
+        val riderNuGetFacade = RiderNuGetHost.getInstance(project).facade
 
-                                panel.createActionLabel(RiderAzureBundle.message("notification.function_app.missing_nupkg.action.install"), {
-                                    // Install, wait, and refresh editor notifications
-                                    riderNuGetFacade.installForProject(
-                                            installableProject.name, dependency.id, dependency.version)
+        for ((triggerName, dependency) in knownMarker.value) {
+            if (fileContent.contains(triggerName, true)) {
+                for (installableProject in installableProjects) {
+                    if (!riderNuGetFacade.isInstalled(installableProject, dependency.id)) {
+                        val panel = EditorNotificationPanel()
+                                .text(RiderAzureBundle.message("notification.function_app.missing_nupkg.title", dependency.id))
 
-                                    pumpMessages(waitForInstallDuration) {
-                                        isInstalled()
-                                    }
+                        panel.createActionLabel(RiderAzureBundle.message("notification.function_app.missing_nupkg.action.install"), {
+                            // Install, wait, and refresh editor notifications
+                            riderNuGetFacade.installForProject(
+                                    installableProject.name, dependency.id, dependency.version)
 
-                                    EditorNotifications.getInstance(project).updateNotifications(file)
-                                }, true)
-
-                                panel.createActionLabel(RiderAzureBundle.message("notification.function_app.missing_nupkg.action.dismiss"), {
-                                    dismissNotification(file, project)
-                                }, true)
-
-                                return panel
+                            pumpMessages(waitForInstallDuration) {
+                                riderNuGetFacade.isInstalled(installableProject, dependency.id)
                             }
-                        }
+
+                            EditorNotifications.getInstance(project).updateNotifications(file)
+                        }, true)
+
+                        panel.createActionLabel(RiderAzureBundle.message("notification.function_app.missing_nupkg.action.dismiss"), {
+                            dismissNotification(file, project)
+                        }, true)
+
+                        return panel
                     }
                 }
             }
@@ -150,4 +145,9 @@ class AzureCoreToolsMissingNupkgNotificationProvider : EditorNotifications.Provi
         PropertiesComponent.getInstance(project).setValue(AzureRiderSettings.DISMISS_NOTIFICATION_AZURE_FUNCTIONS_MISSING_NUPKG, true)
         EditorNotifications.getInstance(project).updateNotifications(file)
     }
+
+    private fun RiderNuGetFacade.isInstalled(installableProject: ProjectModelEntity, dependencyId: String) = this.host.nuGetProjectModel
+            .projects[installableProject.getId(project)]
+            ?.explicitPackages?.any { it.id.equals(dependencyId, ignoreCase = true) }
+            ?: false
 }
