@@ -8,6 +8,10 @@
         <ul>
           <li>Compatibility with Rider 2021.3 EAP2</li>
         </ul>
+        <h4>Fixed:</h4>
+        <ul>
+          <li>Patch Azure Functions core tools path when on Windows + Chocolatey <a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/524">#524</a></li>
+        </ul>
     </html>
     ]]>
   </change-notes>
