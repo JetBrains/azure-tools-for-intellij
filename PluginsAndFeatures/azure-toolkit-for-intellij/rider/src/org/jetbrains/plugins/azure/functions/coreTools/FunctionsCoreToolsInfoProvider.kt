@@ -64,19 +64,22 @@ object FunctionsCoreToolsInfoProvider {
         return FunctionsCoreToolsInfo(funcCoreToolsPath.path, coreToolsExecutablePath.path)
     }
 
-    private fun patchCoreToolsPath(funcCoreToolsPath: File): File {
+    fun patchCoreToolsPath(funcCoreToolsPath: File): File {
 
         if (!SystemInfo.isWindows) return funcCoreToolsPath
 
-        // Check if it's a Chocolatey install or NPM install.
-        // If it is, rewrite the path to the tools path where the func executable is located.
-        val chocolateyCoreToolsPath = funcCoreToolsPath.resolve("..").resolve("lib").resolve("azure-functions-core-tools").resolve("tools")
+        // Chocolatey and NPM have shim executables that are not .NET (and not debuggable).
+        // If it's a Chocolatey install or NPM install, rewrite the path to the tools path
+        // where the func executable is located.
+        //
+        // Logic is similar to com.microsoft.azure.toolkit.intellij.function.runner.core.FunctionCliResolver.resolveFunc()
+        val chocolateyCoreToolsPath = funcCoreToolsPath.resolve("..").resolve("lib").resolve("azure-functions-core-tools").resolve("tools").normalize()
         if (chocolateyCoreToolsPath.exists()) {
             logger.info("Functions core tools path ${funcCoreToolsPath.path} is Chocolatey-installed. Rewriting path to ${chocolateyCoreToolsPath.path}")
             return chocolateyCoreToolsPath
         }
 
-        val npmCoreToolsPath = funcCoreToolsPath.resolve("..").resolve("node_modules").resolve("azure-functions-core-tools").resolve("bin")
+        val npmCoreToolsPath = funcCoreToolsPath.resolve("..").resolve("node_modules").resolve("azure-functions-core-tools").resolve("bin").normalize()
         if (npmCoreToolsPath.exists()) {
             logger.info("Functions core tools path ${funcCoreToolsPath.path} is NPM-installed. Rewriting path to ${npmCoreToolsPath.path}")
             return npmCoreToolsPath
