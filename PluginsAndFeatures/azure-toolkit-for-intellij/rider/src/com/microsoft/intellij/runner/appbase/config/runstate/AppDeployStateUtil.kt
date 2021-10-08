@@ -25,11 +25,13 @@ package com.microsoft.intellij.runner.appbase.config.runstate
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.util.launchIOBackground
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.wm.ToolWindowId
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.util.application
 import com.intellij.util.io.ZipUtil
+import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.spinUntil
 import com.jetbrains.rd.util.threading.SpinWait
 import com.jetbrains.rdclient.util.idea.toIOFile
@@ -141,10 +143,12 @@ object AppDeployStateUtil {
                 event.setResult(it)
             }
 
-            if (publishableProject.isDotNetCore) {
-                publishService.invokeMsBuild(publishableProject, listOf(targetProperties), false, true, true, onFinish)
-            } else {
-                publishService.webPublishToFileSystem(publishableProject.projectFilePath, outPath, false, true, onFinish)
+            Lifetime.Eternal.launchIOBackground {
+                if (publishableProject.isDotNetCore) {
+                    publishService.invokeMsBuild(publishableProject, listOf(targetProperties), false, true, true, onFinish)
+                } else {
+                    publishService.webPublishToFileSystem(publishableProject.projectFilePath, outPath, false, true, onFinish)
+                }
             }
         }
 
