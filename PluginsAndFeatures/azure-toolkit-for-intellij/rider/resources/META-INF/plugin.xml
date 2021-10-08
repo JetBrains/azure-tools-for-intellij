@@ -30,6 +30,7 @@
         <h4>Fixed bugs:</h4>
         <ul>
           <li>Patch Azure Functions core tools path when on Windows + Chocolatey <a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/524">#524</a></li>
+          <li>Azure Functions debugging support on Apple Silicon / M1 / Rosetta <a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/526">#526</a></li>
         </ul>
         <p>[3.50.1-2021.2]</p>
         <ul>
