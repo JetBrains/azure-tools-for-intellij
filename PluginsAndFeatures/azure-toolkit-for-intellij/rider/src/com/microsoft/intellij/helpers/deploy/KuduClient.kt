@@ -83,24 +83,32 @@ object KuduClient {
         val session = AppDeploySession(publishingProfile.gitUsername(), publishingProfile.gitPassword())
 
         var success = false
-        var uploadCount = 0
+        var uploadCount = 1
         var response: Response? = null
+
+        var deploymentTimeout = DEPLOY_TIMEOUT_MS
 
         try {
             do {
-                processHandler.setText(message("process_event.publish.zip_deploy.start_publish", uploadCount + 1, UPLOADING_MAX_TRY))
+                processHandler.setText(message("process_event.publish.zip_deploy.start_publish", uploadCount, UPLOADING_MAX_TRY))
 
                 try {
                     response = session.publishZip(
                             kuduBaseUrl ?: "https://" + appName.toLowerCase() + URL_KUDU_ZIP_DEPLOY,
                             zipFile,
-                            DEPLOY_TIMEOUT_MS)
+                            deploymentTimeout)
                     success = response.isSuccessful
                 } catch (e: Throwable) {
                     processHandler.setText("${message("process_event.publish.zip_deploy.fail")}: $e")
                 }
 
-            } while (!success && ++uploadCount < UPLOADING_MAX_TRY && isWaitFinished())
+                uploadCount++
+
+                // Make sure we have enough time for publishing if failed due to timeout.
+                if (!success && response != null && response.code() == 500) {
+                    deploymentTimeout = DEPLOY_TIMEOUT_MS * uploadCount
+                }
+            } while (!success && uploadCount <= UPLOADING_MAX_TRY && isWaitFinished())
 
             if (response == null || !success) {
                 val message = "${message("process_event.publish.zip_deploy.fail")}. " +
@@ -112,7 +120,6 @@ object KuduClient {
 
             val stateMessage = message("process_event.publish.zip_deploy.success")
             processHandler.setText(stateMessage)
-
         } finally {
             response?.body()?.close()
         }
