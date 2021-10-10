@@ -131,7 +131,7 @@ object AppDeployStateUtil {
         val (targetProperties, outPath) = publishService.getPublishToTempDirParameterAndPath()
 
         val event = AsyncPromise<BuildResultKind>()
-        application.invokeLater {
+        application.executeOnPooledThread {
 
             val onFinish: (result: BuildResultKind) -> Unit = {
                 if (it == BuildResultKind.Successful || it == BuildResultKind.HasWarnings) {
@@ -163,11 +163,11 @@ object AppDeployStateUtil {
      */
     private fun requestRunWindowFocus(project: Project) {
         try {
-            ToolWindowManager.getInstance(project).invokeLater(Runnable {
+            ToolWindowManager.getInstance(project).invokeLater {
                 val window = ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.RUN)
                 if (window != null && window.isAvailable)
                     window.show(null)
-            })
+            }
         } catch (e: Throwable) {
             logger.error(e)
         }
