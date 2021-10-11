@@ -91,13 +91,15 @@ object KuduClient {
         var uploadCount = 0
         var response: Response? = null
 
+        val kuduPublishUrl = kuduBaseUrl ?: "https://" + appName.toLowerCase() + URL_KUDU_ZIP_DEPLOY
+
         try {
             do {
                 processHandler.setText(message("process_event.publish.zip_deploy.start_publish", uploadCount + 1, UPLOADING_MAX_TRY))
 
                 try {
                     response = session.publishZip(
-                            kuduBaseUrl ?: "https://" + appName.toLowerCase() + URL_KUDU_ZIP_DEPLOY,
+                            kuduPublishUrl,
                             zipFile,
                             DEPLOY_REQUEST_TIMEOUT_MS,
                             DEPLOY_POLLING_TIMEOUT_MS,
