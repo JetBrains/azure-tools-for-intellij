@@ -26,7 +26,7 @@ import okhttp3.Request
 import okhttp3.Response
 import java.util.concurrent.TimeUnit
 
-class waitForResponse(
+class WaitForResponse(
         private val url: String,
         private val timeoutInSeconds: Long = 2,
         private val client: OkHttpClient? = null

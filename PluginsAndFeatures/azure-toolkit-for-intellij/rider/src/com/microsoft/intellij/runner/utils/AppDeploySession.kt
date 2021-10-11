@@ -32,7 +32,7 @@ import com.microsoft.rest.credentials.BasicAuthenticationCredentials
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
-import org.jetbrains.plugins.azure.util.waitForResponse
+import org.jetbrains.plugins.azure.util.WaitForResponse
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -86,7 +86,7 @@ class AppDeploySession(username: String, password: String) {
             val pollingUrl = response.header("Location") ?: throw ExecutionException("The Azure KUDU Service did not return an URL to poll for deployment status.")
             val maximumPollingDurationSeconds = (pollingTimeoutMs * pollingNumberOfTries) / 1000
 
-            return waitForResponse(pollingUrl, timeoutInSeconds = readTimeoutMs, client)
+            return WaitForResponse(pollingUrl, timeoutInSeconds = readTimeoutMs, client)
                     .withRetries(pollingNumberOfTries,
                     { _, _ -> },
                     { pollingResponse ->
