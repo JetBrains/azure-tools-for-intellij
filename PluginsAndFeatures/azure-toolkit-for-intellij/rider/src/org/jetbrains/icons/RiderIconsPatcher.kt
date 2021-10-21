@@ -25,6 +25,7 @@ package org.jetbrains.icons
 import com.intellij.httpClient.RestClientIcons
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.IconPathPatcher
+import com.intellij.ui.RetrievableIcon
 import com.intellij.util.ReflectionUtil
 import icons.CommonIcons
 import javax.swing.Icon
@@ -43,13 +44,17 @@ internal class RiderIconsPatcher : IconPathPatcher() {
             IconLoader.installPathPatcher(RiderIconsPatcher())
         }
 
-        private fun path(icon: Icon): String {
-            if (icon is IconLoader.CachedImageIcon) {
-                return ReflectionUtil.getField(icon.javaClass, icon, String::class.java, "originalPath")
-                        ?: throw RuntimeException("originalPath field wasn't found in ${icon.javaClass.simpleName}")
+        private fun path(icon: Icon): String? {
+            val iconToProcess =
+                    if (icon is RetrievableIcon) icon.retrieveIcon()
+                    else icon
+
+            if (iconToProcess is IconLoader.CachedImageIcon) {
+                return ReflectionUtil.getField(iconToProcess.javaClass, iconToProcess, String::class.java, "originalPath")
+                        ?: throw RuntimeException("originalPath field wasn't found in ${iconToProcess.javaClass.simpleName}")
             }
 
-            throw RuntimeException("Unknown icon type")
+            return null
         }
 
         private fun normalize(path: String) : String {
