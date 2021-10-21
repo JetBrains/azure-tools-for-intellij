@@ -22,8 +22,12 @@
 
 package org.jetbrains.icons
 
+import com.intellij.httpClient.RestClientIcons
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.IconPathPatcher
+import com.intellij.util.ReflectionUtil
+import icons.CommonIcons
+import javax.swing.Icon
 
 /**
  * Icons Patcher for icons set from Rider backend (R#).
@@ -38,17 +42,33 @@ internal class RiderIconsPatcher : IconPathPatcher() {
         private val myInstallPatcher: Unit by lazy {
             IconLoader.installPathPatcher(RiderIconsPatcher())
         }
+
+        private fun path(icon: Icon): String {
+            if (icon is IconLoader.CachedImageIcon) {
+                return ReflectionUtil.getField(icon.javaClass, icon, String::class.java, "originalPath")
+                        ?: throw RuntimeException("originalPath field wasn't found in ${icon.javaClass.simpleName}")
+            }
+
+            throw RuntimeException("Unknown icon type")
+        }
+
+        private fun normalize(path: String) : String {
+            if (!path.startsWith("/"))
+                return "/$path"
+
+            return path
+        }
     }
 
-    override fun patchPath(path: String, classLoader: ClassLoader?): String? = myIconsOverrideMap[path]
+    override fun patchPath(path: String, classLoader: ClassLoader?): String? = myIconsOverrideMap[normalize(path)]
 
     override fun getContextClassLoader(path: String, originalClassLoader: ClassLoader?): ClassLoader? =
-        if (myIconsOverrideMap.containsKey(path)) javaClass.classLoader
+        if (myIconsOverrideMap.containsKey(normalize(path))) javaClass.classLoader
         else originalClassLoader
 
     private val myIconsOverrideMap = mapOf(
-            "resharper/FunctionAppRunMarkers/RunFunctionApp.svg" to "CommonIcons.AzureFunctions.FunctionAppRunConfiguration",
-            "resharper/FunctionAppRunMarkers/Trigger.svg" to "RestClientIcons.Http_requests_filetype",
-            "resharper/FunctionAppTemplates/AzureFunctionsTrigger.svg" to "CommonIcons.AzureFunctions.FunctionApp"
+            "/resharper/FunctionAppRunMarkers/RunFunctionApp.svg" to path(CommonIcons.AzureFunctions.FunctionAppRunConfiguration),
+            "/resharper/FunctionAppRunMarkers/Trigger.svg" to path(RestClientIcons.Http_requests_filetype),
+            "/resharper/FunctionAppTemplates/AzureFunctionsTrigger.svg" to path(CommonIcons.AzureFunctions.FunctionApp)
     )
 }
