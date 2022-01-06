@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2021 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -22,10 +22,8 @@
 
 package org.jetbrains.plugins.azure.functions.coreTools
 
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.CapturingProcessHandler
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.PathManager
+import com.intellij.database.util.isNotNullOrEmpty
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -33,76 +31,199 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.io.HttpRequests
 import com.intellij.util.io.ZipUtil
 import com.intellij.util.system.CpuArch
 import com.intellij.util.text.VersionComparatorUtil
+import com.jetbrains.rd.util.concurrentMapOf
+import com.jetbrains.rdclient.util.idea.pumpMessages
+import com.microsoft.intellij.configuration.AzureRiderSettings
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
-import org.jetbrains.plugins.azure.functions.GitHubReleasesService
 import java.io.File
 import java.io.IOException
 import java.net.UnknownHostException
+import java.time.Duration
 
 object FunctionsCoreToolsManager {
 
-    private const val CORE_TOOLS_DIR = "azure-functions-coretools"
-    private const val API_URL_RELEASES = "repos/Azure/azure-functions-core-tools/releases?per_page=100"
-
-    private val downloadPath: String = PathManager.getConfigPath() + File.separator + CORE_TOOLS_DIR
-
     private val logger = Logger.getInstance(FunctionsCoreToolsManager::class.java)
 
-    fun downloadLatestRelease(allowPrerelease: Boolean, indicator: ProgressIndicator, onComplete: (String) -> Unit) {
-        object : Task.Backgroundable(null, message("progress.function_app.core_tools.downloading_latest"), true) {
-            override fun run(indicator: ProgressIndicator) {
-                ApplicationManager.getApplication().executeOnPooledThread {
-                    downloadLatestReleaseInternal(allowPrerelease, indicator, onComplete)
-                }
+    private val releasesCache = concurrentMapOf<String, FunctionsCoreToolsRelease>()
+
+    fun demandCoreToolsPathForVersion(project: Project,
+                                      azureFunctionsVersion: String,
+                                      releaseFeedUrl: String,
+                                      allowDownload: Boolean): String? {
+
+        val downloadRoot = resolveDownloadRoot()
+
+        // When download is allowed, see if we can resolve the path to a (newer) version
+        if (allowDownload) {
+            ensureReleasesCacheFromFeed(releaseFeedUrl)
+
+            val coreToolsPath = resolveDownloadInfoForRelease(azureFunctionsVersion, downloadRoot)
+                    ?.let { downloadInfo -> ensureReleaseDownloaded(project, downloadInfo) }
+            if (coreToolsPath != null) {
+                return coreToolsPath
             }
-        }.run(indicator)
+        }
+
+        // Fallback to using an existing download
+        val coreToolsPath = tryResolveExistingCoreToolsPath(azureFunctionsVersion, downloadRoot)
+        if (coreToolsPath != null) {
+            return coreToolsPath
+        }
+
+        return null
     }
 
-    fun downloadLatestRelease(project: Project, allowPrerelease: Boolean, onComplete: (String) -> Unit): Task {
-        return object : Task.Backgroundable(project, message("progress.function_app.core_tools.downloading_latest"), true) {
-            override fun run(pi: ProgressIndicator) {
-                downloadLatestReleaseInternal(allowPrerelease, pi, onComplete)
+    private fun ensureReleasesCacheFromFeed(releaseFeedUrl: String) {
+
+        if (releasesCache.isNotEmpty()) return
+
+        val azureCoreToolsFeedReleaseFilter =
+                if (SystemInfo.isWindows && CpuArch.isIntel64()) {
+                    AzureCoreToolsFeedReleaseFilter("Windows", "x64", "minified")
+                } else if (SystemInfo.isWindows) {
+                    AzureCoreToolsFeedReleaseFilter("Windows", "x86", "minified")
+                } else if (SystemInfo.isMac) {
+                    AzureCoreToolsFeedReleaseFilter("MacOS", "x64", "full")
+                } else if (SystemInfo.isLinux) {
+                    AzureCoreToolsFeedReleaseFilter("Linux", "x64", "full")
+                } else {
+                    AzureCoreToolsFeedReleaseFilter("Unknown", "x64", "full")
+                }
+
+        try {
+            val functionsCoreToolsReleaseFeed = FunctionsCoreToolsReleaseFeedService.createInstance()
+                    .getReleaseFeed(releaseFeedUrl)
+                    .execute()
+                    .body() ?: return
+
+            val releaseTags = functionsCoreToolsReleaseFeed.tags
+                    .toSortedMap()
+                    .filterValues {
+                        it.releaseQuality.isNotNullOrEmpty && it.release.isNotNullOrEmpty
+                    }
+
+            for ((releaseTagName, releaseTag) in releaseTags) {
+                val release = functionsCoreToolsReleaseFeed.releases[releaseTag.release!!]
+                        ?: continue
+
+                val releaseCoreTools = release.coreTools
+                        .filter {
+                            // Match OS and architecture
+                            it.os.equals(azureCoreToolsFeedReleaseFilter.os, ignoreCase = true) &&
+                                    it.architecture.equals(azureCoreToolsFeedReleaseFilter.architecture, ignoreCase = true) &&
+                                    it.downloadLink.isNotNullOrEmpty
+                        }
+                        .minByOrNull {
+                            // Ideally match requested size, if not, fall back to non-matching.
+                            // This is the case in the feed for e.g. v2, where Windows has only full size
+                            if (it.size.equals(azureCoreToolsFeedReleaseFilter.size, ignoreCase = true)) 0 else 1
+                        } ?: continue
+
+                releasesCache.putIfAbsent(
+                        releaseTagName.lowercase(),
+                        FunctionsCoreToolsRelease(
+                                releaseTagName.lowercase(),
+                                releaseTag.release,
+                                releaseCoreTools.downloadLink!!))
             }
+        } catch (e: UnknownHostException) {
+            logger.warn("Could not download from Azure Functions Core Tools release feed URL at $releaseFeedUrl: $e")
+        } catch (e: IOException) {
+            logger.warn("Could not download from Azure Functions Core Tools release feed URL at $releaseFeedUrl: $e")
         }
     }
 
-    private fun downloadLatestReleaseInternal(allowPrerelease: Boolean, indicator: ProgressIndicator, onComplete: (String) -> Unit) {
+    private fun resolveDownloadRoot(): File {
+        val properties = PropertiesComponent.getInstance()
+
+        // Ensure download root exists
+        val downloadRoot = File(properties.getValue(
+                AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH,
+                AzureRiderSettings.VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH))
+
+        try {
+            downloadRoot.mkdir()
+        } catch (e: Exception) {
+            logger.error("Error while creating download root: ${downloadRoot.path}", e)
+        }
+
+        return downloadRoot
+    }
+
+    private fun resolveDownloadInfoForRelease(azureFunctionsVersion: String, downloadRoot: File): FunctionsCoreToolsDownloadInfo? {
+
+        val releaseInfo = releasesCache[azureFunctionsVersion.lowercase()]
+        if (releaseInfo == null) {
+            logger.warn("Could not determine Azure Functions Core Tools release. Azure Functions version: '$azureFunctionsVersion'")
+            return null
+        }
+
+        val downloadFolderForTag = downloadRoot.resolve(releaseInfo.functionsVersion)
+        val downloadFolderForTagRelease = downloadFolderForTag.resolve(releaseInfo.coreToolsVersion)
+
+        logger.debug("Found Azure Functions Core Tools release from feed. " +
+                     "Azure Functions version: '${releaseInfo.functionsVersion}'; " +
+                     "Core Tools Version: ${releaseInfo.coreToolsVersion}; " +
+                     "Expected download path: ${downloadFolderForTagRelease.path}")
+
+        return FunctionsCoreToolsDownloadInfo(
+                downloadFolderForTag,
+                downloadFolderForTagRelease,
+                releaseInfo
+        )
+    }
+
+    private fun ensureReleaseDownloaded(project: Project, downloadInfo: FunctionsCoreToolsDownloadInfo): String? {
+
+        // Does the download path exist?
+        if (downloadInfo.downloadFolderForTagAndRelease.exists()) {
+            return downloadInfo.downloadFolderForTagAndRelease.path
+        }
+
+        // If not, download the release...
+        var installed = false
+        ProgressManager.getInstance().run(
+                object : Task.Backgroundable(project, message("progress.function_app.core_tools.downloading"), true) {
+                    override fun run(indicator: ProgressIndicator) {
+                        downloadRelease(downloadInfo, indicator) {
+                            installed = true
+                        }
+                    }
+                })
+
+        // REVIEW: What is reasonable amount of time to wait for tools download/expansion?
+        pumpMessages(Duration.ofMinutes(15)) { installed }
+
+        if (downloadInfo.downloadFolderForTagAndRelease.exists()) {
+            return downloadInfo.downloadFolderForTagAndRelease.path
+        }
+
+        return null
+    }
+
+    private fun downloadRelease(
+            functionsCoreToolsDownload: FunctionsCoreToolsDownloadInfo,
+            indicator: ProgressIndicator,
+            onComplete: () -> Unit) {
+
         if (!indicator.isRunning) indicator.start()
 
-        // Grab latest URL
-        indicator.text = message("progress.function_app.core_tools.determining_download_url")
         indicator.isIndeterminate = true
 
-        val latestLocal = determineVersion(determineLatestLocalCoreToolsPath())
-        val latestRemote = determineLatestRemote(allowPrerelease)
-        if (latestRemote == null) {
-            logger.error { "Could not determine latest remote version." }
-        }
-        if (latestRemote == null || latestLocal?.compareTo(latestRemote) == 0) {
-            indicator.text = message("progress.common.finished")
-            if (indicator.isRunning) indicator.stop()
-
-            if (latestLocal != null) {
-                onComplete(latestLocal.fullPath)
-            }
-
-            return
-        }
-
+        // Download latest artifact to temporary folder
         val tempFile = FileUtil.createTempFile(
                 File(FileUtil.getTempDirectory()),
-                latestRemote.fileName,
+                "AzureFunctions-${functionsCoreToolsDownload.release.functionsVersion}-${functionsCoreToolsDownload.release.coreToolsVersion}",
                 "download", true, true)
 
         // Download
         indicator.text = message("progress.function_app.core_tools.preparing_to_download")
         indicator.isIndeterminate = false
-        HttpRequests.request(latestRemote.downloadUrl)
+        HttpRequests.request(functionsCoreToolsDownload.release.coreToolsArtifactUrl)
                 .productNameAsUserAgent()
                 .connect {
                     indicator.text = message("progress.function_app.core_tools.downloading")
@@ -112,34 +233,23 @@ object FunctionsCoreToolsManager {
         indicator.checkCanceled()
 
         // Extract
-        val latestDirectory = File(downloadPath).resolve(latestRemote.version)
-
         ProgressManager.getInstance().executeNonCancelableSection {
             indicator.text = message("progress.function_app.core_tools.preparing_to_extract")
             indicator.isIndeterminate = true
             try {
-                if (latestDirectory.exists()) latestDirectory.deleteRecursively()
+                if (functionsCoreToolsDownload.downloadFolderForTag.exists()) {
+                    functionsCoreToolsDownload.downloadFolderForTag.deleteRecursively()
+                }
             } catch (e: Exception) {
-                logger.error("Error while removing latest directory $latestDirectory.path", e)
+                logger.error("Error while removing directory ${functionsCoreToolsDownload.downloadFolderForTag.path}", e)
             }
 
             indicator.text = message("progress.function_app.core_tools.extracting")
             indicator.isIndeterminate = true
             try {
-                ZipUtil.extract(tempFile.toPath(), latestDirectory.toPath(), null)
+                ZipUtil.extract(tempFile.toPath(), functionsCoreToolsDownload.downloadFolderForTagAndRelease.toPath(), null)
             } catch (e: Exception) {
-                logger.error("Error while extracting $tempFile.path to $latestDirectory.path", e)
-            }
-
-            indicator.text = message("progress.function_app.core_tools.cleaning_up_older_versions")
-            indicator.isIndeterminate = true
-            if (latestLocal != null) {
-                val latestLocalDirectory = File(latestLocal.fullPath)
-                try {
-                    if (latestLocalDirectory.exists()) latestLocalDirectory.deleteRecursively()
-                } catch (e: Exception) {
-                    logger.error("Error while removing older version directory $latestLocalDirectory.path", e)
-                }
+                logger.error("Error while extracting ${tempFile.path} to ${functionsCoreToolsDownload.downloadFolderForTagAndRelease.path}", e)
             }
 
             indicator.text = message("progress.function_app.core_tools.cleaning_up_temporary_files")
@@ -147,7 +257,7 @@ object FunctionsCoreToolsManager {
             try {
                 if (tempFile.exists()) tempFile.delete()
             } catch (e: Exception) {
-                logger.error("Error while removing temporary file $tempFile.path", e)
+                logger.error("Error while removing temporary file ${tempFile.path}", e)
             }
 
             indicator.text = message("progress.common.finished")
@@ -156,118 +266,44 @@ object FunctionsCoreToolsManager {
         if (indicator.isRunning)
             indicator.stop()
 
-        onComplete(latestDirectory.path)
+        onComplete()
     }
 
-    fun getCoreToolsExecutableName(): String {
-        return if (SystemInfo.isWindows) { "func.exe" }
-        else { "func" }
-    }
+    private fun tryResolveExistingCoreToolsPath(azureFunctionsVersion: String, downloadRoot: File): String? {
 
-    fun determineVersion(coreToolsPath: String?): AzureFunctionsCoreToolsLocalAsset? {
-        coreToolsPath ?: return null
+        // Determine target folders for (potentially) cached path
+        val downloadFolderForTag = downloadRoot.resolve(azureFunctionsVersion.lowercase())
+        if (!downloadFolderForTag.exists()) return null
 
-        val coreToolsExecutableDir = File(coreToolsPath)
-        val coreToolsExecutable = coreToolsExecutableDir.resolve(getCoreToolsExecutableName())
-        if (!coreToolsExecutable.exists())
-            return null
+        val downloadFolderForTagRelease = downloadFolderForTag.listFiles(File::isDirectory)
+                ?.sortedWith { first, second -> VersionComparatorUtil.compare(first?.name, second?.name) }
+                ?.lastOrNull { it.exists() && it.listFiles { file ->
+                    file.nameWithoutExtension.equals("func", ignoreCase = true) }?.any() == true }
 
-        try {
-            if (!coreToolsExecutable.canExecute()) {
-                logger.warn("Updating executable flag for $coreToolsPath...")
-                try {
-                    coreToolsExecutable.setExecutable(true)
-                } catch (s: SecurityException) {
-                    logger.error("Failed setting executable flag for $coreToolsPath", s)
-                }
-            }
+        if (downloadFolderForTagRelease != null) {
 
-            val commandLine = GeneralCommandLine()
-                    .withExePath(coreToolsExecutable.path)
-                    .withParameters("--version")
+            logger.debug("Found existing Azure Functions Core Tools path. " +
+                    "Azure Functions version: '${azureFunctionsVersion.lowercase()}'; " +
+                    "Download path: ${downloadFolderForTagRelease.path}")
 
-            val processHandler = CapturingProcessHandler(commandLine)
-            val output = processHandler.runProcess(15000, true)
-            val version = output.stdoutLines.firstOrNull()?.trim('\r', '\n')
-            if (!version.isNullOrEmpty()) {
-                return AzureFunctionsCoreToolsLocalAsset(version, coreToolsPath)
-            }
-        } catch (e: Exception) {
-            logger.error("Error while determining version of tools in $coreToolsPath", e)
+            return downloadFolderForTagRelease.path
         }
+
+        logger.warn("Could not determine existing Azure Functions Core Tools path. " +
+                    "Azure Functions version: '${azureFunctionsVersion.lowercase()}'")
 
         return null
     }
 
-    fun determineLatestLocalCoreToolsPath(toolsDownloadPath: String = downloadPath): String? {
-        val downloadDirectory = File(toolsDownloadPath)
-        if (downloadDirectory.exists()) {
-            val versionDirs = downloadDirectory.listFiles { file -> file != null && file.isDirectory } ?: return null
-            val latestDirectory = versionDirs
-                    .sortedWith(Comparator<File> { o1, o2 -> StringUtil.compareVersionNumbers(o1?.name, o2?.name) })
-                    .lastOrNull()
+    private class AzureCoreToolsFeedReleaseFilter(val os: String,
+                                                  val architecture: String,
+                                                  val size: String)
 
-            if (latestDirectory != null) {
-                return latestDirectory.path
-            }
-        }
+    private class FunctionsCoreToolsRelease(val functionsVersion: String,
+                                            val coreToolsVersion: String,
+                                            val coreToolsArtifactUrl: String)
 
-        return null
-    }
-
-    fun determineLatestRemote(allowPrerelease: Boolean): AzureFunctionsCoreToolsRemoteAsset? {
-        val expectedFileNamePrefix = "Azure.Functions.Cli." +
-                if (SystemInfo.isWindows && CpuArch.isIntel64()) {
-                    "win-x64"
-                } else if (SystemInfo.isWindows) {
-                    "win-x86"
-                } else if (SystemInfo.isMac) {
-                    "osx-x64"
-                } else if (SystemInfo.isLinux) {
-                    "linux-x64"
-                } else {
-                    "unknown"
-                }
-
-        try {
-            val gitHubReleases = GitHubReleasesService.createInstance()
-                    .getReleases(API_URL_RELEASES)
-                    .execute()
-                    .body()
-
-            if (gitHubReleases != null) {
-                for (gitHubRelease in gitHubReleases
-                        .filter { !it.tagName.isNullOrEmpty() }
-                        .filter { allowPrerelease || !it.prerelease }
-                        .sortedWith { o1, o2 ->
-                            VersionComparatorUtil.compare(o2.tagName!!.trimStart('v'), o1.tagName!!.trimStart('v')) // latest versions on top
-                        }) {
-                    val latestReleaseVersion = gitHubRelease.tagName!!.trimStart('v')
-
-                    val latestAsset = gitHubRelease.assets.firstOrNull {
-                        it.name!!.startsWith(expectedFileNamePrefix, true) && it.name.endsWith(".zip")
-                    }
-
-                    if (latestAsset != null) {
-                        return AzureFunctionsCoreToolsRemoteAsset(latestReleaseVersion, latestAsset.name!!, gitHubRelease.prerelease, latestAsset.browserDownloadUrl!!)
-                    }
-                }
-            }
-        } catch (e: UnknownHostException) {
-            logger.warn("Could not determine latest remote: $e")
-        } catch (e: IOException) {
-            logger.warn("Could not determine latest remote: $e")
-        }
-
-        return null
-    }
-
-    open class AzureFunctionsCoreToolsAsset(val version: String) : Comparable<AzureFunctionsCoreToolsAsset> {
-        override fun compareTo(other: AzureFunctionsCoreToolsAsset): Int {
-            return StringUtil.compareVersionNumbers(version, other.version)
-        }
-    }
-
-    class AzureFunctionsCoreToolsLocalAsset(version: String, val fullPath: String) : AzureFunctionsCoreToolsAsset(version)
-    class AzureFunctionsCoreToolsRemoteAsset(version: String, val fileName: String, val isPrerelease: Boolean, val downloadUrl: String) : AzureFunctionsCoreToolsAsset(version)
+    private class FunctionsCoreToolsDownloadInfo(val downloadFolderForTag: File,
+                                                 val downloadFolderForTagAndRelease: File,
+                                                 val release: FunctionsCoreToolsRelease)
 }

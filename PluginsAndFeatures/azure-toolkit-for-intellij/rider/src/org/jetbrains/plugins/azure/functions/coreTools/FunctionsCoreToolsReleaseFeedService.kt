@@ -1,18 +1,18 @@
 /**
- * Copyright (c) 2019 JetBrains s.r.o.
- * <p/>
+ * Copyright (c) 2022 JetBrains s.r.o.
+ *
  * All rights reserved.
- * <p/>
+ *
  * MIT License
- * <p/>
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
  * to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * <p/>
+ *
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of
  * the Software.
- * <p/>
+ *
  * THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
  * THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package org.jetbrains.plugins.azure.functions
+package org.jetbrains.plugins.azure.functions.coreTools
 
 import com.google.gson.annotations.SerializedName
 import retrofit2.Call
@@ -30,32 +30,34 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Url
 
-interface GitHubReleasesService {
+interface FunctionsCoreToolsReleaseFeedService {
     companion object {
-        fun createInstance(baseUrl: String = "https://api.github.com/"): GitHubReleasesService =
+        fun createInstance(): FunctionsCoreToolsReleaseFeedService =
                 Retrofit.Builder()
-                        .baseUrl(baseUrl)
                         .addConverterFactory(GsonConverterFactory.create())
+                        .baseUrl("https://functionscdn.azureedge.net/public/")
                         .build()
-                        .create(GitHubReleasesService::class.java)
+                        .create(FunctionsCoreToolsReleaseFeedService::class.java)
     }
 
     @GET
     @Headers("Accept: application/json")
-    fun getReleases(@Url releasesUrl: String): Call<List<GitHubRelease>>
+    fun getReleaseFeed(@Url feedUrl: String): Call<ReleaseFeed>
 }
 
-class GitHubRelease(val url: String?,
-                    @SerializedName("assets_url") val assetsUrl: String?,
-                    val name: String?,
-                    val prerelease: Boolean,
-                    @SerializedName("tag_name") val tagName: String?,
-                    val assets: List<GitHubReleaseAsset> = mutableListOf()) {
-}
+class ReleaseFeed(@SerializedName("tags") val tags: Map<String, Tag> = mapOf(),
+                  @SerializedName("releases") val releases: Map<String, Release> = mapOf())
 
-class GitHubReleaseAsset(val url: String?,
-                         @SerializedName("browser_download_url") val browserDownloadUrl: String?,
-                         val name: String?,
-                         val label: String?,
-                         @SerializedName("content_type")  val contentType: String?,
-                         val size: Long?)
+class Tag(@SerializedName("release") val release: String?,
+          @SerializedName("releaseQuality") val releaseQuality: String?,
+          @SerializedName("hidden") val hidden: Boolean)
+
+class Release(@SerializedName("templates") val templates: String?,
+              @SerializedName("coreTools") val coreTools: List<ReleaseCoreTool> = listOf())
+
+class ReleaseCoreTool(@SerializedName("OS") val os: String?,
+                      @SerializedName("Architecture") val architecture: String?,
+                      @SerializedName("downloadLink") val downloadLink: String?,
+                      @SerializedName("sha2") val sha2: String?,
+                      @SerializedName("size") val size: String?,
+                      @SerializedName("default") val default: Boolean)

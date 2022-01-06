@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2021 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -22,22 +22,31 @@
 
 package org.jetbrains.plugins.azure.functions.projectTemplating
 
+import com.intellij.openapi.command.impl.DummyProject
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.util.use
 import com.jetbrains.rider.projectView.actions.projectTemplating.backend.ReSharperProjectTemplateProvider
+import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsConstants
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsInfoProvider
 import java.io.File
 
 object FunctionsCoreToolsTemplateManager {
+
     private val logger = Logger.getInstance(FunctionsCoreToolsTemplateManager::class.java)
 
     private fun isFunctionsProjectTemplate(file: File?): Boolean =
-            file != null && file.isFile && file.name.startsWith("projectTemplates.", true) && file.name.endsWith(".nupkg", true)
+            file != null && file.name.startsWith("projectTemplates.", true) && file.name.endsWith(".nupkg", true)
 
     fun areRegistered(): Boolean =
             ReSharperProjectTemplateProvider.getUserTemplateSources().any { isFunctionsProjectTemplate(it) }
 
     fun tryReload() {
-        val coreToolsInfo = FunctionsCoreToolsInfoProvider.retrieve() ?: return
+
+        // Determine core tools info for latest supported Azure Functions version
+        val coreToolsInfo = DummyProject.getInstance().use { dummyProject ->
+            FunctionsCoreToolsInfoProvider.retrieveForVersion(
+                    dummyProject, FunctionsCoreToolsConstants.FUNCTIONS_CORETOOLS_LATEST_SUPPORTED_VERSION, allowDownload = false)
+        } ?: return
 
         // Remove previous templates
         ReSharperProjectTemplateProvider.getUserTemplateSources().forEach {

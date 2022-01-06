@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2020 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -100,13 +100,22 @@ open class AzureFunctionsHostConfigurationParameters(
         get() = WorkspaceModel.getInstance(project).getProjectModelEntities(Path.of(projectFilePath), project).any { it.isUnloadedProject() }
 
     override fun toDotNetExecutable(): DotNetExecutable {
+
+        if (tryGetRunnableProject() == null) throw CantRunException("Project is not specified")
+
+        @Suppress("DialogTitleCapitalization")
+        val coreToolsInfo = FunctionsCoreToolsInfoProvider.retrieveForProject(project, projectFilePath, allowDownload = true)
+                ?: throw CantRunException("Can't run Azure Functions host. No Azure Functions Core Tools information could be determined.")
+
+        return toDotNetExecutable(coreToolsInfo)
+    }
+
+    fun toDotNetExecutable(coreToolsInfo: FunctionsCoreToolsInfo) : DotNetExecutable {
+
         val runnableProject = tryGetRunnableProject()
                 ?: throw CantRunException("Project is not specified")
 
         val projectOutput = tryGetProjectOutput(runnableProject)
-
-        val coreToolsInfo: FunctionsCoreToolsInfo? = FunctionsCoreToolsInfoProvider.retrieve()
-                ?: throw CantRunException("Can't run Azure Functions host - path to core tools has not been configured.")
 
         val effectiveWorkingDirectory = if (trackProjectWorkingDirectory && projectOutput != null) {
             projectOutput.workingDirectory
@@ -126,7 +135,7 @@ open class AzureFunctionsHostConfigurationParameters(
                 }
 
         return DotNetExecutable(
-                exePath = coreToolsInfo!!.coreToolsExecutable,
+                exePath = coreToolsInfo.coreToolsExecutable,
                 projectTfm = projectOutput?.tfm,
                 workingDirectory = effectiveWorkingDirectory,
                 programParameterString = effectiveArguments,
@@ -197,9 +206,6 @@ open class AzureFunctionsHostConfigurationParameters(
                 throw RuntimeConfigurationError(
                         message("run_config.run_function_app.validation.invalid_working_directory", if (workingDirectory.isNotEmpty()) workingDirectory else "<${message("common.empty")}>"))
         }
-
-        FunctionsCoreToolsInfoProvider.retrieve()
-                ?: throw RuntimeConfigurationError(message("run_config.run_function_app.validation.missing_core_tools_path"))
 
         if (useMonoRuntime && riderDotNetActiveRuntimeHost.monoRuntime == null)
             throw RuntimeConfigurationError(message("run_config.run_function_app.validation.missing_mono_runtime"))

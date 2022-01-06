@@ -252,10 +252,17 @@
     <configurationType implementation="org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfigurationType"/>
     <runConfigurationProducer implementation="org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostRunConfigurationProducer"/>
 
+    <registryKey key="azure.function_app.core_tools.feed.enabled"
+                 defaultValue="true"
+                 description="Enable downloading from Azure Functions Core Tools releases feed URL." />
+    <registryKey key="azure.function_app.core_tools.feed.url"
+                 defaultValue="https://functionscdn.azureedge.net/public/cli-feed-v4.json"
+                 description="Azure Functions Core Tools releases feed URL." />
+
     <postStartupActivity implementation="com.microsoft.intellij.AzureRiderPlugin" />
-    <postStartupActivity implementation="org.jetbrains.plugins.azure.functions.AzureCoreToolsDetector" />
     <postStartupActivity implementation="org.jetbrains.icons.RiderIconsPatcherRegistrar"/>
-    <postStartupActivity implementation="org.jetbrains.plugins.azure.functions.AzureCoreToolsNotification" order="last" />
+    <postStartupActivity implementation="org.jetbrains.plugins.azure.functions.TryRefreshAzureCoreToolsProjectTemplatesActivity" order="last" />
+    <postStartupActivity implementation="org.jetbrains.plugins.azure.functions.CleanupDeprecatedAzureCoreToolsConfigurationActivity" order="last" />
 
     <projectTemplateProvider implementation="org.jetbrains.plugins.azure.functions.projectTemplating.FunctionsCoreToolsTemplatesProvider" order="first"/>
 
