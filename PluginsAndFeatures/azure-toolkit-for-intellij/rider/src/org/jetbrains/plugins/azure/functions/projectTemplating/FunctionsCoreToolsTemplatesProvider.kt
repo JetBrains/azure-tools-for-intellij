@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2021 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -26,6 +26,7 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.IOptProperty
 import com.jetbrains.rd.util.reactive.OptProperty
 import com.jetbrains.rd.util.reactive.Property
+import com.jetbrains.rd.util.reactive.fire
 import com.jetbrains.rider.projectView.actions.projectTemplating.RiderProjectTemplate
 import com.jetbrains.rider.projectView.actions.projectTemplating.RiderProjectTemplateGenerator
 import com.jetbrains.rider.projectView.actions.projectTemplating.RiderProjectTemplateProvider
@@ -40,6 +41,7 @@ import javax.swing.Icon
 import javax.swing.JComponent
 
 class FunctionsCoreToolsTemplatesProvider : RiderProjectTemplateProvider {
+
     override val isReady = Property(true)
 
     override fun load(lifetime: Lifetime, context: ProjectTemplateDialogContext): IOptProperty<RiderProjectTemplateState> {
@@ -57,6 +59,7 @@ class FunctionsCoreToolsTemplatesProvider : RiderProjectTemplateProvider {
     }
 
     private class InstallTemplates : RiderProjectTemplate {
+
         override val group: String?
             get() = ".NET / .NET Core"
         override val name: String
@@ -78,7 +81,10 @@ class FunctionsCoreToolsTemplatesProvider : RiderProjectTemplateProvider {
                 }
 
                 override fun getComponent(): JComponent {
-                    return InstallFunctionsCoreToolsComponent(this.validationError).getView()
+                    return InstallFunctionsCoreToolsComponent(this.validationError) {
+                        FunctionsCoreToolsTemplateManager.tryReload()
+                        context.restart.fire()
+                    }.getView()
                 }
             }
         }
