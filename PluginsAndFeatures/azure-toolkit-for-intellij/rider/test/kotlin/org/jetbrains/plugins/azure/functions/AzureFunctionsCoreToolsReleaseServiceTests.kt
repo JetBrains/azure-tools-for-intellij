@@ -28,6 +28,8 @@ import org.testng.annotations.Test
 
 class AzureFunctionsCoreToolsReleaseServiceTests {
 
+    // Note: This test really serves to make sure expected values are present on the remote URL,
+    // and that we can properly deserialize it.
     @Test
     fun testHasExpectedTagsAndReleases() {
         val feed = FunctionsCoreToolsReleaseFeedService.createInstance()
@@ -40,9 +42,6 @@ class AzureFunctionsCoreToolsReleaseServiceTests {
         feed.releases.size.shouldNotBe(0)
 
         val osArchitecturesToVerify = mapOf(
-                "v1" to mapOf(
-                        "Windows" to "x86"
-                ),
                 "v2" to mapOf(
                         "Linux" to "x64",
                         "MacOS" to "x64",
