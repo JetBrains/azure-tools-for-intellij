@@ -98,7 +98,6 @@ abstract class AzureFunctionsTimerTriggerCompletionTestCore(
     @DataProvider(name = "completionSymbolPrefixData")
     fun completionSymbolPrefixData() = arrayOf(
             arrayOf("Star", "*"),
-            arrayOf("Slash", "/"),
             arrayOf("Comma", ","),
             arrayOf("Space", " ")
     )
