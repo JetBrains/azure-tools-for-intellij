@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -23,7 +23,6 @@
 package org.cases.runconfig.functionapp
 
 import com.intellij.execution.configurations.RuntimeConfigurationError
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.ide.model.EnvironmentVariable
 import com.jetbrains.rider.model.*
@@ -32,10 +31,7 @@ import com.jetbrains.rider.run.configurations.project.DotNetStartBrowserParamete
 import com.jetbrains.rider.runtime.RiderDotNetActiveRuntimeHost
 import com.jetbrains.rider.runtime.mono.MonoRuntime
 import com.jetbrains.rider.test.base.BaseTestWithSolution
-import com.microsoft.intellij.configuration.AzureRiderSettings
 import org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfigurationParameters
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
 
@@ -50,20 +46,6 @@ abstract class FunctionHostConfigurationParametersTestCore(
     override val waitForCaches: Boolean = true
 
     override val restoreNuGetPackages: Boolean = true
-
-    private var originalCoreToolsProperty: String? = null
-
-    @BeforeMethod(alwaysRun = true)
-    fun collectCoreToolsProperties() {
-        originalCoreToolsProperty =
-                PropertiesComponent.getInstance().getValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_PATH)
-    }
-
-    @AfterMethod(alwaysRun = true)
-    fun restoreCoreToolsProperty() {
-        PropertiesComponent.getInstance().setValue(
-                AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_PATH, originalCoreToolsProperty)
-    }
 
     //region Invalid
 
@@ -261,30 +243,6 @@ abstract class FunctionHostConfigurationParametersTestCore(
         parameters.validate(createHost())
     }
 
-    @Test(expectedExceptions = [RuntimeConfigurationError::class], expectedExceptionsMessageRegExp = "Path to Azure Functions core tools has not been configured\\. This can be done in the settings under Tools \\| Azure \\| Functions\\.")
-    fun testValidate_FunctionCoreTools_NotInstalled() {
-        val projectFilePath = File("/project/file/path").absolutePath
-
-        val parameters = createParameters(
-                project = project,
-                projectFilePath = projectFilePath,
-                trackProjectExePath = true,
-                trackProjectWorkingDirectory = true,
-                projectTfm = projectTfm
-        )
-
-        project.solution.runnableProjectsModel.projects.set(listOf(
-                createRunnableProject(
-                        kind = RunnableProjectKind.AzureFunctions,
-                        projectFilePath = projectFilePath,
-                        problems = null
-                )
-        ))
-
-        PropertiesComponent.getInstance().unsetValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_PATH)
-        parameters.validate(createHost())
-    }
-
     @Test(expectedExceptions = [RuntimeConfigurationError::class], expectedExceptionsMessageRegExp = "Mono runtime not found\\. Please setup Mono path in settings \\(File \\| Settings \\| Build, Execution, Deployment \\| Toolset and Build\\)")
     fun testValidate_MonoRuntime_MissingMonoConfig() {
         val projectFilePath = File("/project/file/path").absolutePath
@@ -306,7 +264,6 @@ abstract class FunctionHostConfigurationParametersTestCore(
                         problems = null)
         ))
 
-        setCoreToolsPath()
         parameters.validate(host)
     }
 
@@ -335,7 +292,6 @@ abstract class FunctionHostConfigurationParametersTestCore(
                         problems = null)
         ))
 
-        setCoreToolsPath()
         parameters.validate(host)
     }
 
@@ -360,7 +316,6 @@ abstract class FunctionHostConfigurationParametersTestCore(
                         problems = null)
         ))
 
-        setCoreToolsPath()
         parameters.validate(host)
     }
 
@@ -428,14 +383,4 @@ abstract class FunctionHostConfigurationParametersTestCore(
                 problems = problems,
                 customAttributes = customAttributes
         )
-
-    private fun setCoreToolsPath(): File {
-        val funcCoreTools = tempTestDirectory.resolve("func")
-        funcCoreTools.createNewFile()
-        funcCoreTools.setExecutable(true)
-
-        PropertiesComponent.getInstance().setValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_PATH, tempTestDirectory.canonicalPath)
-
-        return funcCoreTools
-    }
 }

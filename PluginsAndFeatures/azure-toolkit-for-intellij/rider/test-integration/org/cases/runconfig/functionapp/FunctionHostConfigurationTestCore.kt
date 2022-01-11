@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -25,7 +25,6 @@ package org.cases.runconfig.functionapp
 import com.intellij.execution.RunManagerEx
 import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.execution.configurations.RunConfiguration
-import com.intellij.ide.util.PropertiesComponent
 import com.jetbrains.rider.build.BuildHost
 import com.jetbrains.rider.model.RunnableProjectKind
 import com.jetbrains.rider.model.runnableProjectsModel
@@ -35,12 +34,9 @@ import com.jetbrains.rider.test.asserts.shouldContains
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.enums.CoreVersion
 import com.jetbrains.rider.test.scriptingApi.*
-import com.microsoft.intellij.configuration.AzureRiderSettings
 import org.jetbrains.plugins.azure.functions.buildTasks.BuildFunctionsProjectBeforeRunTaskProvider
 import org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfiguration
 import org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfigurationType
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import kotlin.test.fail
 
@@ -56,20 +52,6 @@ abstract class FunctionHostConfigurationTestCore(
     override val waitForCaches: Boolean = true
 
     override val restoreNuGetPackages: Boolean = true
-
-    private var originalCoreToolsProperty: String? = null
-
-    @BeforeMethod(alwaysRun = true)
-    fun collectCoreToolsProperties() {
-        originalCoreToolsProperty =
-                PropertiesComponent.getInstance().getValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_PATH)
-    }
-
-    @AfterMethod(alwaysRun = true)
-    fun restoreCoreToolsProperty() {
-        PropertiesComponent.getInstance().setValue(
-                AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_PATH, originalCoreToolsProperty)
-    }
 
     //region Configuration
 
