@@ -1,0 +1,5 @@
+<assembly name="Microsoft.Azure.Functions.Worker.Extensions.Abstractions">
+    <member name="T:Microsoft.Azure.Functions.Worker.FunctionAttribute">
+        <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    </member>
+</assembly>
