@@ -20,10 +20,9 @@
  * SOFTWARE.
  */
 
-package org.jetbrains.plugins.azure.functions
+package org.jetbrains.plugins.azure.functions.coreTools
 
 import com.jetbrains.rider.test.asserts.*
-import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsReleaseFeedService
 import org.testng.annotations.Test
 
 class AzureFunctionsCoreToolsReleaseServiceTests {
@@ -76,7 +75,7 @@ class AzureFunctionsCoreToolsReleaseServiceTests {
 
             for (osToArchitecture in tagToOsArchitecture.value) {
                 val coreTools = release.coreTools.firstOrNull {
-                    it.size == "full" && it.os.equals(osToArchitecture.key, true) && it.architecture.equals(osToArchitecture.value, true) }
+                    it.os.equals(osToArchitecture.key, true) && it.architecture.equals(osToArchitecture.value, true) }
 
                 coreTools.shouldNotBeNull()
                 coreTools!!.downloadLink.shouldNotBeNull()
