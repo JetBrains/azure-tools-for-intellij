@@ -93,8 +93,6 @@ object FunctionsCoreToolsInfoProvider {
     private fun retrieveFromFeed(project: Project, azureFunctionsVersion: String, allowDownload: Boolean): FunctionsCoreToolsInfo? {
 
         // Determine Azure Functions Core Tools from release feed
-        if (!Registry.`is`("azure.function_app.core_tools.feed.enabled")) return null
-
         val coreToolsPathFromFeed = FunctionsCoreToolsManager.demandCoreToolsPathForVersion(
                 project, azureFunctionsVersion, Registry.get("azure.function_app.core_tools.feed.url").asString(), allowDownload)
                 ?: return null

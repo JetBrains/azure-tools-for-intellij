@@ -31,6 +31,7 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.io.HttpRequests
 import com.intellij.util.io.ZipUtil
 import com.intellij.util.system.CpuArch
@@ -58,7 +59,7 @@ object FunctionsCoreToolsManager {
         val downloadRoot = resolveDownloadRoot()
 
         // When download is allowed, see if we can resolve the path to a (newer) version
-        if (allowDownload) {
+        if (allowDownload && Registry.`is`("azure.function_app.core_tools.feed.enabled")) {
             ensureReleasesCacheFromFeed(releaseFeedUrl)
 
             val coreToolsPath = resolveDownloadInfoForRelease(azureFunctionsVersion, downloadRoot)

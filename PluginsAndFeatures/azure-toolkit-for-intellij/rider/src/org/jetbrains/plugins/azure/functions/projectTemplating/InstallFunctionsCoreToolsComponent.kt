@@ -24,6 +24,7 @@ package org.jetbrains.plugins.azure.functions.projectTemplating
 
 import com.intellij.ide.actions.ShowSettingsUtilImpl
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.ui.JBUI
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rider.ui.components.ComponentFactories
@@ -50,14 +51,16 @@ class InstallFunctionsCoreToolsComponent(private val validationError: IProperty<
             add(ComponentFactories.multiLineLabelPane(message("template.project.function_app.install.core_tools_install_and_configure_request")),
                     "growx, gapbottom ${JBUI.scale(1)}")
 
-            add(ComponentFactories.hyperlinkLabel(message("template.project.function_app.install.core_tools_download_request")) {
-                val project = ProjectManager.getInstance().defaultProject
-                FunctionsCoreToolsInfoProvider.retrieveForVersion(
-                        project, FunctionsCoreToolsConstants.FUNCTIONS_CORETOOLS_LATEST_SUPPORTED_VERSION, allowDownload = true)
+            if (!Registry.`is`("azure.function_app.core_tools.feed.enabled")) {
+                add(ComponentFactories.hyperlinkLabel(message("template.project.function_app.install.core_tools_download_request")) {
+                    val project = ProjectManager.getInstance().defaultProject
+                    FunctionsCoreToolsInfoProvider.retrieveForVersion(
+                            project, FunctionsCoreToolsConstants.FUNCTIONS_CORETOOLS_LATEST_SUPPORTED_VERSION, allowDownload = true)
 
-                validationError.set(null)
-                reloadTemplates.run()
-            })
+                    validationError.set(null)
+                    reloadTemplates.run()
+                })
+            }
 
             add(ComponentFactories.hyperlinkLabel(message("template.project.function_app.install.core_tools_configure_request")) {
                 val project = ProjectManager.getInstance().defaultProject
