@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -25,10 +25,14 @@ package org.cases.runconfig.functionapp.v3.isolatedWorker
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.CoreVersion
 import org.cases.runconfig.functionapp.FunctionHostConfigurationParametersTestCore
+import org.testng.annotations.Test
 
 @TestEnvironment(coreVersion = CoreVersion.DOT_NET_5)
 class FunctionHostConfigurationParametersTest : FunctionHostConfigurationParametersTestCore(
         solutionDirectoryName = "v3/FunctionAppIsolated",
-        projectName = "v3/FunctionAppIsolated",
+        projectName = "FunctionAppIsolated",
         projectTfm = "net5.0"
-)
+) {
+    @Test
+    fun dummy() { } // needed so that base class tests are picked up
+}
