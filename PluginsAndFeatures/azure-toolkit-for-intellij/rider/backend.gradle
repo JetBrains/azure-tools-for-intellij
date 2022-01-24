@@ -2,12 +2,26 @@ import groovy.io.FileType
 
 def backendGroup = 'backend'
 
+def riderSdkPackageVersion = {
+    def sdkPath = new File(projectDir, "/build/riderRD-" + rider_version.replace("RD-", ""))
+    def path = new File(sdkPath, "lib/DotNetSdkForRdPlugins")
+    if (!path.isDirectory()) println("$path does not exist or not a directory")
+
+    def sdkPackageName = "JetBrains.Rider.SDK"
+
+    def regex = "${sdkPackageName}\\.([\\d\\.]+.*)\\.nupkg"
+    def matchingPackage = path.list().find { it =~ regex }
+    def groups = matchingPackage =~ regex
+    return groups[0][1]
+}
+
 ext {
     nugetConfigPath = new File(projectDir, 'NuGet.Config')
     riderSdkVersionPropsPath = new File(resharperPluginPath, 'RiderSdkPackageVersion.props')
 
     // https://www.nuget.org/packages/JetBrains.Rider.SDK/
-    riderNugetSdkVersion = rider_nuget_sdk_version
+    // (resolved from /build/riderRD-*/lib/DotNetSdkForRdPlugins/JetBrains.Rider.SDK.*.nupkg)
+    riderNugetSdkVersion = riderSdkPackageVersion()
 
     if (!ext.has('BuildConfiguration'))
         BuildConfiguration = rider_backend_build_configuration
