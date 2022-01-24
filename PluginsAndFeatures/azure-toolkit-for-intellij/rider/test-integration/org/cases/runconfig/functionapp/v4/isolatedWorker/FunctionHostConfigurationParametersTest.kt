@@ -24,11 +24,11 @@ package org.cases.runconfig.functionapp.v4.isolatedWorker
 
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.CoreVersion
-import org.cases.runconfig.functionapp.FunctionHostConfigurationParametersTestCore
+import org.cases.runconfig.functionapp.FunctionHostConfigurationParametersTestBase
 import org.testng.annotations.Test
 
 @TestEnvironment(coreVersion = CoreVersion.DOT_NET_6)
-class FunctionHostConfigurationParametersTest : FunctionHostConfigurationParametersTestCore(
+class FunctionHostConfigurationParametersTest : FunctionHostConfigurationParametersTestBase(
         solutionDirectoryName = "v4/FunctionAppIsolated",
         projectName = "FunctionAppIsolated",
         projectTfm = "net6.0"

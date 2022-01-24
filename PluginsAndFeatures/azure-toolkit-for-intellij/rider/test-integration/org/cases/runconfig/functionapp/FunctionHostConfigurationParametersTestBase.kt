@@ -35,7 +35,7 @@ import org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfiguration
 import org.testng.annotations.Test
 import java.io.File
 
-abstract class FunctionHostConfigurationParametersTestCore(
+abstract class FunctionHostConfigurationParametersTestBase(
         private val solutionDirectoryName: String,
         val projectName: String,
         val projectTfm: String

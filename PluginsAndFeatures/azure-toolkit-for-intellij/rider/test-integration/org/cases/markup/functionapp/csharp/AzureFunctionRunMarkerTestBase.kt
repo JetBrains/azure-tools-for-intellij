@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -26,7 +26,7 @@ import com.jetbrains.rdclient.testFramework.waitForDaemon
 import com.jetbrains.rider.test.base.BaseTestWithMarkup
 import org.testng.annotations.Test
 
-abstract class AzureFunctionRunMarkerTestCore(
+abstract class AzureFunctionRunMarkerTestBase(
         private val solutionDirectoryName: String,
         val testFilePath: String,
         val sourceFileName: String,

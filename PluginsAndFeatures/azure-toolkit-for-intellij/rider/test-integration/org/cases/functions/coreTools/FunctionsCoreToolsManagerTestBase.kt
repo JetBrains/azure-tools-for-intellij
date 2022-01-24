@@ -36,7 +36,7 @@ import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsManager
 import org.testng.annotations.*
 import java.io.File
 
-abstract class FunctionsCoreToolsManagerTestCore(
+abstract class FunctionsCoreToolsManagerTestBase(
         private val solutionDirectoryName: String,
         private val azureFunctionsVersion: String
 ) : BaseTestWithSolution() {
