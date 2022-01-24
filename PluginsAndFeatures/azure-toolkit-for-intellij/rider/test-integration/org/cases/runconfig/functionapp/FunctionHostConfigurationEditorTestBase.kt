@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -41,7 +41,7 @@ import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
-abstract class FunctionHostConfigurationEditorTestCore(
+abstract class FunctionHostConfigurationEditorTestBase(
         private val solutionDirectoryName: String,
         val projectName: String,
         val projectTfm: String

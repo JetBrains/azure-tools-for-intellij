@@ -24,11 +24,11 @@ package org.cases.markup.functionapp.csharp.v4.isolatedWorker
 
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.CoreVersion
-import org.cases.markup.functionapp.csharp.AzureFunctionRunMarkerTestCore
+import org.cases.markup.functionapp.csharp.AzureFunctionRunMarkerTestBase
 import org.testng.annotations.Test
 
 @TestEnvironment(coreVersion = CoreVersion.DOT_NET_6)
-class AzureFunctionRunMarkerTest : AzureFunctionRunMarkerTestCore(
+class AzureFunctionRunMarkerTest : AzureFunctionRunMarkerTestBase(
         solutionDirectoryName = "v4/FunctionAppIsolated",
         testFilePath = "FunctionAppIsolated/Function.cs",
         sourceFileName = "Function.cs",

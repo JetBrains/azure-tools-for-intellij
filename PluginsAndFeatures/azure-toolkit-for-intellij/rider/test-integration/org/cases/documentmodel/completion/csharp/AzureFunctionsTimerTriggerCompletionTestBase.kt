@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -27,7 +27,7 @@ import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 
-abstract class AzureFunctionsTimerTriggerCompletionTestCore(
+abstract class AzureFunctionsTimerTriggerCompletionTestBase(
         private val solutionDirectoryName: String
 ) : CompletionTestBase() {
 

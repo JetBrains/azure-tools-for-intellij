@@ -40,7 +40,7 @@ import org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfiguration
 import org.testng.annotations.Test
 import kotlin.test.fail
 
-abstract class FunctionHostConfigurationTestCore(
+abstract class FunctionHostConfigurationTestBase(
         private val solutionDirectoryName: String,
         val projectName: String,
         val projectTfm: String,

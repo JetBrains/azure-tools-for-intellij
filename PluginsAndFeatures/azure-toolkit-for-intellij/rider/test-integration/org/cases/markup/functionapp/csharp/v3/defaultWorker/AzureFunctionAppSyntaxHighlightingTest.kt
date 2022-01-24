@@ -24,11 +24,11 @@ package org.cases.markup.functionapp.csharp.v3.defaultWorker
 
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.CoreVersion
-import org.cases.markup.functionapp.csharp.AzureFunctionAppSyntaxHighlightingTestCore
+import org.cases.markup.functionapp.csharp.AzureFunctionAppSyntaxHighlightingTestBase
 import org.testng.annotations.Test
 
 @TestEnvironment(coreVersion = CoreVersion.DOT_NET_CORE_3_1)
-class AzureFunctionAppSyntaxHighlightingTest : AzureFunctionAppSyntaxHighlightingTestCore(
+class AzureFunctionAppSyntaxHighlightingTest : AzureFunctionAppSyntaxHighlightingTestBase(
         solutionDirectoryName = "v3/FunctionApp",
         testFilePath = "FunctionApp/Function.cs",
         sourceFileName = "Function.cs",

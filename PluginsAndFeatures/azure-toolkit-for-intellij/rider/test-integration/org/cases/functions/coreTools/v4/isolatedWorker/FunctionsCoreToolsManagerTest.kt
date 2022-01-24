@@ -24,12 +24,11 @@ package org.cases.functions.coreTools.v4.isolatedWorker
 
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.CoreVersion
-import org.cases.functions.coreTools.FunctionsCoreToolsManagerTestCore
-import org.cases.runconfig.functionapp.FunctionHostConfigurationEditorTestCore
+import org.cases.functions.coreTools.FunctionsCoreToolsManagerTestBase
 import org.testng.annotations.Test
 
 @TestEnvironment(coreVersion = CoreVersion.DOT_NET_6)
-class FunctionsCoreToolsManagerTest : FunctionsCoreToolsManagerTestCore(
+class FunctionsCoreToolsManagerTest : FunctionsCoreToolsManagerTestBase(
         solutionDirectoryName = "v4/FunctionAppIsolated",
         azureFunctionsVersion = "v4"
 ) {
