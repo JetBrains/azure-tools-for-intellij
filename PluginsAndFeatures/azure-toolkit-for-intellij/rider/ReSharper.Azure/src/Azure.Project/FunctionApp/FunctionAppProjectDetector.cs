@@ -1,4 +1,4 @@
-// Copyright (c) 2021 JetBrains s.r.o.
+// Copyright (c) 2021-2022 JetBrains s.r.o.
 //
 // All rights reserved.
 //
@@ -25,7 +25,7 @@ using JetBrains.ProjectModel.Assemblies.Interfaces;
 using JetBrains.ProjectModel.MSBuild;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Managed;
-using JetBrains.RdBackend.Common.Features.ProjectModel.TargetFrameworks;
+using JetBrains.ReSharper.Features.Running;
 using JetBrains.Rider.Model;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
@@ -86,7 +86,8 @@ namespace JetBrains.ReSharper.Azure.Project.FunctionApp
                     // Azure Functions host needs the tfm folder, not the bin folder
                     workingDirectory: projectOutputPath.Directory.NormalizeSeparators(FileSystemPathEx.SeparatorStyle.Unix).TrimFromEnd("/bin"),
                     dotNetCorePlatformRoot: string.Empty,
-                    configuration: null));
+                    configuration: null,
+                    sharedFrameworks: new List<SharedFramework>()));
             }
 
             return projectOutputs;
