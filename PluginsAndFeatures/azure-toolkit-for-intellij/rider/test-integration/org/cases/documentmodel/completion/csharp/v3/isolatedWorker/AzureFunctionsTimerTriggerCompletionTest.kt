@@ -24,11 +24,11 @@ package org.cases.documentmodel.completion.csharp.v3.isolatedWorker
 
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.CoreVersion
-import org.cases.documentmodel.completion.csharp.AzureFunctionsTimerTriggerCompletionTestCore
+import org.cases.documentmodel.completion.csharp.AzureFunctionsTimerTriggerCompletionTestBase
 import org.testng.annotations.Test
 
 @TestEnvironment(coreVersion = CoreVersion.DOT_NET_5)
-class AzureFunctionsTimerTriggerCompletionTest : AzureFunctionsTimerTriggerCompletionTestCore(
+class AzureFunctionsTimerTriggerCompletionTest : AzureFunctionsTimerTriggerCompletionTestBase(
         solutionDirectoryName = "v3/FunctionAppIsolated"
 ) {
     @Test
