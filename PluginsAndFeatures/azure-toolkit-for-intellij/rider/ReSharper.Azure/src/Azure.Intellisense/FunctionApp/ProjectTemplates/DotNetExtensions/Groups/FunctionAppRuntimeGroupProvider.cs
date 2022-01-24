@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 JetBrains s.r.o.
+﻿// Copyright (c) 2021-2022 JetBrains s.r.o.
 //
 // All rights reserved.
 //
@@ -21,7 +21,7 @@
 using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.Rider.Backend.Features.ProjectModel.ProjectTemplates.DotNetExtensions;
-using Microsoft.TemplateEngine.Edge.Settings;
+using Microsoft.TemplateEngine.Abstractions;
 
 namespace JetBrains.ReSharper.Azure.Intellisense.FunctionApp.ProjectTemplates.DotNetExtensions.Groups
 {
@@ -43,9 +43,10 @@ namespace JetBrains.ReSharper.Azure.Intellisense.FunctionApp.ProjectTemplates.Do
             
             protected override bool ShowIfSingleTemplate => false;
 
-            protected override string GetOption(TemplateInfo info)
+            protected override string GetOption(ITemplateInfo info)
             {
-                if (info.GroupIdentity == "Microsoft.AzureFunctions.ProjectTemplates")
+                if (info.GroupIdentity != null &&
+                    info.GroupIdentity == "Microsoft.AzureFunctions.ProjectTemplates")
                 {
                     // Isolated worker known template identities:
                     // * Microsoft.AzureFunctions.ProjectTemplate.CSharp.Isolated.3.x
