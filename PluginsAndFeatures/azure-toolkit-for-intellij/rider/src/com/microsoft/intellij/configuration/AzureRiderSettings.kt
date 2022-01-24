@@ -67,7 +67,7 @@ object AzureRiderSettings {
 
     fun getAzureCoreToolsPathEntries(properties: PropertiesComponent) : List<AzureCoreToolsPathEntry> {
 
-        val coreToolsFromConfiguration = properties.getValues(PROPERTY_FUNCTIONS_CORETOOLS_PATHS)
+        val coreToolsFromConfiguration = properties.getList(PROPERTY_FUNCTIONS_CORETOOLS_PATHS)
                 ?.mapNotNull { AzureCoreToolsPathEntry.fromStringEntry(it) }
                 ?: emptyList()
 
@@ -81,9 +81,9 @@ object AzureRiderSettings {
 
     fun setAzureCoreToolsPathEntries(properties: PropertiesComponent, pathEntries: List<AzureCoreToolsPathEntry>) {
 
-        properties.setValues(
+        properties.setList(
                 PROPERTY_FUNCTIONS_CORETOOLS_PATHS,
-                pathEntries.map { it.toStringEntry() }.toTypedArray())
+                pathEntries.map { it.toStringEntry() })
     }
 
     // Web deploy

@@ -27,13 +27,11 @@ import com.jetbrains.rider.test.enums.CoreVersion
 import org.cases.runconfig.functionapp.FunctionHostConfigurationTestBase
 import org.testng.annotations.Test
 
+@Test
 @TestEnvironment(coreVersion = CoreVersion.DOT_NET_6)
 class FunctionHostConfigurationTest : FunctionHostConfigurationTestBase(
         solutionDirectoryName = "v4/FunctionApp",
         projectName = "FunctionApp",
         projectTfm = "net6.0",
         coreVersion = CoreVersion.DOT_NET_6
-) {
-    @Test
-    fun dummy() { } // needed so that base class tests are picked up
-}
+)

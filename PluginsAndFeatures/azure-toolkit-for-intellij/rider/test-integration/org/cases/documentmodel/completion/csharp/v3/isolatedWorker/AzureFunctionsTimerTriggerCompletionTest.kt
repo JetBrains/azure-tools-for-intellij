@@ -27,10 +27,8 @@ import com.jetbrains.rider.test.enums.CoreVersion
 import org.cases.documentmodel.completion.csharp.AzureFunctionsTimerTriggerCompletionTestBase
 import org.testng.annotations.Test
 
+@Test
 @TestEnvironment(coreVersion = CoreVersion.DOT_NET_5)
 class AzureFunctionsTimerTriggerCompletionTest : AzureFunctionsTimerTriggerCompletionTestBase(
         solutionDirectoryName = "v3/FunctionAppIsolated"
-) {
-    @Test
-    fun dummy() { } // needed so that base class tests are picked up
-}
+)
