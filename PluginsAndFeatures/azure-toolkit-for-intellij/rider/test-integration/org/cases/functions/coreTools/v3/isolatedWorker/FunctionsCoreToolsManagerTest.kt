@@ -27,11 +27,9 @@ import com.jetbrains.rider.test.enums.CoreVersion
 import org.cases.functions.coreTools.FunctionsCoreToolsManagerTestBase
 import org.testng.annotations.Test
 
+@Test
 @TestEnvironment(coreVersion = CoreVersion.DOT_NET_6)
 class FunctionsCoreToolsManagerTest : FunctionsCoreToolsManagerTestBase(
         solutionDirectoryName = "v3/FunctionAppIsolated",
         azureFunctionsVersion = "v3"
-) {
-    @Test
-    fun dummy() { } // needed so that base class tests are picked up
-}
+)

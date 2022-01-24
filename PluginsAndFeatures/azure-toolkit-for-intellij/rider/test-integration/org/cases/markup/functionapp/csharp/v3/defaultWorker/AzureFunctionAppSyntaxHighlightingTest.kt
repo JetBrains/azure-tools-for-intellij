@@ -27,13 +27,11 @@ import com.jetbrains.rider.test.enums.CoreVersion
 import org.cases.markup.functionapp.csharp.AzureFunctionAppSyntaxHighlightingTestBase
 import org.testng.annotations.Test
 
+@Test
 @TestEnvironment(coreVersion = CoreVersion.DOT_NET_CORE_3_1)
 class AzureFunctionAppSyntaxHighlightingTest : AzureFunctionAppSyntaxHighlightingTestBase(
         solutionDirectoryName = "v3/FunctionApp",
         testFilePath = "FunctionApp/Function.cs",
         sourceFileName = "Function.cs",
         goldFileName = "Function.gold"
-) {
-    @Test
-    fun dummy() { } // needed so that base class tests are picked up
-}
+)
