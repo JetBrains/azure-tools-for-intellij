@@ -97,15 +97,15 @@ class AzureFunctionsHostConfigurationEditor(private val project: Project)
                 lifetime,
                 project,
                 project.solution.runnableProjectsModel,
-                ProjectSelector(message("run_config.common.form.project_label")),
-                StringSelector(message("run_config.common.form.target_framework_label")),
-                ProgramParametersEditor(message("run_config.run_function_app.form.function_app.function_host_args_label"), lifetime),
-                PathSelector(message("run_config.run_function_app.form.function_app.working_directory_label"), FileChooserDescriptorFactory.createSingleFolderDescriptor(), lifetime),
-                TextEditor(message("run_config.run_function_app.form.function_app.function_names_to_run_label"), lifetime),
-                EnvironmentVariablesEditor(message("run_config.common.form.environment_variables")),
-                FlagEditor(message("run_config.run_function_app.form.function_app.use_external_console")),
+                ProjectSelector(message("run_config.common.form.project_label"), "Project"),
+                StringSelector(message("run_config.common.form.target_framework_label"), "Target_framework"),
+                ProgramParametersEditor(message("run_config.run_function_app.form.function_app.function_host_args_label"), "Program_arguments", lifetime),
+                PathSelector(message("run_config.run_function_app.form.function_app.working_directory_label"), "Working_directory", FileChooserDescriptorFactory.createSingleFolderDescriptor(), lifetime),
+                TextEditor(message("run_config.run_function_app.form.function_app.function_names_to_run_label"), "Function_name", lifetime),
+                EnvironmentVariablesEditor(message("run_config.common.form.environment_variables"), "Environment_variables"),
+                FlagEditor(message("run_config.run_function_app.form.function_app.use_external_console"), "Use_external_console"),
                 ViewSeparator(message("run_config.run_function_app.form.function_app.open_browser")),
-                TextEditor(message("run_config.run_function_app.form.function_app.url"), lifetime),
+                TextEditor(message("run_config.run_function_app.form.function_app.url"), "URL", lifetime),
                 BrowserSettingsEditor("")
         )
         return ControlViewBuilder(lifetime, project).build(viewModel)

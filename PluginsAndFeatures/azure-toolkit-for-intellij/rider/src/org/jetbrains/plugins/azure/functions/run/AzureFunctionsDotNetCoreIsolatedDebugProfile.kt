@@ -117,7 +117,7 @@ class AzureFunctionsDotNetCoreIsolatedDebugProfile(
                         useExternalConsole = false,
                         programParameterString = ParametersListUtil.join(programParameters)
                 )
-                .createRunCommandLine()
+                .createRunCommandLine(dotNetRuntime)
                 .apply(dotNetRuntime, ParametersListUtil.parse(dotNetExecutable.runtimeArguments))
 
         val processListeners = PatchCommandLineExtension.EP_NAME.getExtensions(executionEnvironment.project)
