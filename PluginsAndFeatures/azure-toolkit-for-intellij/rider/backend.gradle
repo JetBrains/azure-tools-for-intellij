@@ -12,16 +12,17 @@ def riderSdkPackageVersion = {
     def regex = "${sdkPackageName}\\.([\\d\\.]+.*)\\.nupkg"
     def matchingPackage = path.list().find { it =~ regex }
     def groups = matchingPackage =~ regex
-    return groups[0][1]
+
+    def packageVersion = groups[0][1]
+
+    println("$sdkPackageName version is $packageVersion")
+
+    return packageVersion
 }
 
 ext {
     nugetConfigPath = new File(projectDir, 'NuGet.Config')
     riderSdkVersionPropsPath = new File(resharperPluginPath, 'RiderSdkPackageVersion.props')
-
-    // https://www.nuget.org/packages/JetBrains.Rider.SDK/
-    // (resolved from /build/riderRD-*/lib/DotNetSdkForRdPlugins/JetBrains.Rider.SDK.*.nupkg)
-    riderNugetSdkVersion = riderSdkPackageVersion()
 
     if (!ext.has('BuildConfiguration'))
         BuildConfiguration = rider_backend_build_configuration
@@ -30,10 +31,12 @@ ext {
 task prepareBuildProps {
     group = backendGroup
 
+    // https://www.nuget.org/packages/JetBrains.Rider.SDK/
+    // (resolved from /build/riderRD-*/lib/DotNetSdkForRdPlugins/JetBrains.Rider.SDK.*.nupkg)
     doLast {
         def configText = """<Project>
   <PropertyGroup>
-    <RiderSDKVersion>[$riderNugetSdkVersion]</RiderSDKVersion>
+    <RiderSDKVersion>[${riderSdkPackageVersion()}]</RiderSDKVersion>
   </PropertyGroup>
 </Project>
 """
