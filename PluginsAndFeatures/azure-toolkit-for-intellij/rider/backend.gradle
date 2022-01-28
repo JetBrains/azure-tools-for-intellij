@@ -2,24 +2,6 @@ import groovy.io.FileType
 
 def backendGroup = 'backend'
 
-def riderSdkPackageVersion = {
-    def sdkPath = new File(projectDir, "/build/riderRD-" + rider_version.replace("RD-", ""))
-    def path = new File(sdkPath, "lib/DotNetSdkForRdPlugins")
-    if (!path.isDirectory()) println("$path does not exist or not a directory")
-
-    def sdkPackageName = "JetBrains.Rider.SDK"
-
-    def regex = "${sdkPackageName}\\.([\\d\\.]+.*)\\.nupkg"
-    def matchingPackage = path.list().find { it =~ regex }
-    def groups = matchingPackage =~ regex
-
-    def packageVersion = groups[0][1]
-
-    println("$sdkPackageName version is $packageVersion")
-
-    return packageVersion
-}
-
 ext {
     nugetConfigPath = new File(projectDir, 'NuGet.Config')
     riderSdkVersionPropsPath = new File(resharperPluginPath, 'RiderSdkPackageVersion.props')
@@ -185,6 +167,25 @@ private File getNugetPackagesPath() {
         throw new IllegalStateException("${riderSdk} not a directory.")
 
     return riderSdk
+}
+
+private String riderSdkPackageVersion() {
+    def riderSdkPath = getNugetPackagesPath()
+    println("Rider SDK path: $riderSdkPath")
+
+    def sdkPackageName = "JetBrains.Rider.SDK"
+
+    def regex = "${sdkPackageName}\\.([\\d\\.]+.*)\\.nupkg"
+    def matchingPackage = riderSdkPath.list().find { it =~ regex }
+    def groups = matchingPackage =~ regex
+
+    if (groups.groupCount() == 0 || groups[0].size < 2)
+        throw new IllegalStateException("Could not match ${sdkPackageName} package version.")
+
+    def packageVersion = groups[0][1]
+    println("$sdkPackageName version is $packageVersion")
+
+    return packageVersion
 }
 
 private static void writeTextIfChanged(File file, String content) {
