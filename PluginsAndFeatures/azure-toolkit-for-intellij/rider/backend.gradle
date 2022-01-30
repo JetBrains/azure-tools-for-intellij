@@ -154,7 +154,7 @@ task buildReSharperPlugin {
 project.tasks.clean.dependsOn(project.tasks.cleanBackend)
 
 private File getNugetPackagesPath() {
-    def sdkPath = intellij.getIdeaDependency(project.parent).classes
+    def sdkPath = project.parent.setupDependencies.idea.get().classes
     println("SDK path: $sdkPath")
 
     def riderSdk = new File(sdkPath, 'lib/DotNetSdkForRdPlugins')

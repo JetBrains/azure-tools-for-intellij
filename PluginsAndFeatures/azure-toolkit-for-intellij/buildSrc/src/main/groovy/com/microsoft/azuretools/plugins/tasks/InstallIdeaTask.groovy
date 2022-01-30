@@ -27,14 +27,14 @@ import org.gradle.api.tasks.TaskAction
 class InstallIdeaTask extends BundleBuildIDEATask {
     @TaskAction
     def install() {
-        logger.info "IntelliJ IDEA binary: " + intellij.getIdeaDependency(project).classes
+        logger.info "IntelliJ IDEA binary: " + project.setupDependencies.idea.get().classes
         logger.info "Spark development bundle bits target directory: " + bundleConfig.bundleBuildDir
 
         def ideaBat = new File(bundleConfig.bundleBuildDir, "bin/idea.bat")
 
         if (!ideaBat.exists()) {
             project.copy {
-                from intellij.getIdeaDependency(project).classes
+                from project.setupDependencies.idea.get().classes
                 into bundleConfig.bundleBuildDir
             }
         } else {
