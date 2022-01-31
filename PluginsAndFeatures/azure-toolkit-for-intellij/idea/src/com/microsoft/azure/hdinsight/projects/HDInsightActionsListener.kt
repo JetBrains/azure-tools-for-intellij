@@ -22,14 +22,14 @@
 
 package com.microsoft.azure.hdinsight.projects
 
-import com.intellij.ide.AppLifecycleListener
+import com.intellij.ide.ApplicationInitializedListener
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.IdeActions
-import com.intellij.openapi.project.Project
 
-class HDInsightActionsListener: AppLifecycleListener {
-    override fun appStarting(projectFromCommandLine: Project?) {
+class HDInsightActionsListener : ApplicationInitializedListener {
+
+    override fun componentsInitialized() {
         val actionManager = ActionManager.getInstance()
         val projectPopupGroup = actionManager.getAction(IdeActions.GROUP_PROJECT_VIEW_POPUP) as DefaultActionGroup
         projectPopupGroup.add(actionManager.getAction("Actions.SubmitSparkApplicationAction"))

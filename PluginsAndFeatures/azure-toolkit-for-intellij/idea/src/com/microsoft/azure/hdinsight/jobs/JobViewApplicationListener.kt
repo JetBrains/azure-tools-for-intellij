@@ -23,11 +23,12 @@
 package com.microsoft.azure.hdinsight.jobs
 
 import com.intellij.ide.AppLifecycleListener
-import com.intellij.openapi.project.Project
+import com.intellij.ide.ApplicationInitializedListener
 import com.microsoft.azure.hdinsight.spark.jobs.JobViewHttpServer
 
-class JobViewApplicationListener: AppLifecycleListener {
-    override fun appStarting(projectFromCommandLine: Project?) {
+class JobViewApplicationListener: AppLifecycleListener, ApplicationInitializedListener {
+
+    override fun componentsInitialized() {
         JobViewHttpServer.initialize()
     }
 

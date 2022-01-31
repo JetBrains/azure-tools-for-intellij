@@ -166,10 +166,11 @@
   </extensions>
 
   <applicationListeners>
-    <listener class="com.microsoft.azure.hdinsight.common.ConsoleViewTypeRegistrationListener" topic="com.intellij.ide.AppLifecycleListener"/>
+    <listener class="com.microsoft.azure.hdinsight.common.ConsoleViewTypeRegistrationListener" topic="com.intellij.ide.ApplicationInitializedListener"/>
     <listener class="com.microsoft.azure.hdinsight.jobs.JobViewApplicationListener" topic="com.intellij.ide.AppLifecycleListener"/>
+    <listener class="com.microsoft.azure.hdinsight.jobs.JobViewApplicationListener" topic="com.intellij.ide.ApplicationInitializedListener"/>
     <listener class="com.microsoft.intellij.AzureJavaActionsListener" topic="com.intellij.ide.AppLifecycleListener"/>
-    <listener class="com.microsoft.azure.hdinsight.projects.HDInsightActionsListener" topic="com.intellij.ide.AppLifecycleListener"/>
+    <listener class="com.microsoft.azure.hdinsight.projects.HDInsightActionsListener" topic="com.intellij.ide.ApplicationInitializedListener"/>
   </applicationListeners>
 
   <actions>
