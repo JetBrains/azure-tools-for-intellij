@@ -51,7 +51,7 @@ class InstallFunctionsCoreToolsComponent(private val validationError: IProperty<
             add(ComponentFactories.multiLineLabelPane(message("template.project.function_app.install.core_tools_install_and_configure_request")),
                     "growx, gapbottom ${JBUI.scale(1)}")
 
-            if (!Registry.`is`("azure.function_app.core_tools.feed.enabled")) {
+            if (Registry.`is`("azure.function_app.core_tools.feed.enabled")) {
                 add(ComponentFactories.hyperlinkLabel(message("template.project.function_app.install.core_tools_download_request")) {
                     val project = ProjectManager.getInstance().defaultProject
                     FunctionsCoreToolsInfoProvider.retrieveForVersion(
