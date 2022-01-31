@@ -78,6 +78,10 @@ object FunctionsCoreToolsInfoProvider {
             val coreToolsInfoFromEnvironment = FunctionCliResolver.resolveFunc()
                     ?.let { resolveFromPath(File(it)) }
 
+            if (coreToolsInfoFromEnvironment == null) {
+                logger.warn("Azure Functions Core Tools path is set to '$coreToolsPathFromConfiguration' in configuration, but could not be resolved.")
+            }
+
             return coreToolsInfoFromEnvironment // can be null: if func.exe is configured but not found, user needs to check settings
         }
 
