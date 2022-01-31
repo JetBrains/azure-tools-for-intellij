@@ -38,7 +38,7 @@ object FunctionsCoreToolsTemplateManager {
             file != null && file.name.startsWith("projectTemplates.", true) && file.name.endsWith(".nupkg", true)
 
     fun areRegistered(): Boolean =
-            ReSharperProjectTemplateProvider.getUserTemplateSources().any { isFunctionsProjectTemplate(it) }
+            ReSharperProjectTemplateProvider.getUserTemplateSources().any { isFunctionsProjectTemplate(it) && it.exists() }
 
     fun tryReload() {
 
