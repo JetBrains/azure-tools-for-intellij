@@ -23,8 +23,7 @@
 package com.microsoft.azure.hdinsight.common
 
 import com.intellij.execution.ui.ConsoleViewContentType.*
-import com.intellij.ide.AppLifecycleListener
-import com.intellij.openapi.project.Project
+import com.intellij.ide.ApplicationInitializedListener
 import com.intellij.openapi.util.Key
 
 /**
@@ -33,7 +32,7 @@ import com.intellij.openapi.util.Key
  * startup so that SparkDriverLogStreamReader can use these keys and ConsoleViewRunningState::print can recognize
  * these keys. Therefore, console view can print logs with more registered types.
  */
-class ConsoleViewTypeRegistrationListener: AppLifecycleListener {
+class ConsoleViewTypeRegistrationListener : ApplicationInitializedListener {
     companion object {
         private val LOG_WARNING_OUTPUT_KEY = Key<Any>(LOG_WARNING_OUTPUT.toString())
         private val LOG_INFO_OUTPUT_KEY = Key<Any>(LOG_INFO_OUTPUT.toString())
@@ -45,7 +44,7 @@ class ConsoleViewTypeRegistrationListener: AppLifecycleListener {
                 LOG_INFO_OUTPUT to LOG_INFO_OUTPUT_KEY)
     }
 
-    override fun appStarting(projectFromCommandLine: Project?) {
+    override fun componentsInitialized() {
         registerNewConsoleViewType(LOG_ERROR_OUTPUT_KEY, LOG_ERROR_OUTPUT)
         registerNewConsoleViewType(LOG_WARNING_OUTPUT_KEY, LOG_WARNING_OUTPUT)
         registerNewConsoleViewType(LOG_INFO_OUTPUT_KEY, LOG_INFO_OUTPUT)
