@@ -26,10 +26,12 @@ import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
 import com.intellij.util.PathUtil
+import com.microsoft.azuretools.azurecommons.util.FileUtil
 import org.jetbrains.plugins.azure.RiderAzureBundle
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsConstants
 import org.jetbrains.plugins.azure.storage.azurite.Azurite
 import java.io.File
+import kotlin.io.path.absolutePathString
 
 object AzureRiderSettings {
 
@@ -47,7 +49,7 @@ object AzureRiderSettings {
     const val PROPERTY_FUNCTIONS_CORETOOLS_PATHS = "AzureFunctionsCoreToolsPaths"
     const val PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH = "AzureFunctionsCoreToolsDownloadPath"
     val VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH: String = PathUtil.toSystemIndependentName(
-            File(System.getProperty("user.home"), AZURE_TOOLS_FOLDER).resolve("AzureFunctionsCoreTools").absolutePath)
+            FileUtil.getDirectoryWithinUserHome(AZURE_TOOLS_FOLDER).resolve("AzureFunctionsCoreTools").absolutePathString())
 
     data class AzureCoreToolsPathEntry(var functionsVersion: String, var coreToolsPath: String) {
 
@@ -72,7 +74,7 @@ object AzureRiderSettings {
                 ?: emptyList()
 
         val coreTools = FunctionsCoreToolsConstants.FUNCTIONS_CORETOOLS_KNOWN_SUPPORTED_VERSIONS.map { functionsVersion ->
-            coreToolsFromConfiguration.firstOrNull { it.functionsVersion == functionsVersion }
+            coreToolsFromConfiguration.firstOrNull { it.functionsVersion.equals(functionsVersion, ignoreCase = true) }
                     ?: AzureCoreToolsPathEntry(functionsVersion, "")
         }
 

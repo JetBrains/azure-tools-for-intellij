@@ -30,6 +30,7 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.ui.ColoredTableCellRenderer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.TableSpeedSearch
+import com.intellij.ui.layout.noGrowY
 import com.intellij.ui.layout.panel
 import com.intellij.ui.table.JBTable
 import com.intellij.ui.table.TableView
@@ -116,14 +117,16 @@ class AzureFunctionsConfigurationPanel: AzureRiderAbstractConfigurablePanel {
         coreToolsEditor = TableView(coreToolsEditorModel).apply {
             setShowGrid(false)
             setEnableAntialiasing(true)
-            preferredScrollableViewportSize = JBUI.size(200, -1)
-            visibleRowCount = JBTable.PREFERRED_SCROLLABLE_VIEWPORT_HEIGHT_IN_ROWS
+            preferredScrollableViewportSize = JBUI.size(200, 100)
 
             emptyText.setText(message("settings.app_services.function_app.core_tools.configuration.empty_list"))
 
             TableSpeedSearch(this)
 
             selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
+
+            columnModel.getColumn(0).preferredWidth = JBUI.scale(250)
+            columnModel.getColumn(1).preferredWidth = JBUI.scale(750)
         }
 
         coreToolsDownloadPathEditor = TextFieldWithBrowseButton().apply {
@@ -145,11 +148,12 @@ class AzureFunctionsConfigurationPanel: AzureRiderAbstractConfigurablePanel {
 
         row {
             cell(isFullWidth = true) {
-                scrollPane(coreToolsEditor)
+                scrollPane(coreToolsEditor).noGrowY()
             }
         }
 
-        row(message("settings.app_services.function_app.core_tools.download_path")) {
+        row(message("settings.app_services.function_app.core_tools.download_path")) { }
+        row {
             cell(isFullWidth = true) {
                 component(coreToolsDownloadPathEditor)
             }

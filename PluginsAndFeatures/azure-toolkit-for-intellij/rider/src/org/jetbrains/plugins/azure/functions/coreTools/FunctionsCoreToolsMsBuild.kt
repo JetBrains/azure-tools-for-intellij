@@ -39,8 +39,7 @@ object FunctionsCoreToolsMsBuild {
         val msBuildPropertiesPromise = msBuildEvaluator.evaluateProperties(
                 MSBuildEvaluator.PropertyRequest(projectFilePath, null, listOf(PROPERTY_AZURE_FUNCTIONS_VERSION)))
 
-        // REVIEW: Should this be shorter?
-        pumpMessages(Duration.ofMinutes(1)) { !msBuildPropertiesPromise.isPending }
+        pumpMessages(Duration.ofSeconds(15)) { !msBuildPropertiesPromise.isPending }
 
         val msBuildProperties = msBuildPropertiesPromise.blockingGet(0)
                 ?: return null
