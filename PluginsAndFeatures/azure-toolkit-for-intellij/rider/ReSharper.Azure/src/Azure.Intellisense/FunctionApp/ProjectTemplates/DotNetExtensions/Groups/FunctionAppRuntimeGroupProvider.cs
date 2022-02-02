@@ -21,7 +21,7 @@
 using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.Rider.Backend.Features.ProjectModel.ProjectTemplates.DotNetExtensions;
-using Microsoft.TemplateEngine.Abstractions;
+using Microsoft.TemplateEngine.Edge.Settings;
 
 namespace JetBrains.ReSharper.Azure.Intellisense.FunctionApp.ProjectTemplates.DotNetExtensions.Groups
 {
@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Azure.Intellisense.FunctionApp.ProjectTemplates.Do
             
             protected override bool ShowIfSingleTemplate => false;
 
-            protected override string GetOption(ITemplateInfo info)
+            protected override string GetOption(TemplateInfo info)
             {
                 if (info.GroupIdentity != null &&
                     info.GroupIdentity == "Microsoft.AzureFunctions.ProjectTemplates")
