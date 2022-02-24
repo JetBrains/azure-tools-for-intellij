@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2021 JetBrains s.r.o.
+ * Copyright (c) 2018-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -25,11 +25,17 @@ package com.microsoft.intellij.configuration
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
+import com.intellij.util.PathUtil
+import com.microsoft.azuretools.azurecommons.util.FileUtil
 import org.jetbrains.plugins.azure.RiderAzureBundle
+import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsConstants
 import org.jetbrains.plugins.azure.storage.azurite.Azurite
 import java.io.File
+import kotlin.io.path.absolutePathString
 
 object AzureRiderSettings {
+
+    private const val AZURE_TOOLS_FOLDER = ".AzureToolsForIntelliJ" // See com.microsoft.intellij.AzureActionsListener
 
     // Dismiss notifications
     const val DISMISS_NOTIFICATION_AZURE_FUNCTIONS_MISSING_NUPKG = "DismissAzureFunctionsMissingNupkg"
@@ -40,9 +46,50 @@ object AzureRiderSettings {
     const val OPEN_IN_BROWSER_AFTER_PUBLISH_DEFAULT_VALUE = false
 
     // Functions
-    const val PROPERTY_FUNCTIONS_CORETOOLS_PATH = "AzureFunctionsCoreToolsPath"
-    const val PROPERTY_FUNCTIONS_CORETOOLS_ALLOW_PRERELEASE = "AzureFunctionsCoreToolsAllowPrerelease"
-    const val PROPERTY_FUNCTIONS_CORETOOLS_CHECK_UPDATES = "AzureFunctionCoreToolsCheckUpdates"
+    const val PROPERTY_FUNCTIONS_CORETOOLS_PATHS = "AzureFunctionsCoreToolsPaths"
+    const val PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH = "AzureFunctionsCoreToolsDownloadPath"
+    val VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH: String = PathUtil.toSystemIndependentName(
+            FileUtil.getDirectoryWithinUserHome(AZURE_TOOLS_FOLDER).resolve("AzureFunctionsCoreTools").absolutePathString())
+
+    @Deprecated("To be removed with 2022.3")
+    const val PROPERTY_FUNCTIONS_MIGRATE_CORETOOLS_PATH_NOTIFICATION = "AzureFunctionsCoreToolsPath_Migration_Notify"
+
+    data class AzureCoreToolsPathEntry(var functionsVersion: String, var coreToolsPath: String) {
+
+        fun toStringEntry() = "$functionsVersion|$coreToolsPath"
+
+        companion object {
+
+            fun fromStringEntry(entry: String): AzureCoreToolsPathEntry? {
+                val segments = entry.split('|')
+
+                if (segments.size == 1) return AzureCoreToolsPathEntry(segments[0], "")
+                if (segments.size == 2) return AzureCoreToolsPathEntry(segments[0], segments[1])
+                return null
+            }
+        }
+    }
+
+    fun getAzureCoreToolsPathEntries(properties: PropertiesComponent) : List<AzureCoreToolsPathEntry> {
+
+        val coreToolsFromConfiguration = properties.getList(PROPERTY_FUNCTIONS_CORETOOLS_PATHS)
+                ?.mapNotNull { AzureCoreToolsPathEntry.fromStringEntry(it) }
+                ?: emptyList()
+
+        val coreTools = FunctionsCoreToolsConstants.FUNCTIONS_CORETOOLS_KNOWN_SUPPORTED_VERSIONS.map { functionsVersion ->
+            coreToolsFromConfiguration.firstOrNull { it.functionsVersion.equals(functionsVersion, ignoreCase = true) }
+                    ?: AzureCoreToolsPathEntry(functionsVersion, "")
+        }
+
+        return coreTools
+    }
+
+    fun setAzureCoreToolsPathEntries(properties: PropertiesComponent, pathEntries: List<AzureCoreToolsPathEntry>) {
+
+        properties.setList(
+                PROPERTY_FUNCTIONS_CORETOOLS_PATHS,
+                pathEntries.map { it.toStringEntry() })
+    }
 
     // Web deploy
     const val PROPERTY_COLLECT_ARTIFACTS_TIMEOUT_MINUTES_NAME = "AzureDeployCollectArtifactsTimeoutMinutes"

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2021 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -24,7 +24,9 @@ package org.jetbrains.plugins.azure.functions.coreTools
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.util.registry.Registry
 import com.microsoft.azure.toolkit.intellij.function.runner.core.FunctionCliResolver
 import com.microsoft.intellij.configuration.AzureRiderSettings
 import java.io.File
@@ -32,20 +34,89 @@ import java.io.File
 data class FunctionsCoreToolsInfo(val coreToolsPath: String, var coreToolsExecutable: String)
 
 object FunctionsCoreToolsInfoProvider {
+
+    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
     private val logger = Logger.getInstance(FunctionsCoreToolsInfoProvider::class.java)
 
-    fun retrieve(): FunctionsCoreToolsInfo? {
-        val funcCoreToolsPathSetting = PropertiesComponent.getInstance().getValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_PATH)
-        if (funcCoreToolsPathSetting.isNullOrEmpty() || !File(funcCoreToolsPathSetting).exists()) {
+    fun retrieveForProject(project: Project, projectFilePath: String, allowDownload: Boolean): FunctionsCoreToolsInfo? {
+
+        // Determine "AzureFunctionsVersion" property in MSBuild.
+        // This will be used to find the correct Azure Functions Core Tools executable.
+        val azureFunctionsVersion = FunctionsCoreToolsMsBuild.requestAzureFunctionsVersion(project, projectFilePath)
+
+        if (azureFunctionsVersion == null) {
+            logger.error("Could not determine project MSBuild property '${FunctionsCoreToolsMsBuild.PROPERTY_AZURE_FUNCTIONS_VERSION}'.")
             return null
         }
 
-        val funcCoreToolsPath = patchCoreToolsPath(File(funcCoreToolsPathSetting))
+        logger.info("MSBuild property ${FunctionsCoreToolsMsBuild.PROPERTY_AZURE_FUNCTIONS_VERSION}: $azureFunctionsVersion")
+
+        // Retrieve matching Azure Functions Core Tools information.
+        return retrieveForVersion(project, azureFunctionsVersion, allowDownload)
+    }
+
+    fun retrieveForVersion(project: Project, azureFunctionsVersion: String, allowDownload: Boolean): FunctionsCoreToolsInfo? {
+
+        // Based on priority, try and retrieve the tool information.
+        return retrieveFromConfiguration(azureFunctionsVersion)
+                ?: retrieveFromFeed(project, azureFunctionsVersion, allowDownload)
+    }
+
+    private fun retrieveFromConfiguration(azureFunctionsVersion: String): FunctionsCoreToolsInfo? {
+
+        // Determine Azure Functions Core Tools from configuration
+        val coreToolsConfiguration = AzureRiderSettings.getAzureCoreToolsPathEntries(properties)
+        val coreToolsPathFromConfiguration = coreToolsConfiguration
+                .firstOrNull { it.functionsVersion.equals(azureFunctionsVersion, ignoreCase = true) }
+                ?.coreToolsPath ?: return null
+
+        // If configuration is func/func.cmd/func.exe, try and determine the full path from the environment
+        if (coreToolsPathFromConfiguration.equals("func", ignoreCase = true) ||
+                coreToolsPathFromConfiguration.equals("func.cmd", ignoreCase = true) ||
+                coreToolsPathFromConfiguration.equals("func.exe", ignoreCase = true)) {
+
+            val coreToolsInfoFromEnvironment = FunctionCliResolver.resolveFunc()
+                    ?.let { resolveFromPath(File(it)) }
+
+            if (coreToolsInfoFromEnvironment == null) {
+                logger.warn("Azure Functions Core Tools path is set to '$coreToolsPathFromConfiguration' in configuration, but could not be resolved.")
+            }
+
+            return coreToolsInfoFromEnvironment // can be null: if func.exe is configured but not found, user needs to check settings
+        }
+
+        // Try and resolve from full configured path
+        val coreToolsInfoFromConfiguration = resolveFromPath(File(coreToolsPathFromConfiguration))
+        if (coreToolsInfoFromConfiguration != null) {
+            return coreToolsInfoFromConfiguration
+        }
+
+        return null
+    }
+
+    private fun retrieveFromFeed(project: Project, azureFunctionsVersion: String, allowDownload: Boolean): FunctionsCoreToolsInfo? {
+
+        // Determine Azure Functions Core Tools from release feed
+        val coreToolsPathFromFeed = FunctionsCoreToolsManager.demandCoreToolsPathForVersion(
+                project, azureFunctionsVersion, Registry.get("azure.function_app.core_tools.feed.url").asString(), allowDownload)
+                ?: return null
+
+        val coreToolsInfoFromFeed = resolveFromPath(File(coreToolsPathFromFeed))
+        if (coreToolsInfoFromFeed != null) {
+            return coreToolsInfoFromFeed
+        }
+
+        return null
+    }
+
+    private fun resolveFromPath(funcCoreToolsPath: File): FunctionsCoreToolsInfo? {
+
+        val patchedFuncCoreToolsPath = patchCoreToolsPath(funcCoreToolsPath)
 
         val coreToolsExecutablePath = if (SystemInfo.isWindows) {
-            funcCoreToolsPath.resolve("func.exe")
+            patchedFuncCoreToolsPath.resolve("func.exe")
         } else {
-            funcCoreToolsPath.resolve("func")
+            patchedFuncCoreToolsPath.resolve("func")
         }
 
         if (!coreToolsExecutablePath.exists()) {
@@ -61,71 +132,41 @@ object FunctionsCoreToolsInfoProvider {
             }
         }
 
-        return FunctionsCoreToolsInfo(funcCoreToolsPath.path, coreToolsExecutablePath.path)
+        return FunctionsCoreToolsInfo(patchedFuncCoreToolsPath.path, coreToolsExecutablePath.path)
     }
 
-    fun patchCoreToolsPath(funcCoreToolsPath: File): File {
+    private fun normalizeCoreToolsPath(funcCoreToolsPath: File): File {
+        // Normalize path - if the user appends func/func.cmd/func.exe, strip it off
+        return if (funcCoreToolsPath.isFile && funcCoreToolsPath.nameWithoutExtension.equals("func", ignoreCase = true)) {
+            funcCoreToolsPath.parentFile
+        } else {
+            funcCoreToolsPath
+        }
+    }
 
-        if (!SystemInfo.isWindows) return funcCoreToolsPath
+    private fun patchCoreToolsPath(funcCoreToolsPath: File): File {
+
+        val normalizedFuncCoreToolsPath = normalizeCoreToolsPath(funcCoreToolsPath)
+
+        if (!SystemInfo.isWindows) return normalizedFuncCoreToolsPath
 
         // Chocolatey and NPM have shim executables that are not .NET (and not debuggable).
         // If it's a Chocolatey install or NPM install, rewrite the path to the tools path
         // where the func executable is located.
         //
         // Logic is similar to com.microsoft.azure.toolkit.intellij.function.runner.core.FunctionCliResolver.resolveFunc()
-        val chocolateyCoreToolsPath = funcCoreToolsPath.resolve("..").resolve("lib").resolve("azure-functions-core-tools").resolve("tools").normalize()
+        val chocolateyCoreToolsPath = normalizedFuncCoreToolsPath.resolve("..").resolve("lib").resolve("azure-functions-core-tools").resolve("tools").normalize()
         if (chocolateyCoreToolsPath.exists()) {
-            logger.info("Functions core tools path ${funcCoreToolsPath.path} is Chocolatey-installed. Rewriting path to ${chocolateyCoreToolsPath.path}")
+            logger.info("Functions core tools path ${normalizedFuncCoreToolsPath.path} is Chocolatey-installed. Rewriting path to ${chocolateyCoreToolsPath.path}")
             return chocolateyCoreToolsPath
         }
 
-        val npmCoreToolsPath = funcCoreToolsPath.resolve("..").resolve("node_modules").resolve("azure-functions-core-tools").resolve("bin").normalize()
+        val npmCoreToolsPath = normalizedFuncCoreToolsPath.resolve("..").resolve("node_modules").resolve("azure-functions-core-tools").resolve("bin").normalize()
         if (npmCoreToolsPath.exists()) {
-            logger.info("Functions core tools path ${funcCoreToolsPath.path} is NPM-installed. Rewriting path to ${npmCoreToolsPath.path}")
+            logger.info("Functions core tools path ${normalizedFuncCoreToolsPath.path} is NPM-installed. Rewriting path to ${npmCoreToolsPath.path}")
             return npmCoreToolsPath
         }
 
-        return funcCoreToolsPath
-    }
-
-    fun detectFunctionCoreToolsPath(): String? {
-
-        fun detectPluginDownloads(): File? {
-            val pluginCoreToolsPath = FunctionsCoreToolsManager.determineLatestLocalCoreToolsPath() ?: return null
-            val downloadFile = File(pluginCoreToolsPath)
-
-            val toolNameWithExtension = FunctionsCoreToolsManager.getCoreToolsExecutableName()
-            val toolFile = downloadFile.resolve(toolNameWithExtension)
-
-            if (!toolFile.exists())
-                return null
-
-            return toolFile
-        }
-
-        fun detectManualDownloads(): File? {
-            val coreToolsPath = FunctionCliResolver.resolveFunc() ?: return null
-
-            val coreToolFile = File(coreToolsPath)
-            if (!coreToolFile.exists())
-                return null
-
-            return coreToolFile
-        }
-
-        // Plugin tool downloads has higher priority then manual downloads.
-        val pluginCoreToolsExecutable = detectPluginDownloads()
-        if (pluginCoreToolsExecutable != null) {
-            logger.info("Found an existing download from the plugin for function core tool: '${pluginCoreToolsExecutable.canonicalPath}'")
-            return pluginCoreToolsExecutable.parentFile.canonicalPath
-        }
-
-        val manualCoreToolsExecutable = detectManualDownloads()
-        if (manualCoreToolsExecutable != null) {
-            logger.info("Found an existing manual setup for function core tool: '${manualCoreToolsExecutable.canonicalPath}'")
-            return manualCoreToolsExecutable.parentFile.canonicalPath
-        }
-
-        return null
+        return normalizedFuncCoreToolsPath
     }
 }

@@ -7,6 +7,7 @@
         <h4>Added:</h4>
         <ul>
           <li>Compatibility with Rider 2022.1 EAP3</li>
+          <li>Azure Functions: Run project against a function core tool version defined in project file (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/294">#294</a>)</li>
         </ul>
     </html>
     ]]>

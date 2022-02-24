@@ -25,6 +25,7 @@ package org.jetbrains.plugins.azure.functions.helpers.csharp
 import com.jetbrains.rider.test.asserts.shouldBeFalse
 import org.testng.annotations.Test
 
+// REVIEW @sdubov: Integration tests exist for TimerTrigger completion etc. Should this class be removed?
 class AzureFunctionsPsiHelperTest {
 
     @Test(enabled = false)

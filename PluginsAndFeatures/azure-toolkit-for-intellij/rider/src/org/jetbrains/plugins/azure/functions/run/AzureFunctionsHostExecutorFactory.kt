@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2021 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -29,7 +29,6 @@ import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.rider.run.configurations.IExecutorFactory
-import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsInfo
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsInfoProvider
 import org.jetbrains.plugins.azure.functions.run.localsettings.FunctionLocalSettingsUtil
 import org.jetbrains.plugins.azure.functions.run.localsettings.FunctionsWorkerRuntime
@@ -44,15 +43,21 @@ class AzureFunctionsHostExecutorFactory(
     }
 
     override fun create(executorId: String, environment: ExecutionEnvironment): RunProfileState {
-        val coreToolsInfo: FunctionsCoreToolsInfo? = FunctionsCoreToolsInfoProvider.retrieve()
-                ?: throw CantRunException("Can't run Azure Functions host - path to core tools has not been configured.")
 
         val projectKind = parameters.projectKind
         logger.info("Project kind is $projectKind")
 
+        // Retrieve Azure Functions Core Tools information.
+        @Suppress("DialogTitleCapitalization")
+        val coreToolsInfo = FunctionsCoreToolsInfoProvider.retrieveForProject(parameters.project, parameters.projectFilePath, allowDownload = true)
+                ?: throw CantRunException("Can't run Azure Functions host. No Azure Functions Core Tools information could be determined.")
+        logger.info("Core tools executable: ${coreToolsInfo.coreToolsExecutable}")
+
+        // Patch host.json
         logger.debug("Patching host.json file to reflect run configuration parameters")
         HostJsonPatcher.tryPatchHostJsonFile(parameters.workingDirectory, parameters.functionNames)
 
+        // Determine worker runtime (default, isolated)
         logger.debug("Determine worker runtime from local.settings.json")
         val functionLocalSettings = FunctionLocalSettingsUtil.readFunctionLocalSettings(
                 project = parameters.project,
@@ -60,8 +65,9 @@ class AzureFunctionsHostExecutorFactory(
         val workerRuntime = functionLocalSettings?.values?.workerRuntime ?: FunctionsWorkerRuntime.DotNetDefault
         logger.info("Worker runtime: $workerRuntime")
 
-        val dotNetExecutable = parameters.toDotNetExecutable()
-        val runtimeToExecute = AzureFunctionsDotNetCoreRuntime(coreToolsInfo!!, workerRuntime)
+        // Set up executor based on Azure Functions Core Tools and worker runtime
+        val dotNetExecutable = parameters.toDotNetExecutable(coreToolsInfo)
+        val runtimeToExecute = AzureFunctionsDotNetCoreRuntime(coreToolsInfo, workerRuntime)
         logger.info("Configuration will be executed on ${runtimeToExecute.javaClass.name}")
         return when (executorId) {
             DefaultRunExecutor.EXECUTOR_ID -> runtimeToExecute.createRunState(dotNetExecutable, environment)
