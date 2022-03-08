@@ -27,6 +27,7 @@
         <ul>
           <li>Compatibility with Rider 2022.1 EAP5</li>
           <li>Azure Functions: Run project against a function core tool version defined in project file (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/294">#294</a>)</li>
+          <li>Azure Functions: Support NCrontab 5-field expressions (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/571">#571</a>)</li>
         </ul>
         <p>[3.50.0-2021.3]</p>
         <ul>

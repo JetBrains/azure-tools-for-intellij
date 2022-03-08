@@ -47,6 +47,9 @@ namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp.Stages.Analysis
     /// | | +--------- hour (0 - 23)
     /// | +----------- min (0 - 59)
     /// +------------- sec (0 - 59)
+    ///
+    /// Note that NCRONTAB uses 6 fields, but Azure Functions also supports 5 fields.
+    /// https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer?tabs=csharp#ncrontab-expressions
     /// </summary>
     [ElementProblemAnalyzer(typeof(IAttribute), HighlightingTypes = new[]
     {
@@ -90,7 +93,8 @@ namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp.Stages.Analysis
         {
             try
             {
-                CrontabSchedule.Parse(literal, new CrontabSchedule.ParseOptions {IncludingSeconds = true});
+                var normalizedLiteral = NormalizeCronSchedule(literal);
+                CrontabSchedule.Parse(normalizedLiteral, new CrontabSchedule.ParseOptions {IncludingSeconds = true});
                 errorMessage = null;
                 return true;
             }
@@ -116,6 +120,29 @@ namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp.Stages.Analysis
                 errorMessage = e.Message;
                 return false;
             }
+        }
+
+        /// <summary>
+        /// NCRONTAB expression supports both five field and six field format.
+        /// The sixth field position is a value for seconds which is placed at the beginning of the expression.
+        ///
+        /// This method converts a five field format to a six field format by prepending "0 " when needed.
+        /// </summary>
+        /// <param name="cronSchedule"></param>
+        /// <returns></returns>
+        private string NormalizeCronSchedule(string cronSchedule)
+        {
+            var numberOfFields = cronSchedule.Trim()
+                .Replace(@"\t", " ")
+                .Split(new [] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Length;
+
+            if (numberOfFields == 5)
+            {
+                return "0 " + cronSchedule;
+            }
+
+            return cronSchedule;
         }
     }
 }
