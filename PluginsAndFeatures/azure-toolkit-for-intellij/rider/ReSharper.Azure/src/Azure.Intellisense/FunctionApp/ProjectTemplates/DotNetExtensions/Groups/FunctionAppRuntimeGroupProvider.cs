@@ -49,19 +49,19 @@ namespace JetBrains.ReSharper.Azure.Intellisense.FunctionApp.ProjectTemplates.Do
                     info.GroupIdentity == "Microsoft.AzureFunctions.ProjectTemplates")
                 {
                     // Isolated worker known template identities:
-                    // * Microsoft.AzureFunctions.ProjectTemplate.CSharp.Isolated.3.x
-                    // * Microsoft.AzureFunctions.ProjectTemplate.FSharp.Isolated.3.x
                     if (info.Identity == "Microsoft.AzureFunctions.ProjectTemplate.CSharp.Isolated.3.x" || 
-                        info.Identity == "Microsoft.AzureFunctions.ProjectTemplate.FSharp.Isolated.3.x")
+                        info.Identity == "Microsoft.AzureFunctions.ProjectTemplate.FSharp.Isolated.3.x" ||
+                        info.Identity == "Microsoft.AzureFunctions.ProjectTemplate.CSharp.Isolated.4.x" || 
+                        info.Identity == "Microsoft.AzureFunctions.ProjectTemplate.FSharp.Isolated.4.x")
                     {
                         return "Isolated worker";
                     }
                     
                     // Default worker known template identities:
-                    // * Microsoft.AzureFunctions.ProjectTemplate.CSharp.3.x
-                    // * Microsoft.AzureFunctions.ProjectTemplate.FSharp.3.x
                     if (info.Identity == "Microsoft.AzureFunctions.ProjectTemplate.CSharp.3.x" || 
-                        info.Identity == "Microsoft.AzureFunctions.ProjectTemplate.FSharp.3.x")
+                        info.Identity == "Microsoft.AzureFunctions.ProjectTemplate.FSharp.3.x" ||
+                        info.Identity == "Microsoft.AzureFunctions.ProjectTemplate.CSharp.4.x" || 
+                        info.Identity == "Microsoft.AzureFunctions.ProjectTemplate.FSharp.4.x")
                     {
                         return "Default worker";
                     }
