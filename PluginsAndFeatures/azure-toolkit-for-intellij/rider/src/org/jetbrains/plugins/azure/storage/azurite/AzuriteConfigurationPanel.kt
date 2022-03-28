@@ -44,14 +44,13 @@ import com.intellij.webcore.ui.PathShortener
 import com.microsoft.intellij.configuration.AzureRiderSettings
 import com.microsoft.intellij.configuration.ui.AzureRiderAbstractConfigurablePanel
 import com.microsoft.intellij.helpers.validator.IpAddressInputValidator
-import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.azure.RiderAzureBundle
 import org.jetbrains.plugins.azure.orWhenNullOrEmpty
 import java.io.File
 import javax.swing.*
 
 @Suppress("UNUSED_LAMBDA_EXPRESSION")
-class AzuriteConfigurationPanel(private val project: Project) : AzureRiderAbstractConfigurablePanel, @NotNull Disposable {
+class AzuriteConfigurationPanel(private val project: Project) : AzureRiderAbstractConfigurablePanel, Disposable {
 
     private val disposable = Disposer.newDisposable()
     private val properties = PropertiesComponent.getInstance(project)

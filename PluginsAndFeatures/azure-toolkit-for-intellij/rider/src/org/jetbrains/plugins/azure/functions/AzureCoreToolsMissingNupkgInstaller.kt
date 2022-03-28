@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2021 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -28,9 +28,9 @@ import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.impl.LoadTextUtil
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
+import com.intellij.ui.EditorNotificationProvider
 import com.intellij.ui.EditorNotifications
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.jetbrains.rd.util.firstOrNull
@@ -44,12 +44,11 @@ import com.jetbrains.rider.projectView.workspace.getProjectModelEntities
 import com.microsoft.intellij.configuration.AzureRiderSettings
 import org.jetbrains.plugins.azure.RiderAzureBundle
 import java.time.Duration
+import java.util.function.Function
 
-class AzureCoreToolsMissingNupkgNotificationProvider : EditorNotifications.Provider<EditorNotificationPanel>() {
+class AzureCoreToolsMissingNupkgNotificationProvider : EditorNotificationProvider {
 
     companion object {
-
-        private val KEY = Key.create<EditorNotificationPanel>("azure.functions.missingnupkgnotification")
 
         private val waitForInstallDuration = Duration.ofSeconds(30)
 
@@ -87,9 +86,11 @@ class AzureCoreToolsMissingNupkgNotificationProvider : EditorNotifications.Provi
 
     private data class PackageDependency(val id: String, val version: String)
 
-    override fun getKey(): Key<EditorNotificationPanel> = KEY
+    override fun collectNotificationData(project: Project, file: VirtualFile) = Function { editor: FileEditor ->
+        createNotificationPanel(file, editor, project)
+    }
 
-    override fun createNotificationPanel(file: VirtualFile, fileEditor: FileEditor, project: Project): EditorNotificationPanel? {
+    private fun createNotificationPanel(file: VirtualFile, fileEditor: FileEditor, project: Project): EditorNotificationPanel? {
         if (PropertiesComponent.getInstance(project).getBoolean(AzureRiderSettings.DISMISS_NOTIFICATION_AZURE_FUNCTIONS_MISSING_NUPKG)) return null
 
         if (!hasKnownFileSuffix(file)) return null

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -35,7 +35,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBPanelWithEmptyText
 import icons.CommonIcons
-import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.azure.RiderAzureBundle
 import org.jetbrains.plugins.azure.storage.azurite.actions.CleanAzuriteAction
 import org.jetbrains.plugins.azure.storage.azurite.actions.ShowAzuriteSettingsAction
@@ -47,7 +46,7 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 
 class AzuriteServiceViewSessionDescriptor(private val project: Project)
-    : SimpleServiceViewDescriptor(RiderAzureBundle.message("service.azurite.name"), CommonIcons.Azurite), @NotNull Disposable {
+    : SimpleServiceViewDescriptor(RiderAzureBundle.message("service.azurite.name"), CommonIcons.Azurite), Disposable {
 
     companion object {
         val defaultToolbarActions = DefaultActionGroup(
