@@ -29,6 +29,9 @@
           <li>Azure Functions: Run project against a function core tool version defined in project file (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/294">#294</a>)</li>
           <li>Azure Functions Host version can be selected from new project dialog (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/568">#568</a>)</li>
         </ul>
+        <h4>Fixed bugs:</h4>
+          <li>SSLHandshakeException connecting to Azure Cloud Shell (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/579">#579</a>)</li>
+        <ul>
         <p>[3.50.0-2021.3]</p>
         <ul>
           <li>Compatibility with Rider 2021.3</li>
