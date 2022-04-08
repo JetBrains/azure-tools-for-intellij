@@ -25,7 +25,7 @@
       <html>
         <p>[3.50.0-2022.1]</p>
         <ul>
-          <li>Compatibility with Rider 2022.1 EAP6</li>
+          <li>Compatibility with Rider 2022.1 EAP9</li>
           <li>Azure Functions: Run project against a function core tool version defined in project file (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/294">#294</a>)</li>
           <li>Azure Functions Host version can be selected from new project dialog (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/568">#568</a>)</li>
         </ul>
@@ -218,7 +218,7 @@
   <xi:include href="/META-INF/platformPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
   <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-  <idea-version since-build="213" until-build="213.*"/>
+  <idea-version since-build="221" until-build="221.*"/>
 
   <resource-bundle>messages.RiderAzureMessages</resource-bundle>
 
