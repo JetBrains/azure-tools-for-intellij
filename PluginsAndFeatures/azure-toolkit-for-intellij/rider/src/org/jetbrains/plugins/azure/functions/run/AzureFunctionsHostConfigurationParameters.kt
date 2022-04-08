@@ -47,6 +47,7 @@ import com.jetbrains.rider.run.configurations.dotNetExe.DotNetExeConfigurationPa
 import com.jetbrains.rider.run.configurations.project.DotNetStartBrowserParameters
 import com.jetbrains.rider.runtime.DotNetExecutable
 import com.jetbrains.rider.runtime.RiderDotNetActiveRuntimeHost
+import com.jetbrains.rider.runtime.mono.MonoRuntimeType
 import org.jdom.Element
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsInfo
@@ -139,7 +140,8 @@ open class AzureFunctionsHostConfigurationParameters(
                 projectTfm = projectOutput?.tfm,
                 workingDirectory = effectiveWorkingDirectory,
                 programParameterString = effectiveArguments,
-                useMonoRuntime = useMonoRuntime,
+                runtimeType = runtimeType,
+                useMonoRuntime = runtimeType is MonoRuntimeType,
                 useExternalConsole = useExternalConsole,
                 environmentVariables = envs,
                 isPassParentEnvs = isPassParentEnvs,
@@ -207,7 +209,7 @@ open class AzureFunctionsHostConfigurationParameters(
                         message("run_config.run_function_app.validation.invalid_working_directory", if (workingDirectory.isNotEmpty()) workingDirectory else "<${message("common.empty")}>"))
         }
 
-        if (useMonoRuntime && riderDotNetActiveRuntimeHost.monoRuntime == null)
+        if (runtimeType is MonoRuntimeType && riderDotNetActiveRuntimeHost.monoRuntime == null)
             throw RuntimeConfigurationError(message("run_config.run_function_app.validation.missing_mono_runtime"))
     }
 
