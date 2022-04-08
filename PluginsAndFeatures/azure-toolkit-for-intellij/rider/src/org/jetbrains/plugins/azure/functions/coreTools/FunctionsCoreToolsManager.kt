@@ -87,6 +87,8 @@ object FunctionsCoreToolsManager {
                     AzureCoreToolsFeedReleaseFilter("Windows", "x64", "minified")
                 } else if (SystemInfo.isWindows) {
                     AzureCoreToolsFeedReleaseFilter("Windows", "x86", "minified")
+                } else if (SystemInfo.isMac && CpuArch.isArm64()) {
+                    AzureCoreToolsFeedReleaseFilter("MacOS", "arm64", "full")
                 } else if (SystemInfo.isMac) {
                     AzureCoreToolsFeedReleaseFilter("MacOS", "x64", "full")
                 } else if (SystemInfo.isLinux) {
