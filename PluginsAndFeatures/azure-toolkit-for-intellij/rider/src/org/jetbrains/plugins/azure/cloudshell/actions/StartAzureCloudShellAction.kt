@@ -1,18 +1,18 @@
 /**
- * Copyright (c) 2018-2020 JetBrains s.r.o.
- * <p/>
+ * Copyright (c) 2018-2022 JetBrains s.r.o.
+ *
  * All rights reserved.
- * <p/>
+ *
  * MIT License
- * <p/>
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
  * to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * <p/>
+ *
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of
  * the Software.
- * <p/>
+ *
  * THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
  * THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
@@ -23,6 +23,7 @@
 package org.jetbrains.plugins.azure.cloudshell.actions
 
 import com.intellij.ide.BrowserUtil
+import com.intellij.ide.ui.IdeUiService
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationListener
 import com.intellij.notification.NotificationType
@@ -40,6 +41,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.util.net.ssl.CertificateManager
 import com.microsoft.aad.adal4j.AuthenticationException
 import com.microsoft.azure.AzureEnvironment
 import com.microsoft.azuretools.authmanage.AuthMethodManager
@@ -59,6 +61,7 @@ import org.jetbrains.plugins.terminal.TerminalView
 import java.net.URI
 import javax.swing.event.HyperlinkEvent
 
+@Suppress("UnstableApiUsage")
 class StartAzureCloudShellAction : AnAction() {
     companion object {
         private val logger = Logger.getInstance(StartAzureCloudShellAction::class.java)
@@ -160,7 +163,13 @@ class StartAzureCloudShellAction : AnAction() {
                         azureManager.environment.azureEnvironment,
                         AzureEnvironment.Endpoint.RESOURCE_MANAGER,
                         CloudConsoleService::class.java,
-                        tokenCredentials)
+                        tokenCredentials) { httpClientBuilder ->
+
+                    IdeUiService.getInstance().sslSocketFactory?.let {
+                        // Inject IDEA SSL socket factory and trust manager
+                        httpClientBuilder.sslSocketFactory(it, CertificateManager.getInstance().trustManager)
+                    }
+                }
 
                 // 1. Retrieve cloud shell preferences
                 updateIndicator(indicator, 0.05, RiderAzureBundle.message("progress.cloud_shell.start.retrieving_preferences"))
