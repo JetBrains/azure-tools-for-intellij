@@ -40,6 +40,9 @@ abstract class AzureFunctionAppSyntaxHighlightingTestBase(
     fun testTimerTrigger_CronExpression_ValidNCrontabExpression() = verifySyntaxHighlighting()
 
     @Test
+    fun testTimerTrigger_CronExpression_ValidNCrontabExpressionWithFiveFields() = verifySyntaxHighlighting()
+
+    @Test
     fun testTimerTrigger_CronExpression_IncompleteNCrontabExpression() = verifySyntaxHighlighting()
 
     @Test
