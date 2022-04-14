@@ -124,6 +124,7 @@ object AzureFunctionAppMvpModel {
                           appName: String,
                           isCreateResourceGroup: Boolean,
                           resourceGroupName: String,
+                          operatingSystem: OperatingSystem,
                           isCreateAppServicePlan: Boolean,
                           appServicePlanId: String,
                           appServicePlanName: String,
@@ -155,7 +156,7 @@ object AzureFunctionAppMvpModel {
 
                     val planCreatable = planWithResourceGroup
                             .withPricingTier(pricingTier)
-                            .withOperatingSystem(OperatingSystem.WINDOWS)
+                            .withOperatingSystem(operatingSystem)
 
                     withResourceGroup.withNewAppServicePlan(planCreatable)
                 } else {

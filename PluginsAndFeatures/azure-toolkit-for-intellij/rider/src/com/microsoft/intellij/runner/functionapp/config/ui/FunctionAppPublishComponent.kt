@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2020 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -27,10 +27,10 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rider.model.PublishableProjectModel
+import com.jetbrains.rider.model.projectModelTasks
+import com.jetbrains.rider.projectView.solution
 import com.microsoft.applicationinsights.web.dependencies.apachecommons.lang3.RandomStringUtils
-import com.microsoft.azure.management.appservice.AppServicePlan
-import com.microsoft.azure.management.appservice.FunctionApp
-import com.microsoft.azure.management.appservice.PricingTier
+import com.microsoft.azure.management.appservice.*
 import com.microsoft.azure.management.resources.Location
 import com.microsoft.azure.management.resources.ResourceGroup
 import com.microsoft.azure.management.resources.Subscription
@@ -49,10 +49,14 @@ import com.microsoft.intellij.ui.extension.getSelectedValue
 import com.microsoft.intellij.ui.extension.setComponentsVisible
 import net.miginfocom.swing.MigLayout
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
+import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsMsBuild
+import org.jetbrains.plugins.azure.functions.run.localsettings.FunctionLocalSettingsUtil
+import org.jetbrains.plugins.azure.functions.run.localsettings.FunctionsWorkerRuntime
+import java.io.File
 import javax.swing.JPanel
 
 class FunctionAppPublishComponent(private val lifetime: Lifetime,
-                                  project: Project,
+                                  private val project: Project,
                                   private val model: FunctionAppPublishModel) :
         JPanel(MigLayout("novisualpadding, ins 0, fillx, wrap 1, hidemode 3")),
         AzureComponent {
@@ -61,6 +65,9 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
         private const val DEFAULT_APP_NAME = "functionapp-"
         private const val DEFAULT_PLAN_NAME = "appsp-"
         private const val DEFAULT_RESOURCE_GROUP_NAME = "rg-"
+
+        private val netCoreAppVersionRegex = Regex("\\.NETCoreApp,Version=v([0-9](?:\\.[0-9])*)", RegexOption.IGNORE_CASE)
+        private val netAppVersionRegex = Regex("net([0-9](?:\\.[0-9])*)", RegexOption.IGNORE_CASE)
     }
 
     private val pnlFunctionAppSelector = ExistingOrNewSelector(message("run_config.publish.form.function_app.existing_new_selector"))
@@ -115,6 +122,10 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
         if (config.isCreatingAppServicePlan) pnlCreateFunctionApp.pnlHostingPlan.rdoCreateNew.doClick()
         else pnlCreateFunctionApp.pnlHostingPlan.rdoUseExisting.doClick()
 
+        // Operating System
+        if (config.operatingSystem == OperatingSystem.WINDOWS) pnlCreateFunctionApp.pnlOperatingSystem.rdoOperatingSystemWindows.doClick()
+        else pnlCreateFunctionApp.pnlOperatingSystem.rdoOperatingSystemLinux.doClick()
+
         // Storage Account
         if (config.isCreatingStorageAccount) pnlCreateFunctionApp.pnlStorageAccount.rdoCreateNew.doClick()
         else pnlCreateFunctionApp.pnlStorageAccount.rdoUseExisting.doClick()
@@ -151,11 +162,12 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
         model.isCreatingNewApp = pnlFunctionAppSelector.isCreateNew
         model.appName = pnlCreateFunctionApp.pnlAppName.appName
 
-        if (!model.isCreatingNewApp) {
-            val selectedResource = pnlExistingFunctionApp.pnlExistingAppTable.lastSelectedResource
-            val selectedApp = selectedResource?.resource
+        val selectedResource = pnlExistingFunctionApp.pnlExistingAppTable.lastSelectedResource
+        val selectedApp = selectedResource?.resource
 
-            model.appId = selectedApp?.id() ?: ""
+        model.appId = selectedApp?.id() ?: ""
+
+        if (!model.isCreatingNewApp) {
             model.subscription = AzureMvpModel.getInstance()
                     .selectedSubscriptions
                     .find { it.subscriptionId() == selectedResource?.subscriptionId }
@@ -166,6 +178,27 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
             model.resourceGroupName = pnlCreateFunctionApp.pnlResourceGroup.resourceGroupName
         } else {
             model.resourceGroupName = pnlCreateFunctionApp.pnlResourceGroup.cbResourceGroup.getSelectedValue()?.name() ?: ""
+        }
+
+        if (pnlCreateFunctionApp.pnlOperatingSystem.isWindows) {
+            model.operatingSystem = OperatingSystem.WINDOWS
+        } else {
+            model.operatingSystem = OperatingSystem.LINUX
+        }
+
+        // Set runtime stack based on project config
+        val publishableProject = model.publishableProject
+        if (publishableProject != null && publishableProject.isDotNetCore) {
+            val functionLocalSettings = FunctionLocalSettingsUtil.readFunctionLocalSettings(project, File(publishableProject.projectFilePath).parent)
+            val workerRuntime = functionLocalSettings?.values?.workerRuntime ?: FunctionsWorkerRuntime.DotNetDefault
+
+            val coreToolsVersion = FunctionsCoreToolsMsBuild.requestAzureFunctionsVersion(project, publishableProject.projectFilePath) ?: "V4"
+            val netCoreVersion = getProjectNetCoreFrameworkVersion(publishableProject)
+            model.functionRuntimeStack = FunctionRuntimeStack(
+                    workerRuntime.value,
+                    "~" + coreToolsVersion.trimStart('v', 'V'),
+                    "${workerRuntime.value}|$netCoreVersion",
+                    "${workerRuntime.value}|$netCoreVersion")
         }
 
         val hostingPlan = pnlCreateFunctionApp.pnlHostingPlan
@@ -216,6 +249,7 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
         pnlProject.fillProjectComboBox(publishableProjects, model.publishableProject)
 
         if (model.publishableProject != null && publishableProjects.contains(model.publishableProject!!)) {
+            pnlCreateFunctionApp.setOperatingSystemRadioButtons(model.publishableProject!!.isDotNetCore)
             pnlProject.lastSelectedProject = model.publishableProject
         }
     }
@@ -229,11 +263,46 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
         pnlProject.canBePublishedAction = { publishableProject -> publishableProject.isAzureFunction }
 
         pnlProject.listenerAction = { publishableProject ->
+            pnlCreateFunctionApp.setOperatingSystemRadioButtons(publishableProject.isDotNetCore)
             pnlExistingFunctionApp.filterAppTableContent(publishableProject.isDotNetCore)
+
+            val functionApp = pnlExistingFunctionApp.pnlExistingAppTable.lastSelectedResource?.resource
+            if (functionApp != null)
+                checkSelectedProjectAgainstFunctionAppRuntime(functionApp, publishableProject)
         }
     }
 
+    private fun checkSelectedProjectAgainstFunctionAppRuntime(functionApp: FunctionApp, publishableProject: PublishableProjectModel) {
+        if (functionApp.operatingSystem() == OperatingSystem.WINDOWS) {
+            pnlExistingFunctionApp.setRuntimeMismatchWarning(false)
+            return
+        }
+
+        // DOTNETCORE|2.0 -> 2.0
+        val functionAppFrameworkVersion = functionApp.linuxFxVersion().split('|').getOrNull(1)
+
+        // .NETCoreApp,Version=v2.0 -> 2.0
+        val projectNetCoreVersion = getProjectNetCoreFrameworkVersion(publishableProject)
+        pnlExistingFunctionApp.setRuntimeMismatchWarning(
+                functionAppFrameworkVersion != projectNetCoreVersion,
+                message("run_config.publish.form.function_app.runtime_mismatch_warning", functionAppFrameworkVersion.toString(), projectNetCoreVersion)
+        )
+    }
+
     //endregion Project
+
+    private fun getProjectNetCoreFrameworkVersion(publishableProject: PublishableProjectModel): String {
+        val defaultVersion = "6.0"
+        val currentFramework = getCurrentFrameworkId(publishableProject) ?: return defaultVersion
+        return netAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value // netX.Y
+                ?: netCoreAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value // .NETCoreApp,version=vX.Y
+                ?: defaultVersion
+    }
+
+    private fun getCurrentFrameworkId(publishableProject: PublishableProjectModel): String? {
+        val targetFramework = project.solution.projectModelTasks.targetFrameworks[publishableProject.projectModelId]
+        return targetFramework?.currentTargetFrameworkId?.valueOrNull?.framework?.id
+    }
 
     //region Button Group
 

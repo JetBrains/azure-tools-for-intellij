@@ -28,10 +28,11 @@ import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
-import com.microsoft.azure.management.appservice.WebAppBase
+import com.microsoft.azure.management.appservice.*
 import com.microsoft.azure.management.sql.SqlDatabase
 import com.microsoft.azure.toolkit.intellij.common.AzureRunProfileState
 import com.microsoft.azuretools.core.mvp.model.AzureMvpModel
+import com.microsoft.azuretools.core.mvp.model.appserviceplan.AzureAppServicePlanMvpModel
 import com.microsoft.azuretools.core.mvp.model.database.AzureSqlDatabaseMvpModel
 import com.microsoft.azuretools.core.mvp.model.functionapp.AzureFunctionAppMvpModel
 import com.microsoft.azuretools.core.mvp.model.storage.AzureStorageAccountMvpModel
@@ -61,7 +62,6 @@ class FunctionAppRunState(project: Project, private val myModel: FunctionAppSett
     companion object {
         private const val TARGET_FUNCTION_NAME = "FunctionApp"
         private const val TARGET_FUNCTION_DEPLOYMENT_SLOT_NAME = "FunctionDeploymentSlot"
-        private const val URL_FUNCTION_APP_WWWROOT = "/home/site/wwwroot"
     }
 
     override fun getDeployTarget(): String =
@@ -82,6 +82,30 @@ class FunctionAppRunState(project: Project, private val myModel: FunctionAppSett
                 AzureRiderSettings.VALUE_COLLECT_ARTIFACTS_TIMEOUT_MINUTES_DEFAULT) * 60000L
 
         val app = getOrCreateFunctionAppFromConfiguration(myModel.functionAppModel, processHandler)
+
+        if (myModel.functionAppModel.isCreatingNewApp && app is FunctionApp) {
+
+            val functionRuntimeStack = myModel.functionAppModel.functionRuntimeStack
+            processHandler.setText(message("process_event.publish.updating_runtime", functionRuntimeStack.runtime(), functionRuntimeStack.version()))
+
+            if (myModel.functionAppModel.operatingSystem == OperatingSystem.LINUX) {
+                val appServicePlan = AzureAppServicePlanMvpModel
+                        .getAppServicePlanById(subscriptionId, app.appServicePlanId())
+
+                processHandler.setText(message("process_event.publish.updating_runtime.linux", functionRuntimeStack.linuxFxVersionForDedicatedPlan))
+
+                app.update()
+                        .withExistingLinuxAppServicePlan(appServicePlan)
+                        .withBuiltInImage(functionRuntimeStack)
+                        .apply()
+            } else {
+                app.update()
+                        .withRuntime(functionRuntimeStack.runtime())
+                        .withRuntimeVersion(functionRuntimeStack.version())
+                        .apply()
+            }
+        }
+
         deployToAzureFunctionApp(project, publishableProject, app, processHandler, collectArtifactsTimeoutMs)
 
         isFunctionAppCreated = true

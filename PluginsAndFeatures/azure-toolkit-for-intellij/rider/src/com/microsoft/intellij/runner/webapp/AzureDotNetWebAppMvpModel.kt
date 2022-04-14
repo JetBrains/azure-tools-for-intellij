@@ -128,7 +128,7 @@ object AzureDotNetWebAppMvpModel {
         }
 
         val linuxDotNetRuntime = netCoreRuntime ?: let {
-            val version =  WebAppPublishModel.defaultRuntime
+            val version = WebAppPublishModel.defaultRuntime
             logger.info("Net Core Runtime version is not provided. Use a default value: $version")
             version
         }

@@ -64,6 +64,8 @@ class HostingPlanSelector(private val lifetime: Lifetime) :
     val cbPricingTier = ComboBox<PricingTier>()
 
     var cachedAppServicePlan: List<AppServicePlan> = emptyList()
+    var cachedPricingTier: List<PricingTier> = emptyList()
+
     var lastSelectedAppServicePlan: AppServicePlan? = null
 
     val isCreatingNew: Boolean
@@ -134,6 +136,7 @@ class HostingPlanSelector(private val lifetime: Lifetime) :
     }
 
     fun fillPricingTier(pricingTiers: List<PricingTier>, defaultPricingTier: PricingTier? = null) {
+        cachedPricingTier = pricingTiers
         cbPricingTier.fillComboBox(
                 elements = pricingTiers,
                 defaultElement = defaultPricingTier)

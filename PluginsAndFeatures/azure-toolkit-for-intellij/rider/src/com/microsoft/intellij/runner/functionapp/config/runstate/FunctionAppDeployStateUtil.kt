@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2021 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -76,6 +76,7 @@ object FunctionAppDeployStateUtil {
             val functionModelLog = StringBuilder("Create a new Function App with name '${model.appName}', ")
                     .append("isCreateResourceGroup: ").append(model.isCreatingResourceGroup).append(", ")
                     .append("resourceGroupName: ").append(model.resourceGroupName).append(", ")
+                    .append("operatingSystem: ").append(model.operatingSystem).append(", ")
                     .append("isCreatingAppServicePlan: ").append(model.isCreatingAppServicePlan).append(", ")
                     .append("appServicePlanId: ").append(model.appServicePlanId).append(", ")
                     .append("appServicePlanName: ").append(model.appServicePlanName).append(", ")
@@ -102,6 +103,7 @@ object FunctionAppDeployStateUtil {
                     appName = model.appName,
                     isCreateResourceGroup = model.isCreatingResourceGroup,
                     resourceGroupName = model.resourceGroupName,
+                    operatingSystem = model.operatingSystem,
                     isCreateAppServicePlan = model.isCreatingAppServicePlan,
                     appServicePlanId = model.appServicePlanId,
                     appServicePlanName = model.appServicePlanName,
