@@ -1,6 +1,6 @@
 /*
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2022 JetBrains s.r.o.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
@@ -19,6 +19,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
+import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.microsoft.azuretools.azurecommons.helpers.AzureCmdException;
 import com.microsoft.intellij.forms.QueueMessageForm;
@@ -46,7 +47,7 @@ import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-public class QueueFileEditor implements FileEditor {
+public class QueueFileEditor extends UserDataHolderBase implements FileEditor {
     static final String OPEN = "Open";
     static final String DEQUEUE = "Dequeue";
     static final String ADD_MESSAGE = "Add Message";
@@ -431,16 +432,6 @@ public class QueueFileEditor implements FileEditor {
             unregisterSubscriptionsChanged();
         } catch (AzureCmdException ignored) {
         }
-    }
-
-    @Nullable
-    @Override
-    public <T> T getUserData(@NotNull Key<T> key) {
-        return null;
-    }
-
-    @Override
-    public <T> void putUserData(@NotNull Key<T> key, @Nullable T t) {
     }
 
     @Override
