@@ -23,6 +23,7 @@ object PublishableProjectMock {
             isAzureFunction = isAzureFunction,
             pubXmls = emptyList(),
             projectOutputs = projectOutputs,
+            isBlazorProject = false,
             hasPublishTarget = hasPublishTarget,
             hasWebPublishTarget = hasWebPublishTarget
     )
