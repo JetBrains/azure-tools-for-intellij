@@ -180,11 +180,16 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
             model.resourceGroupName = pnlCreateFunctionApp.pnlResourceGroup.cbResourceGroup.getSelectedValue()?.name() ?: ""
         }
 
-        if (pnlCreateFunctionApp.pnlOperatingSystem.isWindows) {
-            model.operatingSystem = OperatingSystem.WINDOWS
+        if (pnlFunctionAppSelector.isCreateNew) {
+            if (pnlCreateFunctionApp.pnlOperatingSystem.isWindows) {
+                model.operatingSystem = OperatingSystem.WINDOWS
+            } else {
+                model.operatingSystem = OperatingSystem.LINUX
+            }
         } else {
-            model.operatingSystem = OperatingSystem.LINUX
+            model.operatingSystem = selectedApp?.operatingSystem() ?: OperatingSystem.WINDOWS
         }
+
 
         // Set runtime stack based on project config
         val publishableProject = model.publishableProject

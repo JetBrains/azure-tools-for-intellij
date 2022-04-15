@@ -142,11 +142,11 @@ class AppServicePlanSelector(private val lifetime: Lifetime) :
                     AppServicePlanValidator.checkAppServicePlanNameMinLength(txtName.text) })
     }
 
-    fun fillAppServicePlanComboBox(appServicePlans: List<AppServicePlan>, defaultComparator: (AppServicePlan) -> Boolean = { false }) {
+    fun fillAppServicePlanComboBox(appServicePlans: List<AppServicePlan>, filterAppServicePlans: (List<AppServicePlan>) -> List<AppServicePlan>, defaultComparator: (AppServicePlan) -> Boolean = { false }) {
         cachedAppServicePlan = appServicePlans
 
         cbAppServicePlan.fillComboBox(
-                appServicePlans.sortedWith(compareBy({ it.operatingSystem() }, { it.name() })),
+                filterAppServicePlans(appServicePlans).sortedWith(compareBy({ it.operatingSystem() }, { it.name() })),
                 defaultComparator)
 
         if (appServicePlans.isEmpty()) {

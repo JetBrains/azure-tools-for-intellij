@@ -123,7 +123,9 @@ class FunctionAppCreateNewComponent(lifetime: Lifetime) :
 
     fun fillAppServicePlan(appServicePlans: List<AppServicePlan>, defaultAppServicePlanId: String? = null) =
             pnlHostingPlan.fillAppServicePlan(
-                    filterAppServicePlans(pnlOperatingSystem.deployOperatingSystem, appServicePlans), defaultAppServicePlanId)
+                    appServicePlans,
+                    { filterAppServicePlans(pnlOperatingSystem.deployOperatingSystem, it) },
+                    defaultAppServicePlanId)
 
     fun fillLocation(locations: List<Location>, defaultLocation: Region? = null) =
             pnlHostingPlan.fillLocationComboBox(locations, defaultLocation)
@@ -154,6 +156,6 @@ class FunctionAppCreateNewComponent(lifetime: Lifetime) :
      *       Add Consumption plan for pricing on demand
      */
     private fun filterPricingTiers(prices: List<PricingTier>) =
-            prices.filter { it != PricingTier.FREE_F1 && it != PricingTier.SHARED_D1 } +
-                    FunctionAppPublishModel.consumptionPricingTier
+            (prices.filter { it != PricingTier.FREE_F1 && it != PricingTier.SHARED_D1 } +
+                    FunctionAppPublishModel.consumptionPricingTier).distinct()
 }
