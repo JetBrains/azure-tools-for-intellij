@@ -84,17 +84,17 @@ object FunctionsCoreToolsManager {
 
         val azureCoreToolsFeedReleaseFilter =
                 if (SystemInfo.isWindows && CpuArch.isIntel64()) {
-                    AzureCoreToolsFeedReleaseFilter("Windows", "x64", "minified")
+                    AzureCoreToolsFeedReleaseFilter("Windows", listOf("x64"), listOf("minified", "full"))
                 } else if (SystemInfo.isWindows) {
-                    AzureCoreToolsFeedReleaseFilter("Windows", "x86", "minified")
+                    AzureCoreToolsFeedReleaseFilter("Windows", listOf("x86"), listOf("minified", "full"))
                 } else if (SystemInfo.isMac && CpuArch.isArm64()) {
-                    AzureCoreToolsFeedReleaseFilter("MacOS", "arm64", "full")
+                    AzureCoreToolsFeedReleaseFilter("MacOS", listOf("arm64", "x64"), listOf("full"))
                 } else if (SystemInfo.isMac) {
-                    AzureCoreToolsFeedReleaseFilter("MacOS", "x64", "full")
+                    AzureCoreToolsFeedReleaseFilter("MacOS", listOf("x64"), listOf("full"))
                 } else if (SystemInfo.isLinux) {
-                    AzureCoreToolsFeedReleaseFilter("Linux", "x64", "full")
+                    AzureCoreToolsFeedReleaseFilter("Linux", listOf("x64"), listOf("full"))
                 } else {
-                    AzureCoreToolsFeedReleaseFilter("Unknown", "x64", "full")
+                    AzureCoreToolsFeedReleaseFilter("Unknown", listOf("x64"), listOf("full"))
                 }
 
         try {
@@ -115,16 +115,24 @@ object FunctionsCoreToolsManager {
 
                 val releaseCoreTools = release.coreTools
                         .filter {
-                            // Match OS and architecture
+                            // Match OS and ensure a download link is present
                             it.os.equals(azureCoreToolsFeedReleaseFilter.os, ignoreCase = true) &&
-                                    it.architecture.equals(azureCoreToolsFeedReleaseFilter.architecture, ignoreCase = true) &&
                                     it.downloadLink.isNotNullOrEmpty
                         }
-                        .minByOrNull {
-                            // Ideally match requested size, if not, fall back to non-matching.
-                            // This is the case in the feed for e.g. v2, where Windows has only full size
-                            if (it.size.equals(azureCoreToolsFeedReleaseFilter.size, ignoreCase = true)) 0 else 1
-                        } ?: continue
+                        .sortedWith(compareBy<ReleaseCoreTool> {
+                            // Then match architecture. Items higher in the list have precedence.
+                            // Use 9999 when no match is found.
+                            azureCoreToolsFeedReleaseFilter.architectures.indexOfFirst { architecture ->
+                                it.architecture.equals(architecture, ignoreCase = true)
+                            }.let { rank -> if (rank >= 0) rank else 9999 }
+                        }.thenBy {
+                            // Then match size. Items higher in the list have precedence.
+                            // Use 9999 when no match is found.
+                            azureCoreToolsFeedReleaseFilter.sizes.indexOfFirst { size ->
+                                it.size.equals(size, ignoreCase = true)
+                            }.let { rank -> if (rank >= 0) rank else 9999 }
+                        })
+                        .firstOrNull() ?: continue
 
                 releasesCache.putIfAbsent(
                         releaseTagName.lowercase(),
@@ -299,8 +307,8 @@ object FunctionsCoreToolsManager {
     }
 
     private class AzureCoreToolsFeedReleaseFilter(val os: String,
-                                                  val architecture: String,
-                                                  val size: String)
+                                                  val architectures: List<String>,
+                                                  val sizes: List<String>)
 
     private class FunctionsCoreToolsRelease(val functionsVersion: String,
                                             val coreToolsVersion: String,
