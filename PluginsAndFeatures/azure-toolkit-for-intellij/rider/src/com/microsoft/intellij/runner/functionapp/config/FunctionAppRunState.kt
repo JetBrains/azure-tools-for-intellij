@@ -82,30 +82,7 @@ class FunctionAppRunState(project: Project, private val myModel: FunctionAppSett
                 AzureRiderSettings.VALUE_COLLECT_ARTIFACTS_TIMEOUT_MINUTES_DEFAULT) * 60000L
 
         val app = getOrCreateFunctionAppFromConfiguration(myModel.functionAppModel, processHandler)
-
-        if (myModel.functionAppModel.isCreatingNewApp && app is FunctionApp) {
-
-            val functionRuntimeStack = myModel.functionAppModel.functionRuntimeStack
-            processHandler.setText(message("process_event.publish.updating_runtime", functionRuntimeStack.runtime(), functionRuntimeStack.version()))
-
-            if (myModel.functionAppModel.operatingSystem == OperatingSystem.LINUX) {
-                val appServicePlan = AzureAppServicePlanMvpModel
-                        .getAppServicePlanById(subscriptionId, app.appServicePlanId())
-
-                processHandler.setText(message("process_event.publish.updating_runtime.linux", functionRuntimeStack.linuxFxVersionForDedicatedPlan))
-
-                app.update()
-                        .withExistingLinuxAppServicePlan(appServicePlan)
-                        .withBuiltInImage(functionRuntimeStack)
-                        .apply()
-            } else {
-                app.update()
-                        .withRuntime(functionRuntimeStack.runtime())
-                        .withRuntimeVersion(functionRuntimeStack.version())
-                        .apply()
-            }
-        }
-
+        tryConfigureAzureFunctionRuntimeStack(app, subscriptionId, processHandler)
         deployToAzureFunctionApp(project, publishableProject, app, processHandler, collectArtifactsTimeoutMs)
 
         isFunctionAppCreated = true
@@ -147,6 +124,30 @@ class FunctionAppRunState(project: Project, private val myModel: FunctionAppSett
         processHandler.setText(message("process_event.publish.done"))
 
         return FunctionAppDeployResult(app, database)
+    }
+
+    private fun tryConfigureAzureFunctionRuntimeStack(app: WebAppBase, subscriptionId: String, processHandler: RunProcessHandler) {
+        if (app !is FunctionApp) return
+
+        val functionRuntimeStack = myModel.functionAppModel.functionRuntimeStack
+        processHandler.setText(message("process_event.publish.updating_runtime", functionRuntimeStack.runtime(), functionRuntimeStack.version()))
+
+        if (myModel.functionAppModel.operatingSystem == OperatingSystem.LINUX) {
+            val appServicePlan = AzureAppServicePlanMvpModel
+                    .getAppServicePlanById(subscriptionId, app.appServicePlanId())
+
+            processHandler.setText(message("process_event.publish.updating_runtime.linux", functionRuntimeStack.linuxFxVersionForDedicatedPlan))
+
+            app.update()
+                    .withExistingLinuxAppServicePlan(appServicePlan)
+                    .withBuiltInImage(functionRuntimeStack)
+                    .apply()
+        } else {
+            app.update()
+                    .withRuntime(functionRuntimeStack.runtime())
+                    .withRuntimeVersion(functionRuntimeStack.version())
+                    .apply()
+        }
     }
 
     override fun onSuccess(result: FunctionAppDeployResult, processHandler: RunProcessHandler) {
