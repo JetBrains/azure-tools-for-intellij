@@ -138,11 +138,23 @@ class FunctionAppRunState(project: Project, private val myModel: FunctionAppSett
 
             processHandler.setText(message("process_event.publish.updating_runtime.linux", functionRuntimeStack.linuxFxVersionForDedicatedPlan))
 
+            // For Linux, we have to set the correct FunctionRuntimeStack
             app.update()
                     .withExistingLinuxAppServicePlan(appServicePlan)
                     .withBuiltInImage(functionRuntimeStack)
                     .apply()
+
+            // For Linux dynamic (consumption) plan, we have to set SCM_DO_BUILD_DURING_DEPLOYMENT=false
+            if (appServicePlan.pricingTier() == FunctionAppPublishModel.dynamicPricingTier) {
+
+                processHandler.setText(message("process_event.publish.updating_appsettings.scm_build"))
+
+                app.update()
+                        .withAppSetting("SCM_DO_BUILD_DURING_DEPLOYMENT", "false")
+                        .apply()
+            }
         } else {
+            // For Windows, we have to set the correct runtime and version
             app.update()
                     .withRuntime(functionRuntimeStack.runtime())
                     .withRuntimeVersion(functionRuntimeStack.version())

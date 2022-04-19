@@ -190,7 +190,6 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
             model.operatingSystem = selectedApp?.operatingSystem() ?: OperatingSystem.WINDOWS
         }
 
-
         // Set runtime stack based on project config
         val publishableProject = model.publishableProject
         if (publishableProject != null && publishableProject.isDotNetCore) {

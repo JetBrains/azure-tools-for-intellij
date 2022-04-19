@@ -157,5 +157,5 @@ class FunctionAppCreateNewComponent(lifetime: Lifetime) :
      */
     private fun filterPricingTiers(prices: List<PricingTier>) =
             (prices.filter { it != PricingTier.FREE_F1 && it != PricingTier.SHARED_D1 } +
-                    FunctionAppPublishModel.consumptionPricingTier).distinct()
+                    FunctionAppPublishModel.dynamicPricingTier).distinct()
 }

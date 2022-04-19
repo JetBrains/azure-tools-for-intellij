@@ -43,8 +43,8 @@ class FunctionAppPublishModel {
 
     companion object {
         val defaultOperatingSystem = OperatingSystem.WINDOWS
-        val consumptionPricingTier = PricingTier("Consumption", "Y1")
-        val defaultPricingTier = consumptionPricingTier
+        val dynamicPricingTier = PricingTier("Dynamic", "Y1")
+        val defaultPricingTier = dynamicPricingTier
 
         val standardLocalRedundantStorage = StorageAccountSkuType.STANDARD_LRS
         val defaultStorageAccountType = standardLocalRedundantStorage
