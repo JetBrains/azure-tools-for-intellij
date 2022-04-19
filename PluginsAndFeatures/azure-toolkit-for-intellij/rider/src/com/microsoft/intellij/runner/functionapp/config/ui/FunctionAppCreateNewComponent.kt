@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2020 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -40,6 +40,9 @@ import com.microsoft.intellij.ui.component.StorageAccountSelector
 import com.microsoft.intellij.ui.component.appservice.AppNameComponent
 import com.microsoft.intellij.ui.component.appservice.HostingPlanSelector
 import com.microsoft.intellij.runner.functionapp.model.FunctionAppPublishModel
+import com.microsoft.intellij.ui.component.appservice.OperatingSystemSelector
+import com.microsoft.intellij.ui.extension.fillComboBox
+import com.microsoft.intellij.ui.extension.setComponentsEnabled
 import net.miginfocom.swing.MigLayout
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import javax.swing.JPanel
@@ -55,6 +58,9 @@ class FunctionAppCreateNewComponent(lifetime: Lifetime) :
     val pnlResourceGroup = ResourceGroupSelector(lifetime.createNested())
     private val pnlResourceGroupHolder = HideableTitledPanel(message("run_config.publish.form.resource_group.header"), pnlResourceGroup, true)
 
+    val pnlOperatingSystem = OperatingSystemSelector()
+    private val pnlOperatingSystemHolder = HideableTitledPanel(message("run_config.publish.form.operating_system.header"), pnlOperatingSystem, true)
+
     val pnlHostingPlan = HostingPlanSelector(lifetime.createNested())
     private val pnlHostingPlanHolder = HideableTitledPanel(message("run_config.publish.form.hosting_plan.header"), pnlHostingPlan, true)
 
@@ -62,12 +68,49 @@ class FunctionAppCreateNewComponent(lifetime: Lifetime) :
     private val pnlStorageAccountHolder = HideableTitledPanel(message("run_config.publish.form.storage_account.header"), pnlStorageAccount, true)
 
     init {
+        initButtonGroupsState()
+
         add(pnlAppName, "growx")
         add(pnlSubscription, "growx")
         add(pnlResourceGroupHolder, "growx")
+        add(pnlOperatingSystemHolder, "growx")
         add(pnlHostingPlanHolder, "growx")
         add(pnlStorageAccountHolder, "growx")
     }
+
+    fun setOperatingSystemRadioButtons(isDotNetCore: Boolean) {
+        setComponentsEnabled(isDotNetCore, pnlOperatingSystem.rdoOperatingSystemLinux)
+
+        if (!isDotNetCore) {
+            pnlOperatingSystem.rdoOperatingSystemWindows.doClick()
+            toggleOperatingSystem(OperatingSystem.WINDOWS)
+        }
+    }
+
+    //region Button Group
+
+    private fun initButtonGroupsState() {
+        initOperatingSystemButtonGroup()
+    }
+
+    private fun initOperatingSystemButtonGroup() {
+        pnlOperatingSystem.rdoOperatingSystemWindows.addActionListener { toggleOperatingSystem(OperatingSystem.WINDOWS) }
+        pnlOperatingSystem.rdoOperatingSystemLinux.addActionListener { toggleOperatingSystem(OperatingSystem.LINUX) }
+    }
+
+    fun toggleOperatingSystem(operatingSystem: OperatingSystem) {
+        pnlHostingPlan.cbHostingPlan.fillComboBox(
+                filterAppServicePlans(operatingSystem, pnlHostingPlan.cachedAppServicePlan),
+                pnlHostingPlan.lastSelectedAppServicePlan
+        )
+
+        pnlHostingPlan.cbPricingTier.fillComboBox(
+                filterPricingTiers(pnlHostingPlan.cachedPricingTier),
+                pnlHostingPlan.lastSelectedAppServicePlan?.pricingTier()
+        )
+    }
+
+    //endregion Button Group
 
     fun fillSubscription(subscriptions: List<Subscription>, defaultSubscription: Subscription? = null) =
             pnlSubscription.fillSubscriptionComboBox(subscriptions, defaultSubscription)
@@ -79,13 +122,16 @@ class FunctionAppCreateNewComponent(lifetime: Lifetime) :
     }
 
     fun fillAppServicePlan(appServicePlans: List<AppServicePlan>, defaultAppServicePlanId: String? = null) =
-            pnlHostingPlan.fillAppServicePlan(filterAppServicePlans(appServicePlans), defaultAppServicePlanId)
+            pnlHostingPlan.fillAppServicePlan(
+                    appServicePlans,
+                    { filterAppServicePlans(pnlOperatingSystem.deployOperatingSystem, it) },
+                    defaultAppServicePlanId)
 
     fun fillLocation(locations: List<Location>, defaultLocation: Region? = null) =
             pnlHostingPlan.fillLocationComboBox(locations, defaultLocation)
 
     fun fillPricingTier(pricingTiers: List<PricingTier>, defaultPricingTier: PricingTier? = null) =
-            pnlHostingPlan.fillPricingTier(updatePricingTiers(pricingTiers), defaultPricingTier)
+            pnlHostingPlan.fillPricingTier(filterPricingTiers(pricingTiers), defaultPricingTier)
 
     fun fillStorageAccount(storageAccounts: List<StorageAccount>, defaultStorageAccountId: String? = null) =
             pnlStorageAccount.fillStorageAccount(storageAccounts, defaultStorageAccountId)
@@ -96,9 +142,10 @@ class FunctionAppCreateNewComponent(lifetime: Lifetime) :
     /**
      * Filter App Service Plans to Operating System related values
      */
-    private fun filterAppServicePlans(appServicePlans: List<AppServicePlan>): List<AppServicePlan> {
+    private fun filterAppServicePlans(operatingSystem: OperatingSystem,
+                                      appServicePlans: List<AppServicePlan>): List<AppServicePlan> {
         return appServicePlans
-                .filter { it.operatingSystem() == OperatingSystem.WINDOWS }
+                .filter { it.operatingSystem() == operatingSystem }
                 .sortedWith(compareBy({ it.operatingSystem() }, { it.name() }))
     }
 
@@ -108,7 +155,7 @@ class FunctionAppCreateNewComponent(lifetime: Lifetime) :
      * Note: Function Apps cannot use "Free" and "Shared" Pricing Tiers.
      *       Add Consumption plan for pricing on demand
      */
-    private fun updatePricingTiers(prices: List<PricingTier>) =
-            prices.filter { it != PricingTier.FREE_F1 && it != PricingTier.SHARED_D1 } +
-                    FunctionAppPublishModel.consumptionPricingTier
+    private fun filterPricingTiers(prices: List<PricingTier>) =
+            (prices.filter { it != PricingTier.FREE_F1 && it != PricingTier.SHARED_D1 } +
+                    FunctionAppPublishModel.dynamicPricingTier).distinct()
 }

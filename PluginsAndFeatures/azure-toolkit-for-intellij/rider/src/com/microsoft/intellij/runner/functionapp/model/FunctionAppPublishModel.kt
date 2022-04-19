@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2021 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -22,6 +22,7 @@
 
 package com.microsoft.intellij.runner.functionapp.model
 
+import com.intellij.database.util.isNotNullOrEmpty
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createLifetime
 import com.intellij.openapi.util.JDOMExternalizerUtil
@@ -29,10 +30,7 @@ import com.intellij.util.application
 import com.jetbrains.rider.model.PublishableProjectModel
 import com.jetbrains.rider.model.publishableProjectsModel
 import com.jetbrains.rider.projectView.solution
-import com.microsoft.azure.management.appservice.FunctionDeploymentSlot
-import com.microsoft.azure.management.appservice.PricingTier
-import com.microsoft.azure.management.appservice.SkuDescription
-import com.microsoft.azure.management.appservice.WebAppBase
+import com.microsoft.azure.management.appservice.*
 import com.microsoft.azure.management.resources.Subscription
 import com.microsoft.azure.management.resources.fluentcore.arm.Region
 import com.microsoft.azure.management.storage.SkuName
@@ -44,11 +42,15 @@ import org.jdom.Element
 class FunctionAppPublishModel {
 
     companion object {
-        val consumptionPricingTier = PricingTier("Consumption", "Y1")
-        val defaultPricingTier = consumptionPricingTier
+        val defaultOperatingSystem = OperatingSystem.WINDOWS
+        val dynamicPricingTier = PricingTier("Dynamic", "Y1")
+        val defaultPricingTier = dynamicPricingTier
 
         val standardLocalRedundantStorage = StorageAccountSkuType.STANDARD_LRS
         val defaultStorageAccountType = standardLocalRedundantStorage
+
+        val defaultFunctionRuntimeStack = FunctionRuntimeStack(
+                "dotnet","~4", "dotnet|6.0", "dotnet|6.0")
 
         private const val AZURE_FUNCTION_APP_PROJECT                    = "AZURE_FUNCTION_APP_PROJECT"
         private const val AZURE_FUNCTION_APP_SUBSCRIPTION_ID            = "AZURE_FUNCTION_APP_SUBSCRIPTION_ID"
@@ -62,6 +64,10 @@ class FunctionAppPublishModel {
         private const val AZURE_FUNCTION_APP_SERVICE_PLAN_NAME          = "AZURE_FUNCTION_APP_SERVICE_PLAN_NAME"
         private const val AZURE_FUNCTION_APP_LOCATION                   = "AZURE_FUNCTION_APP_LOCATION"
         private const val AZURE_FUNCTION_APP_PRICING_TIER               = "AZURE_FUNCTION_APP_PRICING_TIER"
+        private const val AZURE_FUNCTION_APP_OPERATING_SYSTEM           = "AZURE_FUNCTION_APP_OPERATING_SYSTEM"
+        private const val AZURE_FUNCTION_APP_RUNTIME                    = "AZURE_FUNCTION_APP_RUNTIME"
+        private const val AZURE_FUNCTION_APP_RUNTIMEVERSION             = "AZURE_FUNCTION_APP_RUNTIMEVERSION"
+        private const val AZURE_FUNCTION_APP_FXVERSION                  = "AZURE_FUNCTION_APP_FXVERSION"
         private const val AZURE_FUNCTION_APP_IS_CREATE_STORAGE_ACCOUNT  = "AZURE_FUNCTION_APP_IS_CREATE_STORAGE_ACCOUNT"
         private const val AZURE_FUNCTION_APP_STORAGE_ACCOUNT_ID         = "AZURE_FUNCTION_APP_STORAGE_ACCOUNT_ID"
         private const val AZURE_FUNCTION_APP_STORAGE_ACCOUNT_NAME       = "AZURE_FUNCTION_APP_STORAGE_ACCOUNT_NAME"
@@ -84,8 +90,11 @@ class FunctionAppPublishModel {
     var isCreatingAppServicePlan = false
     var appServicePlanId: String = ""
     var appServicePlanName = ""
+    var operatingSystem = defaultOperatingSystem
     var location = AzureDefaults.location
     var pricingTier = defaultPricingTier
+
+    var functionRuntimeStack = defaultFunctionRuntimeStack
 
     var isCreatingStorageAccount = false
     var storageAccountId = ""
@@ -138,6 +147,9 @@ class FunctionAppPublishModel {
         isCreatingResourceGroup = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_IS_CREATE_RESOURCE_GROUP) == "1"
         resourceGroupName = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_RESOURCE_GROUP_NAME) ?: ""
 
+        val osString = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_OPERATING_SYSTEM) ?: defaultOperatingSystem.name
+        operatingSystem = OperatingSystem.fromString(osString)
+
         isCreatingAppServicePlan = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_IS_CREATE_APP_SERVICE_PLAN) == "1"
         appServicePlanId = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_SERVICE_PLAN_ID) ?: ""
         appServicePlanName = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_SERVICE_PLAN_NAME) ?: ""
@@ -156,6 +168,15 @@ class FunctionAppPublishModel {
         val storageAccountTypeString = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_STORAGE_ACCOUNT_TYPE) ?: storageAccountType.name().toString()
         val skuName = SkuName.fromString(storageAccountTypeString)
         storageAccountType = StorageAccountSkuType.fromSkuName(skuName)
+
+        val runtime = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_RUNTIME) ?: "dotnet"
+        val runtimeVersion = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_RUNTIMEVERSION)
+        val runtimeFxVersion = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_FXVERSION)
+        if (runtimeVersion.isNotNullOrEmpty && runtimeFxVersion.isNotNullOrEmpty) {
+            functionRuntimeStack = FunctionRuntimeStack(runtime, runtimeVersion, runtimeFxVersion, runtimeFxVersion)
+        } else {
+            functionRuntimeStack = defaultFunctionRuntimeStack
+        }
 
         isDeployToSlot = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_IS_DEPLOY_TO_SLOT) == "1"
         slotName = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_SLOT_NAME) ?: ""
@@ -179,6 +200,10 @@ class FunctionAppPublishModel {
         JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_LOCATION, location.name())
         JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_PRICING_TIER, pricingTier.toSkuDescription().name())
 
+        JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_OPERATING_SYSTEM, operatingSystem.name)
+        JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_RUNTIME, functionRuntimeStack.runtime())
+        JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_RUNTIMEVERSION, functionRuntimeStack.version())
+        JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_FXVERSION, functionRuntimeStack.linuxFxVersionForDedicatedPlan)
 
         JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_IS_CREATE_STORAGE_ACCOUNT, if (isCreatingStorageAccount) "1" else "0")
         JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_STORAGE_ACCOUNT_ID, storageAccountId)

@@ -64,6 +64,8 @@ class HostingPlanSelector(private val lifetime: Lifetime) :
     val cbPricingTier = ComboBox<PricingTier>()
 
     var cachedAppServicePlan: List<AppServicePlan> = emptyList()
+    var cachedPricingTier: List<PricingTier> = emptyList()
+
     var lastSelectedAppServicePlan: AppServicePlan? = null
 
     val isCreatingNew: Boolean
@@ -119,11 +121,11 @@ class HostingPlanSelector(private val lifetime: Lifetime) :
                     AppServicePlanValidator.checkAppServicePlanNameMinLength(txtName.text) })
     }
 
-    fun fillAppServicePlan(appServicePlans: List<AppServicePlan>, defaultAppServicePlanId: String? = null) {
+    fun fillAppServicePlan(appServicePlans: List<AppServicePlan>, filterAppServicePlans: (List<AppServicePlan>) -> List<AppServicePlan>, defaultAppServicePlanId: String? =  null) {
         cachedAppServicePlan = appServicePlans
 
         cbHostingPlan.fillComboBox<AppServicePlan>(
-                elements = appServicePlans,
+                elements = filterAppServicePlans(appServicePlans),
                 defaultComparator = { appServicePlan -> appServicePlan.id() == defaultAppServicePlanId })
     }
 
@@ -134,6 +136,7 @@ class HostingPlanSelector(private val lifetime: Lifetime) :
     }
 
     fun fillPricingTier(pricingTiers: List<PricingTier>, defaultPricingTier: PricingTier? = null) {
+        cachedPricingTier = pricingTiers
         cbPricingTier.fillComboBox(
                 elements = pricingTiers,
                 defaultElement = defaultPricingTier)

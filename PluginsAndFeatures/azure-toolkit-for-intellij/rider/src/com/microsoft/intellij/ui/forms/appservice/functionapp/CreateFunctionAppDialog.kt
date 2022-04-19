@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 JetBrains s.r.o.
+ * Copyright (c) 2020-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -119,6 +119,7 @@ class CreateFunctionAppDialog(lifetimeDef: LifetimeDefinition,
                         appName                = appName,
                         isCreateResourceGroup  = pnlCreate.pnlResourceGroup.isCreateNew,
                         resourceGroupName      = resourceGroupName,
+                        operatingSystem        = pnlCreate.pnlOperatingSystem.deployOperatingSystem,
                         isCreateAppServicePlan = pnlCreate.pnlHostingPlan.isCreatingNew,
                         appServicePlanId       = pnlCreate.pnlHostingPlan.lastSelectedAppServicePlan?.id() ?: "",
                         appServicePlanName     = pnlCreate.pnlHostingPlan.hostingPlanName,

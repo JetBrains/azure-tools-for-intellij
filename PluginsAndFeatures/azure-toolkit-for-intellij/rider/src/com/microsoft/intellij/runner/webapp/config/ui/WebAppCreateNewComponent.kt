@@ -120,9 +120,9 @@ class WebAppCreateNewComponent(lifetime: Lifetime) :
 
     fun fillAppServicePlan(appServicePlans: List<AppServicePlan>, defaultAppServicePlanId: String? = null) {
         pnlAppServicePlan.fillAppServicePlanComboBox(
-                filterAppServicePlans(pnlOperatingSystem.deployOperatingSystem, appServicePlans)) {
-            appServicePlan -> appServicePlan.id() == defaultAppServicePlanId
-        }
+                appServicePlans,
+                { filterAppServicePlans(pnlOperatingSystem.deployOperatingSystem, it) },
+                { it.id() == defaultAppServicePlanId })
     }
 
     fun fillLocation(locations: List<Location>, defaultLocation: Region? = null) {
