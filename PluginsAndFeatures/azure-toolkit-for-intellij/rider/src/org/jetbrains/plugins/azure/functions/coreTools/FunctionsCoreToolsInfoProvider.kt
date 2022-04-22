@@ -58,14 +58,27 @@ object FunctionsCoreToolsInfoProvider {
     fun retrieveForVersion(project: Project, azureFunctionsVersion: String, allowDownload: Boolean): FunctionsCoreToolsInfo? {
 
         // Based on priority, try and retrieve the tool information.
-        return retrieveFromConfiguration(azureFunctionsVersion)
-                ?: retrieveFromFeed(project, azureFunctionsVersion, allowDownload)
+        val coreToolsFromConfiguration = retrieveFromConfiguration(azureFunctionsVersion)
+        if (coreToolsFromConfiguration != null) {
+            return coreToolsFromConfiguration
+        }
+        logger.info("Could not determine Azure Core Tools path from configuration")
+
+        val coreToolsFromFeed = retrieveFromFeed(project, azureFunctionsVersion, allowDownload)
+        if (coreToolsFromFeed != null) {
+            return coreToolsFromFeed
+        }
+        logger.info("Could not determine Azure Core Tools path from feed")
+
+        return null
     }
 
     private fun retrieveFromConfiguration(azureFunctionsVersion: String): FunctionsCoreToolsInfo? {
 
         // Determine Azure Functions Core Tools from configuration
         val coreToolsConfiguration = AzureRiderSettings.getAzureCoreToolsPathEntries(properties)
+        logger.debugValues("Azure Core Tools path entries", coreToolsConfiguration.map { "${it.functionsVersion}: ${it.coreToolsPath}" })
+
         val coreToolsPathFromConfiguration = coreToolsConfiguration
                 .firstOrNull { it.functionsVersion.equals(azureFunctionsVersion, ignoreCase = true) }
                 ?.coreToolsPath ?: return null
