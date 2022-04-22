@@ -97,6 +97,8 @@ object FunctionsCoreToolsManager {
                     AzureCoreToolsFeedReleaseFilter("Unknown", listOf("x64"), listOf("full"))
                 }
 
+        logger.debug("Azure Core Tools release filter: $azureCoreToolsFeedReleaseFilter")
+
         try {
             val functionsCoreToolsReleaseFeed = FunctionsCoreToolsReleaseFeedService.createInstance()
                     .getReleaseFeed(releaseFeedUrl)
@@ -133,6 +135,8 @@ object FunctionsCoreToolsManager {
                             }.let { rank -> if (rank >= 0) rank else 9999 }
                         })
                         .firstOrNull() ?: continue
+
+                logger.debug("Release for Azure Core Tools version ${releaseTagName.lowercase()}: ${releaseTag.release}; ${releaseCoreTools.downloadLink}")
 
                 releasesCache.putIfAbsent(
                         releaseTagName.lowercase(),
