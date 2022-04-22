@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2021 JetBrains s.r.o.
+ * Copyright (c) 2018-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -26,12 +26,11 @@ import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.rd.util.concurrentMapOf
 import com.microsoft.azure.management.Azure
 import com.microsoft.azure.management.appservice.*
-import com.microsoft.azure.management.appservice.implementation.*
 import com.microsoft.azure.management.resources.fluentcore.arm.Region
 import com.microsoft.azuretools.authmanage.AuthMethodManager
 import com.microsoft.azuretools.core.mvp.model.AzureMvpModel
 import com.microsoft.azuretools.core.mvp.model.ResourceEx
-import com.microsoft.azuretools.core.mvp.model.webapp.WebAppWrapper
+import com.microsoft.azuretools.core.mvp.model.webapp.AzureWebAppMvpModel
 import com.microsoft.intellij.runner.webapp.model.WebAppPublishModel
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.azure.RiderAzureBundle
@@ -85,12 +84,7 @@ object AzureDotNetWebAppMvpModel {
         }
 
         try {
-            val azure = AuthMethodManager.getInstance().getAzureClient(subscriptionId)
-            val webAppList = (azure.appServices().webApps().inner() as WebAppsInner)
-                    .list()
-                    .filter { it.kind() == null || !it.kind().split(",").contains("functionapp") }
-                    .map { ResourceEx<WebApp>(WebAppWrapper(subscriptionId, it), subscriptionId) }
-
+            val webAppList = AzureWebAppMvpModel.getInstance().listWebApps(subscriptionId, force)
             subscriptionIdToWebAppsMap[subscriptionId] = webAppList
             return webAppList
         } catch (e: Throwable) {
