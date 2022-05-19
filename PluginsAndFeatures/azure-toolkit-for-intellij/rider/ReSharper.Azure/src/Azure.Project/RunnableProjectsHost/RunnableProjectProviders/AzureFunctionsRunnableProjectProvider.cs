@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Azure.Project.RunnableProjectsHost.RunnableProject
 
             return new RunnableProject(name, fullName,
                 project.ProjectFileLocation.NormalizeSeparators(FileSystemPathEx.SeparatorStyle.Unix),
-                RunnableProjectKind.AzureFunctions,
+                AzureRunnableProjectKinds.AzureFunctions,
                 projectOutputs, new List<EnvironmentVariable>(), problems, new List<CustomAttribute>());
         }
 

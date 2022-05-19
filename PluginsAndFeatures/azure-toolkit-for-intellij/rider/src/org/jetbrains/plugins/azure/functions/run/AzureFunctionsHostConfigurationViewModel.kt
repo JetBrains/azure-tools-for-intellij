@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2020 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -28,6 +28,7 @@ import com.jetbrains.rd.ide.model.EnvironmentVariable
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rider.model.*
+import com.jetbrains.rider.run.configurations.RunnableProjectKinds
 import com.jetbrains.rider.run.configurations.controls.*
 import com.jetbrains.rider.run.configurations.controls.startBrowser.BrowserSettings
 import com.jetbrains.rider.run.configurations.controls.startBrowser.BrowserSettingsEditor
@@ -278,7 +279,7 @@ class AzureFunctionsHostConfigurationViewModel(
                 } else {
                     val fakeProjectName = File(projectFilePath).name
                     val fakeProject = RunnableProject(
-                            fakeProjectName, fakeProjectName, projectFilePath, RunnableProjectKind.Unloaded,
+                            fakeProjectName, fakeProjectName, projectFilePath, RunnableProjectKinds.Unloaded,
                             listOf(ProjectOutput(RdTargetFrameworkId("", projectTfm, false, false), exePath,
                                     ParametersListUtil.parse(programParameters), workingDirectory, "", null, emptyList())),
                             envs.map { EnvironmentVariable(it.key, it.value) }.toList(), null, listOf()

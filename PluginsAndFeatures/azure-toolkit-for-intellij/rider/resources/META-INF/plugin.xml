@@ -226,7 +226,7 @@
   <xi:include href="/META-INF/platformPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
   <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-  <idea-version since-build="221" until-build="221.*"/>
+  <idea-version since-build="222" until-build="222.*"/>
 
   <resource-bundle>messages.RiderAzureMessages</resource-bundle>
 

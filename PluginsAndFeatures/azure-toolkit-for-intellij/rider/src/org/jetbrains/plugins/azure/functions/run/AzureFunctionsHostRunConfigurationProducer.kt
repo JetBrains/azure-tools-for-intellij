@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -29,11 +29,11 @@ import com.intellij.openapi.util.Ref
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.io.systemIndependentPath
 import com.intellij.psi.PsiElement
-import com.jetbrains.rider.model.RunnableProjectKind
 import com.jetbrains.rider.model.runnableProjectsModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.workspace.getFile
 import com.jetbrains.rider.run.configurations.getSelectedProject
+import org.jetbrains.plugins.azure.functions.daemon.AzureRunnableProjectKinds
 
 class AzureFunctionsHostRunConfigurationProducer
     : LazyRunConfigurationProducer<AzureFunctionsHostConfiguration>() {
@@ -51,7 +51,7 @@ class AzureFunctionsHostRunConfigurationProducer
 
         val projects = context.project.solution.runnableProjectsModel.projects.valueOrNull ?: return false
         val runnableProject = projects.firstOrNull {
-            it.kind == RunnableProjectKind.AzureFunctions &&
+            it.kind == AzureRunnableProjectKinds.AzureFunctions &&
             FileUtil.toSystemIndependentName(it.projectFilePath) == selectedProjectFilePathInvariant &&
             FileUtil.toSystemIndependentName(configuration.parameters.projectFilePath) == selectedProjectFilePathInvariant
         }
@@ -68,7 +68,7 @@ class AzureFunctionsHostRunConfigurationProducer
 
         val projects = context.project.solution.runnableProjectsModel.projects.valueOrNull ?: return false
         val runnableProject = projects.firstOrNull {
-            it.kind == RunnableProjectKind.AzureFunctions &&
+            it.kind == AzureRunnableProjectKinds.AzureFunctions &&
             FileUtil.toSystemIndependentName(it.projectFilePath) == selectedProjectFilePathInvariant
         } ?: return false
 

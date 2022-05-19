@@ -225,7 +225,7 @@ open class AzureFunctionsHostConfigurationParameters(
         val trackProjectWorkingDirectoryString = JDOMExternalizerUtil.readField(element, PROJECT_WORKING_DIRECTORY_TRACKING)
                 ?: ""
         trackProjectWorkingDirectory = trackProjectWorkingDirectoryString != "0"
-        projectKind = RunnableProjectKind.valueOf(JDOMExternalizerUtil.readField(element, PROJECT_KIND)
+        projectKind = RunnableProjectKind(JDOMExternalizerUtil.readField(element, PROJECT_KIND)
                 ?: message("common.none_capitalized"))
         projectTfm = JDOMExternalizerUtil.readField(element, PROJECT_TFM) ?: ""
         functionNames = JDOMExternalizerUtil.readField(element, FUNCTION_NAMES) ?: ""

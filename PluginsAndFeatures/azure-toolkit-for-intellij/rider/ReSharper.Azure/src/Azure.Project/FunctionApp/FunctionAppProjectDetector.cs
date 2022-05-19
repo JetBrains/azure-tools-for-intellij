@@ -126,7 +126,7 @@ namespace JetBrains.ReSharper.Azure.Project.FunctionApp
 
             // 1) Check MSBuild properties. When property is defined but is empty, this will yield false.
             var hasMsBuildProperty = !string.IsNullOrEmpty(project
-                .GetRequestedProjectProperties(MSBuildProjectUtil.AzureFunctionsVersion)
+                .GetRequestedProjectProperties(MSBuildProjectUtil.AzureFunctionsVersionProperty)
                 .FirstNotNull());
 
             // 2) Check expected package reference.
