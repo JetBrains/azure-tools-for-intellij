@@ -23,6 +23,10 @@
   <change-notes>
     <![CDATA[
       <html>
+        <p>[3.50.0-2022.2]</p>
+        <ul>
+          <li>Compatibility with Rider 2022.2 EAP 1</li>
+        </ul>
         <p>[3.50.0-2022.1]</p>
         <ul>
           <li>Compatibility with Rider 2022.1</li>

@@ -6,17 +6,7 @@
     <html>
         <h4>Added:</h4>
         <ul>
-          <li>Compatibility with Rider 2022.1</li>
-          <li>Azure Functions: Run project against a function core tool version defined in project file (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/294">#294</a>)</li>
-          <li>Azure Functions: Support NCrontab 5-field expressions (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/571">#571</a>)</li>
-          <li>Azure Functions: Host version can be selected from new project dialog (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/568">#568</a>)</li>
-          <li>Azure Functions: choose OS (Windows/Linux) when creating new function app (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/585">#585</a>)</li>
-        </ul>
-        <h4>Fixed bugs:</h4>
-        <ul>
-          <li>Azure Functions: Wrong version of core tools is downloaded on M1 (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/582">#582</a>)</li>
-          <li>Azure Functions: Set correct worker runtime when publishing (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/586">#586</a>)</li>
-          <li>SSLHandshakeException connecting to Azure Cloud Shell (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/579">#579</a>)</li>
+          <li>Compatibility with Rider 2022.2 EAP 1</li>
         </ul>
     </html>
     ]]>
