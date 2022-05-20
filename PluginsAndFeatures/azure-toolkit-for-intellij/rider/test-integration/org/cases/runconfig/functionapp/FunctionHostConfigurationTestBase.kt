@@ -26,7 +26,6 @@ import com.intellij.execution.RunManagerEx
 import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.execution.configurations.RunConfiguration
 import com.jetbrains.rider.build.BuildHost
-import com.jetbrains.rider.model.RunnableProjectKind
 import com.jetbrains.rider.model.runnableProjectsModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.asserts.shouldBe
@@ -35,6 +34,7 @@ import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.enums.CoreVersion
 import com.jetbrains.rider.test.scriptingApi.*
 import org.jetbrains.plugins.azure.functions.buildTasks.BuildFunctionsProjectBeforeRunTaskProvider
+import org.jetbrains.plugins.azure.functions.daemon.AzureRunnableProjectKinds
 import org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfiguration
 import org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfigurationType
 import org.testng.annotations.Test
@@ -95,7 +95,7 @@ abstract class FunctionHostConfigurationTestBase(
         val projectToRun = project.solution.runnableProjectsModel.projects.valueOrNull?.find { it.name == projectName }
                 ?: fail("Project to run is not found.")
 
-        configuration.parameters.projectKind = RunnableProjectKind.AzureFunctions
+        configuration.parameters.projectKind = AzureRunnableProjectKinds.AzureFunctions
         configuration.parameters.projectTfm = projectTfm
         configuration.parameters.projectFilePath = projectToRun.projectFilePath
         configuration.parameters.workingDirectory = projectToRun.projectOutputs.first().workingDirectory

@@ -23,7 +23,6 @@
 package org.cases.runconfig.functionapp
 
 import com.intellij.openapi.util.Disposer
-import com.jetbrains.rider.model.RunnableProjectKind
 import com.jetbrains.rider.model.runnableProjectsModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
@@ -34,6 +33,7 @@ import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.scriptingApi.changeFileContent
 import com.jetbrains.rider.test.scriptingApi.createRunConfiguration
 import org.jetbrains.plugins.azure.RiderAzureBundle
+import org.jetbrains.plugins.azure.functions.daemon.AzureRunnableProjectKinds
 import org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfiguration
 import org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfigurationEditor
 import org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfigurationType
@@ -76,14 +76,14 @@ abstract class FunctionHostConfigurationEditorTestBase(
 
         val runnableProject =
                 project.solution.runnableProjectsModel.projects.valueOrNull?.find {
-                    it.name == projectName && it.kind == RunnableProjectKind.AzureFunctions }.shouldNotBeNull()
+                    it.name == projectName && it.kind == AzureRunnableProjectKinds.AzureFunctions }.shouldNotBeNull()
 
         val parameters = configuration.parameters
         parameters.project.name.shouldBe(projectName)
         parameters.projectFilePath.shouldBe(runnableProject.projectFilePath)
         parameters.functionNames.shouldBeEmpty()
         parameters.isUnloadedProject.shouldBeFalse()
-        parameters.projectKind.shouldBe(RunnableProjectKind.AzureFunctions)
+        parameters.projectKind.shouldBe(AzureRunnableProjectKinds.AzureFunctions)
         parameters.projectTfm.shouldBe(projectTfm)
 
         val projectOutput = runnableProject.projectOutputs.first()

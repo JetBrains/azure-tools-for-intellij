@@ -27,10 +27,12 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.ide.model.EnvironmentVariable
 import com.jetbrains.rider.model.*
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.run.configurations.RunnableProjectKinds
 import com.jetbrains.rider.run.configurations.project.DotNetStartBrowserParameters
 import com.jetbrains.rider.runtime.RiderDotNetActiveRuntimeHost
 import com.jetbrains.rider.runtime.mono.MonoRuntime
 import com.jetbrains.rider.test.base.BaseTestWithSolution
+import org.jetbrains.plugins.azure.functions.daemon.AzureRunnableProjectKinds
 import org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfigurationParameters
 import org.testng.annotations.Test
 import java.io.File
@@ -66,7 +68,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
     @Test(expectedExceptions = [RuntimeConfigurationError::class], expectedExceptionsMessageRegExp = "Project is not specified\\.")
     fun testValidate_RunnableProjects_NoFunctionProjectType() {
         val parameters = createParameters(project = project, projectTfm = projectTfm)
-        project.solution.runnableProjectsModel.projects.set(listOf(createRunnableProject(kind = RunnableProjectKind.DotNetCore)))
+        project.solution.runnableProjectsModel.projects.set(listOf(createRunnableProject(kind = RunnableProjectKinds.DotNetCore)))
         parameters.validate(createHost())
     }
 
@@ -80,8 +82,8 @@ abstract class FunctionHostConfigurationParametersTestBase(
         )
 
         project.solution.runnableProjectsModel.projects.set(listOf(
-                createRunnableProject(kind = RunnableProjectKind.DotNetCore, projectFilePath = projectFilePath),
-                createRunnableProject(kind = RunnableProjectKind.DotNetCore, projectFilePath = projectFilePath)
+                createRunnableProject(kind = RunnableProjectKinds.DotNetCore, projectFilePath = projectFilePath),
+                createRunnableProject(kind = RunnableProjectKinds.DotNetCore, projectFilePath = projectFilePath)
         ))
         parameters.validate(createHost())
     }
@@ -97,7 +99,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
 
         project.solution.runnableProjectsModel.projects.set(listOf(
                 createRunnableProject(
-                        kind = RunnableProjectKind.AzureFunctions,
+                        kind = AzureRunnableProjectKinds.AzureFunctions,
                         projectFilePath = projectFilePath,
                         problems = "Function App is not loaded properly."
                 )
@@ -119,7 +121,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
 
         project.solution.runnableProjectsModel.projects.set(listOf(
                 createRunnableProject(
-                        kind = RunnableProjectKind.AzureFunctions,
+                        kind = AzureRunnableProjectKinds.AzureFunctions,
                         projectFilePath = projectFilePath,
                         problems = null
                 )
@@ -141,7 +143,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
 
         project.solution.runnableProjectsModel.projects.set(listOf(
                 createRunnableProject(
-                        kind = RunnableProjectKind.AzureFunctions,
+                        kind = AzureRunnableProjectKinds.AzureFunctions,
                         projectFilePath = projectFilePath,
                         problems = null
                 )
@@ -163,7 +165,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
 
         project.solution.runnableProjectsModel.projects.set(listOf(
                 createRunnableProject(
-                        kind = RunnableProjectKind.AzureFunctions,
+                        kind = AzureRunnableProjectKinds.AzureFunctions,
                         projectFilePath = projectFilePath,
                         problems = null
                 )
@@ -186,7 +188,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
 
         project.solution.runnableProjectsModel.projects.set(listOf(
                 createRunnableProject(
-                        kind = RunnableProjectKind.AzureFunctions,
+                        kind = AzureRunnableProjectKinds.AzureFunctions,
                         projectFilePath = projectFilePath,
                         problems = null
                 )
@@ -209,7 +211,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
 
         project.solution.runnableProjectsModel.projects.set(listOf(
                 createRunnableProject(
-                        kind = RunnableProjectKind.AzureFunctions,
+                        kind = AzureRunnableProjectKinds.AzureFunctions,
                         projectFilePath = projectFilePath,
                         problems = null
                 )
@@ -235,7 +237,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
 
         project.solution.runnableProjectsModel.projects.set(listOf(
                 createRunnableProject(
-                        kind = RunnableProjectKind.AzureFunctions,
+                        kind = AzureRunnableProjectKinds.AzureFunctions,
                         projectFilePath = projectFilePath,
                         problems = null
                 )
@@ -259,7 +261,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
 
         project.solution.runnableProjectsModel.projects.set(listOf(
                 createRunnableProject(
-                        kind = RunnableProjectKind.AzureFunctions,
+                        kind = AzureRunnableProjectKinds.AzureFunctions,
                         projectFilePath = projectFilePath,
                         problems = null)
         ))
@@ -287,7 +289,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
 
         project.solution.runnableProjectsModel.projects.set(listOf(
                 createRunnableProject(
-                        kind = RunnableProjectKind.AzureFunctions,
+                        kind = AzureRunnableProjectKinds.AzureFunctions,
                         projectFilePath = projectFilePath,
                         problems = null)
         ))
@@ -311,7 +313,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
 
         project.solution.runnableProjectsModel.projects.set(listOf(
                 createRunnableProject(
-                        kind = RunnableProjectKind.AzureFunctions,
+                        kind = AzureRunnableProjectKinds.AzureFunctions,
                         projectFilePath = projectFilePath,
                         problems = null)
         ))
@@ -333,7 +335,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
             trackProjectExePath: Boolean = false,
             trackProjectArguments: Boolean = false,
             trackProjectWorkingDirectory: Boolean = false,
-            projectKind: RunnableProjectKind = RunnableProjectKind.AzureFunctions,
+            projectKind: RunnableProjectKind = AzureRunnableProjectKinds.AzureFunctions,
             projectTfm: String,
             functionNames: String = "",
             startBrowserParameters: DotNetStartBrowserParameters = DotNetStartBrowserParameters()
@@ -367,7 +369,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
             name: String = "TestName",
             fullName: String = "TestFullName",
             projectFilePath: String = File("/project/file/path").absolutePath,
-            kind: RunnableProjectKind = RunnableProjectKind.AzureFunctions,
+            kind: RunnableProjectKind = AzureRunnableProjectKinds.AzureFunctions,
             projectOutputs: List<ProjectOutput> = emptyList(),
             environmentVariables: List<EnvironmentVariable> = emptyList(),
             problems: String? = null,
