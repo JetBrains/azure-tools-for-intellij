@@ -1,6 +1,6 @@
 /*
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Copyright (c) 2021 JetBrains s.r.o.
+ * Copyright (c) 2021-2022 JetBrains s.r.o.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
@@ -22,6 +22,7 @@ import com.microsoft.tooling.msservices.serviceexplorer.NodeActionEvent;
 import com.microsoft.tooling.msservices.serviceexplorer.NodeActionListener;
 import com.microsoft.tooling.msservices.serviceexplorer.Sortable;
 import com.microsoft.tooling.msservices.serviceexplorer.azure.function.FunctionAppNode;
+import com.microsoft.tooling.msservices.serviceexplorer.azure.function.deploymentslot.FunctionDeploymentSlotNode;
 import com.microsoft.tooling.msservices.serviceexplorer.azure.webapp.WebAppNode;
 import com.microsoft.tooling.msservices.serviceexplorer.azure.webapp.deploymentslot.DeploymentSlotNode;
 
@@ -52,6 +53,14 @@ public class StartStreamingLogsAction extends NodeActionListener {
     }
 
     public StartStreamingLogsAction(FunctionAppNode functionNode) {
+        super();
+        this.project = (Project) functionNode.getProject();
+        this.resourceId = functionNode.getId();
+        this.service = FUNCTION;
+        this.operation = START_STREAMING_LOG_FUNCTION_APP;
+    }
+
+    public StartStreamingLogsAction(FunctionDeploymentSlotNode functionNode) {
         super();
         this.project = (Project) functionNode.getProject();
         this.resourceId = functionNode.getId();

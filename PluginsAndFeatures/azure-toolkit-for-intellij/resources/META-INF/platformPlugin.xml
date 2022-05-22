@@ -11,6 +11,7 @@
           <li>Azure Functions: Support NCrontab 5-field expressions (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/571">#571</a>)</li>
           <li>Azure Functions: Host version can be selected from new project dialog (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/568">#568</a>)</li>
           <li>Azure Functions: choose OS (Windows/Linux) when creating new function app (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/585">#585</a>)</li>
+          <li>Azure Functions: Deployment slots not appearing in the IDE (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/596">#596</a>)</li>
         </ul>
         <h4>Fixed bugs:</h4>
         <ul>
