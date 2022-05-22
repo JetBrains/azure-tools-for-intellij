@@ -27,6 +27,10 @@
         <ul>
           <li>Compatibility with Rider 2022.2 EAP 1</li>
         </ul>
+        <h4>Fixed bugs:</h4>
+        <ul>
+          <li>Azure Functions: Deployment slots not appearing in the IDE (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/596">#596</a>)</li>
+        </ul>
         <p>[3.50.0-2022.1]</p>
         <ul>
           <li>Compatibility with Rider 2022.1</li>
