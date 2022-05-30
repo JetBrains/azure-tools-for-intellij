@@ -37,6 +37,7 @@
           <li>Azure Functions: Wrong version of core tools is downloaded on M1 (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/582">#582</a>)</li>
           <li>Azure Functions: Set correct worker runtime when publishing (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/586">#586</a>)</li>
           <li>SSLHandshakeException connecting to Azure Cloud Shell (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/579">#579</a>)</li>
+          <li>Azure Functions: Deployment slots not appearing in the IDE (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/596">#596</a>)</li>
         </ul>
         <p>[3.50.0-2021.3]</p>
         <ul>
