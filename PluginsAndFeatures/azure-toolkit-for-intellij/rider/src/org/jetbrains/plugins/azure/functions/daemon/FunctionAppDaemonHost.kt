@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -170,7 +170,8 @@ class FunctionAppDaemonHost(project: Project) : LifetimedProjectComponent(projec
             expectedProjectPath: String
     ): RunnableProject {
         val runnableProjects = project.solution.runnableProjectsModel.projects.valueOrEmpty()
-        return runnableProjects.find { runnableProject -> runnableProject.projectFilePath == expectedProjectPath }
+        return runnableProjects.find { runnableProject ->
+            runnableProject.projectFilePath == expectedProjectPath && runnableProject.kind == AzureRunnableProjectKinds.AzureFunctions }
                 ?: throw IllegalStateException(
                         "Unable to find a project to run with path: '$expectedProjectPath', available project paths: " +
                                 runnableProjects.joinToString(", ", "'", "'") { it.projectFilePath})
