@@ -522,7 +522,10 @@ public class UIHelperImpl implements UIHelper {
             itemVirtualFile.setFileType(new AzureFileType(type, AzureIconLoader.loadIcon(AzureIconSymbol.WebApp.MODULE)));
 
         }
-        fileEditorManager.openFile(itemVirtualFile, true /*focusEditor*/, true /*searchForOpen*/);
+
+        final LightVirtualFile finalItemVirtualFile = itemVirtualFile;
+        AzureTaskManager.getInstance().runLater(
+            () -> fileEditorManager.openFile(finalItemVirtualFile, true /*focusEditor*/, true /*searchForOpen*/));
     }
 
     @Override
@@ -547,7 +550,10 @@ public class UIHelperImpl implements UIHelper {
             itemVirtualFile = createVirtualFile(node.getAppName() + "-" + node.getName(), userData);
             itemVirtualFile.setFileType(new AzureFileType(type, AzureIconLoader.loadIcon(AzureIconSymbol.DeploymentSlot.MODULE)));
         }
-        fileEditorManager.openFile(itemVirtualFile, true /*focusEditor*/, true /*searchForOpen*/);
+
+        final LightVirtualFile finalItemVirtualFile = itemVirtualFile;
+        AzureTaskManager.getInstance().runLater(
+            () -> fileEditorManager.openFile(finalItemVirtualFile, true /*focusEditor*/, true /*searchForOpen*/));
     }
 
     /**
@@ -576,27 +582,34 @@ public class UIHelperImpl implements UIHelper {
             userData.put(FUNCTIONAPP_ID, node.getAppId());
             userData.put(SLOT_NAME, node.getName());
             itemVirtualFile = createVirtualFile(node.getAppName() + "-" + node.getName(), userData);
+            itemVirtualFile.setFileType(new AzureFileType(type, AzureIconLoader.loadIcon(AzureIconSymbol.FunctionApp.MODULE)));
         }
-        fileEditorManager.openFile(itemVirtualFile, true, true);
+
+        final LightVirtualFile finalItemVirtualFile = itemVirtualFile;
+        AzureTaskManager.getInstance().runLater(
+            () -> fileEditorManager.openFile(finalItemVirtualFile, true, true));
     }
 
     @Override
     public void openFunctionAppPropertyView(FunctionAppNode functionNode) {
         final String subscriptionId = functionNode.getSubscriptionId();
-        final String functionApId = functionNode.getFunctionAppId();
-        final FileEditorManager fileEditorManager = getFileEditorManager(subscriptionId, functionApId, (Project) functionNode.getProject());
+        final String functionAppId = functionNode.getFunctionAppId();
+        final FileEditorManager fileEditorManager = getFileEditorManager(subscriptionId, functionAppId, (Project) functionNode.getProject());
         if (fileEditorManager == null) {
             return;
         }
         final String type = FunctionAppPropertyViewProvider.TYPE;
-        LightVirtualFile itemVirtualFile = searchExistingFile(fileEditorManager, type, functionApId);
+        LightVirtualFile itemVirtualFile = searchExistingFile(fileEditorManager, type, functionAppId);
         if (itemVirtualFile == null) {
             final String iconPath = functionNode.getParent() == null ? functionNode.getIconPath()
                                                                      : functionNode.getParent().getIconPath();
-            itemVirtualFile = createVirtualFile(functionNode.getFunctionAppName(), subscriptionId, functionApId);
+            itemVirtualFile = createVirtualFile(functionNode.getFunctionAppName(), subscriptionId, functionAppId);
             itemVirtualFile.setFileType(new AzureFileType(type, AzureIconLoader.loadIcon(AzureIconSymbol.FunctionApp.MODULE)));
         }
-        fileEditorManager.openFile(itemVirtualFile, true /*focusEditor*/, true /*searchForOpen*/);
+
+        final LightVirtualFile finalItemVirtualFile = itemVirtualFile;
+        AzureTaskManager.getInstance().runLater(
+            () -> fileEditorManager.openFile(finalItemVirtualFile, true /*focusEditor*/, true /*searchForOpen*/));
     }
 
     @Override
