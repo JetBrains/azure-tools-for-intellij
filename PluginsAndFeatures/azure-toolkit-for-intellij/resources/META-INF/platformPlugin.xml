@@ -12,6 +12,7 @@
         <h4>Fixed bugs:</h4>
         <ul>
           <li>Azure Functions: Deployment slots not appearing in the IDE (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/596">#596</a>)</li>
+          <li>Azure Functions: Can't debug from gutter mark in some v4 projects (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/602">#602</a> / <a href="https://youtrack.jetbrains.com/issue/RIDER-78053">RIDER-78053</a>)</li>
         </ul>
     </html>
     ]]>
