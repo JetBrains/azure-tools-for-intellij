@@ -48,6 +48,7 @@ object AzureRiderSettings {
     // Functions
     const val PROPERTY_FUNCTIONS_CORETOOLS_PATHS = "AzureFunctionsCoreToolsPaths"
     const val PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH = "AzureFunctionsCoreToolsDownloadPath"
+    @OptIn(kotlin.io.path.ExperimentalPathApi::class)
     val VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH: String = PathUtil.toSystemIndependentName(
             FileUtil.getDirectoryWithinUserHome(AZURE_TOOLS_FOLDER).resolve("AzureFunctionsCoreTools").absolutePathString())
 
