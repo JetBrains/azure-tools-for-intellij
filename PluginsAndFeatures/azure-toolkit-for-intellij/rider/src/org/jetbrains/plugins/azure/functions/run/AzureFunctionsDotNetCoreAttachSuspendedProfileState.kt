@@ -29,8 +29,6 @@ import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.model.debuggerWorker.DotNetCoreAttachSuspendedStartInfo
 import com.jetbrains.rider.run.dotNetCore.DotNetCoreAttachProfileState
 import com.jetbrains.rider.runtime.RunningAssemblyInfo
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
 
 class AzureFunctionsDotNetCoreAttachSuspendedProfileState(
         private val runtime: AzureFunctionsDotNetCoreRuntime,

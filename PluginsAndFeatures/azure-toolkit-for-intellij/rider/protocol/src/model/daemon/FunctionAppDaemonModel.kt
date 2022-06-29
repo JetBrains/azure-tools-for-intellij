@@ -56,6 +56,10 @@ object FunctionAppDaemonModel : Ext(SolutionModel.Solution) {
         field("projectFilePath", string)
     }
 
+    private val AzureFunctionsVersionRequest = structdef {
+        field("projectFilePath", string)
+    }
+
     init {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.azure.model")
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Azure.Model")
@@ -73,5 +77,8 @@ object FunctionAppDaemonModel : Ext(SolutionModel.Solution) {
 
         sink("triggerFunctionApp", FunctionAppRequest)
                 .doc("Signal from backend to trigger a Function App.")
+
+        call("getAzureFunctionsVersion", AzureFunctionsVersionRequest, string.nullable)
+                .doc("Request from frontend to read the AzureFunctionsVersion MSBuild property.")
     }
 }
