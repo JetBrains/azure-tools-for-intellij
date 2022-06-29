@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 JetBrains s.r.o.
+// Copyright (c) 2020-2022 JetBrains s.r.o.
 //
 // All rights reserved.
 //
@@ -18,20 +18,31 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Linq;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.MSBuild;
+using JetBrains.ProjectModel.Properties;
+using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Azure.Model;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp
 {
     [SolutionComponent]
     public class FunctionAppDaemonHost
     {
+        private readonly ISolution _solution;
         private readonly FunctionAppDaemonModel _model;
 
         public FunctionAppDaemonHost(ISolution solution)
         {
+            _solution = solution;
+            
             _model = solution.GetProtocolSolution().GetFunctionAppDaemonModel();
+            _model.GetAzureFunctionsVersion.Set(GetAzureFunctionsVersionHandler);
         }
         
         public void RunFunctionApp(string methodName, string functionName, string projectFilePath)
@@ -47,6 +58,18 @@ namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp
         public void TriggerFunctionApp(string methodName, string functionName, string projectFilePath)
         {
             _model.TriggerFunctionApp(new FunctionAppRequest(methodName, functionName, projectFilePath));
+        }
+        
+        private RdTask<string> GetAzureFunctionsVersionHandler(Lifetime lifetime, AzureFunctionsVersionRequest request)
+        {
+            using (ReadLockCookie.Create())
+            {
+                var project = _solution.FindProjectByProjectFilePath(VirtualFileSystemPath.Parse(request.ProjectFilePath, InteractionContext.SolutionContext));
+
+                var azureFunctionsVersion = project?.GetRequestedProjectProperties(MSBuildProjectUtil.AzureFunctionsVersionProperty).FirstOrDefault();
+
+                return RdTask<string>.Successful(azureFunctionsVersion);
+            }
         }
     }
 }
