@@ -25,7 +25,7 @@
       <html>
         <p>[3.50.0-2022.2]</p>
         <ul>
-          <li>Compatibility with Rider 2022.2 EAP 7</li>
+          <li>Compatibility with Rider 2022.2 EAP 8</li>
           <li>Azure Functions: Isolated functions project template is in net6-isolated folder in newer host versions (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/599">#599</a>)</li>
         </ul>
         <h4>Fixed bugs:</h4>
