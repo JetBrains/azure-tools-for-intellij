@@ -16,6 +16,7 @@ plugins {
 configurations {
     compile.exclude module: 'slf4j-api'
     compile.exclude module: 'log4j'
+    compile.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
 
 dependencies {
@@ -162,7 +163,7 @@ configure(mainProjects) {
 defaultTasks 'buildPlugin'
 
 wrapper {
-    gradleVersion = '6.8.2'
+    gradleVersion = '6.9.2'
     distributionType = Wrapper.DistributionType.ALL
     distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }

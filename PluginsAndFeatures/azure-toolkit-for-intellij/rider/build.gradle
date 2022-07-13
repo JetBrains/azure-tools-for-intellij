@@ -88,6 +88,8 @@ test {
     dependsOn ':rider:buildPlugin'
 
     useTestNG()
+
+    jvmArgs '--illegal-access=warn', '-Didea.force.use.core.classloader=true'
 }
 
 task integrationTest(type: Test) {

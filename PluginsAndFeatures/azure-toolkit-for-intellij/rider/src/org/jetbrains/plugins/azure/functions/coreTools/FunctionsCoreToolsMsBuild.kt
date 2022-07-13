@@ -23,27 +23,16 @@
 package org.jetbrains.plugins.azure.functions.coreTools
 
 import com.intellij.openapi.project.Project
-import com.jetbrains.rdclient.util.idea.pumpMessages
-import com.jetbrains.rider.run.environment.MSBuildEvaluator
-import org.jetbrains.concurrency.isPending
-import java.time.Duration
+import com.jetbrains.rd.framework.impl.RpcTimeouts
+import com.jetbrains.rider.azure.model.AzureFunctionsVersionRequest
+import com.jetbrains.rider.azure.model.functionAppDaemonModel
+import com.jetbrains.rider.projectView.solution
 
 object FunctionsCoreToolsMsBuild {
 
     const val PROPERTY_AZURE_FUNCTIONS_VERSION = "AzureFunctionsVersion"
 
-    fun requestAzureFunctionsVersion(project: Project, projectFilePath: String): String? {
-
-        val msBuildEvaluator = MSBuildEvaluator.getInstance(project)
-
-        val msBuildPropertiesPromise = msBuildEvaluator.evaluateProperties(
-                MSBuildEvaluator.PropertyRequest(projectFilePath, null, listOf(PROPERTY_AZURE_FUNCTIONS_VERSION)))
-
-        pumpMessages(Duration.ofSeconds(15)) { !msBuildPropertiesPromise.isPending }
-
-        val msBuildProperties = msBuildPropertiesPromise.blockingGet(0)
-                ?: return null
-
-        return msBuildProperties[PROPERTY_AZURE_FUNCTIONS_VERSION]
-    }
+    fun requestAzureFunctionsVersion(project: Project, projectFilePath: String): String? = project.solution.functionAppDaemonModel
+            .getAzureFunctionsVersion
+            .sync(AzureFunctionsVersionRequest(projectFilePath), RpcTimeouts.default)
 }
