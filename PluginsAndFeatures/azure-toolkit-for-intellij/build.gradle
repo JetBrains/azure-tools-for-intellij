@@ -16,6 +16,7 @@ plugins {
 configurations {
     compile.exclude module: 'slf4j-api'
     compile.exclude module: 'log4j'
+    compile.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
 
 dependencies {

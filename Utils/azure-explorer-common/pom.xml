@@ -10,7 +10,7 @@
     <artifactId>azure-explorer-common</artifactId>
     <properties>
         <artifact.name>${project.artifactId}-${project.version}.jar</artifact.name>
-        <kotlin.version>1.4.32</kotlin.version>
+        <kotlin.version>1.6.21</kotlin.version>
         <checkstyle.skip>true</checkstyle.skip>
     </properties>
     <profiles>

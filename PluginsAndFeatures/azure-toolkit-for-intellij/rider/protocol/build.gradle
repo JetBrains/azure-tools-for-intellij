@@ -5,7 +5,6 @@ buildscript {
     println("Generate models with rd-gen version: $rd_version")
 
     repositories {
-        maven { url 'https://www.myget.org/F/rd-snapshots/maven/' }
         mavenCentral()
     }
 
@@ -21,7 +20,7 @@ repositories {
     flatDir {
         dirs rdLibDirectory.absolutePath
     }
-    maven { url 'https://www.myget.org/F/rd-snapshots/maven/' }
+    mavenCentral()
 }
 
 apply plugin: 'com.jetbrains.rdgen'
