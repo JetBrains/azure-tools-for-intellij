@@ -59,7 +59,8 @@ object FunctionsCoreToolsTemplateManager {
         val templateFolders = listOf(
                 File(coreToolsInfo.coreToolsPath).resolve("templates"), // Default worker
                 File(coreToolsInfo.coreToolsPath).resolve("templates").resolve("net5-isolated"), // Isolated worker - .NET 5
-                File(coreToolsInfo.coreToolsPath).resolve("templates").resolve("net6-isolated")  // Isolated worker - .NET 6
+                File(coreToolsInfo.coreToolsPath).resolve("templates").resolve("net6-isolated"), // Isolated worker - .NET 6
+                File(coreToolsInfo.coreToolsPath).resolve("templates").resolve("net-isolated")   // Isolated worker - .NET 5 - .NET 7
         ).filter { it.exists() }
 
         for (templateFolder in templateFolders) {
