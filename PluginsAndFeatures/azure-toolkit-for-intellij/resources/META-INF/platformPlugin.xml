@@ -15,6 +15,7 @@
           <li>Azure Functions: Deployment slots not appearing in the IDE (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/596">#596</a>)</li>
           <li>Azure Functions: Can't debug from gutter mark in some v4 projects (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/602">#602</a> / <a href="https://youtrack.jetbrains.com/issue/RIDER-78053">RIDER-78053</a>)</li>
           <li>MSBuildEvaluator timeout breaks right-click + publish (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/611">#611</a>)</li>
+          <li>Dispose of response body when retrying is needed (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/616">#616</a>)</li>
         </ul>
     </html>
     ]]>
