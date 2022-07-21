@@ -87,10 +87,8 @@ object FunctionsCoreToolsManager {
                     AzureCoreToolsFeedReleaseFilter("Windows", listOf("x64"), listOf("minified", "full"))
                 } else if (SystemInfo.isWindows) {
                     AzureCoreToolsFeedReleaseFilter("Windows", listOf("x86"), listOf("minified", "full"))
-                // TODO Maarten - Test on M1 machine
-                /*} else if (SystemInfo.isMac && CpuArch.isArm64()) {
+                } else if (SystemInfo.isMac && CpuArch.isArm64()) {
                     AzureCoreToolsFeedReleaseFilter("MacOS", listOf("arm64", "x64"), listOf("full"))
-                }*/
                 } else if (SystemInfo.isMac) {
                     AzureCoreToolsFeedReleaseFilter("MacOS", listOf("x64"), listOf("full"))
                 } else if (SystemInfo.isLinux) {
