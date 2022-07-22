@@ -55,6 +55,8 @@ class WaitForResponse(
 
                 if (successCondition(response)) {
                     return response
+                } else {
+                    response.body()?.close()
                 }
             } catch (e: Exception) {
                 if (attempt >= numberOfAttempts) {

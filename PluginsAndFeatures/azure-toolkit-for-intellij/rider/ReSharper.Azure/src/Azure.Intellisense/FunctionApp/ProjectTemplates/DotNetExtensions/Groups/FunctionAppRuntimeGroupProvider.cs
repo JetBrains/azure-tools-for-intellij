@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Azure.Intellisense.FunctionApp.ProjectTemplates.Do
         
         public IReadOnlyCollection<DotNetTemplateGroup> Get()
         {
-            return new[] {new FunctionAppRuntimeGroup()};
+            return new[] { new FunctionAppRuntimeGroup() };
         }
 
         private class FunctionAppRuntimeGroup : DotNetTemplateGroup
