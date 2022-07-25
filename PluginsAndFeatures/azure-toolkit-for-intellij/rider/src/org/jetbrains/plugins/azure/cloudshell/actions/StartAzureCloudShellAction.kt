@@ -165,7 +165,7 @@ class StartAzureCloudShellAction : AnAction() {
                         CloudConsoleService::class.java,
                         tokenCredentials) { httpClientBuilder ->
 
-                    IdeUiService.getInstance().sslSocketFactory?.let {
+                    IdeUiService.getInstance()?.sslSocketFactory?.let {
                         // Inject IDEA SSL socket factory and trust manager
                         httpClientBuilder.sslSocketFactory(it, CertificateManager.getInstance().trustManager)
                     }

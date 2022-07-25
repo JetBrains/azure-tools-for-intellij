@@ -38,7 +38,7 @@ class AzureCloudTerminalFactory {
             // Connect terminal web socket
             val terminalSocketClient = CloudConsoleTerminalWebSocket(socketUri)
 
-            IdeUiService.getInstance().sslSocketFactory?.let {
+            IdeUiService.getInstance()?.sslSocketFactory?.let {
                 // Inject IDEA SSL socket factory
                 terminalSocketClient.setSocketFactory(it)
             }

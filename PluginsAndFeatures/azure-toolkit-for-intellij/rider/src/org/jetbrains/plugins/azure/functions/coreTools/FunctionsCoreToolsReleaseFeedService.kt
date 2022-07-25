@@ -23,6 +23,9 @@
 package org.jetbrains.plugins.azure.functions.coreTools
 
 import com.google.gson.annotations.SerializedName
+import com.intellij.ide.ui.IdeUiService
+import com.intellij.util.net.ssl.CertificateManager
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -30,14 +33,27 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Url
 
+@Suppress("UnstableApiUsage")
 interface FunctionsCoreToolsReleaseFeedService {
     companion object {
         fun createInstance(): FunctionsCoreToolsReleaseFeedService =
                 Retrofit.Builder()
                         .addConverterFactory(GsonConverterFactory.create())
                         .baseUrl("https://functionscdn.azureedge.net/public/")
+                        .client(createHttpClient())
                         .build()
                         .create(FunctionsCoreToolsReleaseFeedService::class.java)
+
+        private fun createHttpClient(): OkHttpClient {
+            val httpClientBuilder = OkHttpClient.Builder()
+            runCatching { // For unit tests - IdeUiService.getInstance() throws NullReferenceException
+                IdeUiService.getInstance()?.sslSocketFactory?.let {
+                    // Inject IDEA SSL socket factory and trust manager
+                    httpClientBuilder.sslSocketFactory(it, CertificateManager.getInstance().trustManager)
+                }
+            }
+            return httpClientBuilder.build()
+        }
     }
 
     @GET
