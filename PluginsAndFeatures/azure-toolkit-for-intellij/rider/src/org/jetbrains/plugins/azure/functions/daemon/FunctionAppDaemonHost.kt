@@ -53,7 +53,7 @@ class FunctionAppDaemonHost(project: Project) : LifetimedProjectComponent(projec
     init {
         initRunFunctionAppHandler()
         initDebugFunctionAppHandler()
-        initTriggerFunctionApp()
+        initTriggerFunctionAppHandler()
     }
 
     private fun initRunFunctionAppHandler() {
@@ -74,7 +74,7 @@ class FunctionAppDaemonHost(project: Project) : LifetimedProjectComponent(projec
         }
     }
 
-    private fun initTriggerFunctionApp() {
+    private fun initTriggerFunctionAppHandler() {
         model.triggerFunctionApp.advise(componentLifetime) { triggerFunctionRequest ->
             val triggerAction = TriggerAzureFunctionAction(functionName = triggerFunctionRequest.functionName)
 
@@ -88,7 +88,7 @@ class FunctionAppDaemonHost(project: Project) : LifetimedProjectComponent(projec
     }
 
     private fun runConfiguration(
-            functionName: String,
+            functionName: String?,
             runnableProject: RunnableProject,
             executor: Executor
     ) {
@@ -112,7 +112,7 @@ class FunctionAppDaemonHost(project: Project) : LifetimedProjectComponent(projec
     }
 
     private fun findExistingConfigurationSettings(
-            functionName: String,
+            functionName: String?,
             projectFilePath: String
     ): RunnerAndConfigurationSettings? {
         val runManager = RunManager.getInstance(project)
@@ -121,8 +121,9 @@ class FunctionAppDaemonHost(project: Project) : LifetimedProjectComponent(projec
         val runConfigurations = runManager.getConfigurationsList(configurationType)
 
         return runConfigurations.filterIsInstance<AzureFunctionsHostConfiguration>().firstOrNull { configuration ->
-            configuration.parameters.functionNames == functionName &&
-                    configuration.parameters.projectFilePath == projectFilePath
+            configuration.parameters.projectFilePath == projectFilePath &&
+                    ((functionName.isNullOrEmpty() && configuration.parameters.functionNames.isEmpty()) ||
+                            configuration.parameters.functionNames == functionName)
         }?.let { configuration ->
             runManager.findSettings(configuration)
         }
@@ -130,7 +131,7 @@ class FunctionAppDaemonHost(project: Project) : LifetimedProjectComponent(projec
 
     private fun createFunctionAppRunConfiguration(
             project: Project,
-            functionName: String,
+            functionName: String?,
             runnableProject: RunnableProject
     ): AzureFunctionsHostConfiguration {
 
@@ -149,12 +150,19 @@ class FunctionAppDaemonHost(project: Project) : LifetimedProjectComponent(projec
     private fun patchConfigurationParameters(
             configuration: AzureFunctionsHostConfiguration,
             runnableProject: RunnableProject,
-            functionName: String
+            functionName: String?
     ) {
         val projectOutput = runnableProject.projectOutputs.singleOrNull()
 
-        configuration.name = "$functionName (${runnableProject.fullName})"
-        configuration.parameters.functionNames = functionName
+        if (functionName.isNullOrEmpty()) {
+            // All functions
+            configuration.name = runnableProject.name
+            configuration.parameters.functionNames = ""
+        } else {
+            // Specific function
+            configuration.name = "$functionName (${runnableProject.fullName})"
+            configuration.parameters.functionNames = functionName
+        }
 
         configuration.parameters.projectFilePath = runnableProject.projectFilePath
         configuration.parameters.projectKind = runnableProject.kind

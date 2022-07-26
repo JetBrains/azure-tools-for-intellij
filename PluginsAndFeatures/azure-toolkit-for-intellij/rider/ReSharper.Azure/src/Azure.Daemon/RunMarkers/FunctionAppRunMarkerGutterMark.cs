@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 JetBrains s.r.o.
+// Copyright (c) 2020-2022 JetBrains s.r.o.
 //
 // All rights reserved.
 //
@@ -73,26 +73,39 @@ namespace JetBrains.ReSharper.Azure.Daemon.RunMarkers
             var functionName = FunctionAppFinder.GetFunctionNameFromMethod(runMarker.Method) ??
                                runMarker.Method.ShortName;
 
-            var projectFilePath =
-                runMarker.Project.ProjectFileLocation.NormalizeSeparators(FileSystemPathEx.SeparatorStyle.Unix);
-
+            var projectFilePath = runMarker.Project.ProjectFileLocation.NormalizeSeparators(FileSystemPathEx.SeparatorStyle.Unix);
+            
+            var subAnchor = BulbMenuAnchors.PermanentItem.CreateNext(separate: true);
+            
             yield return new BulbMenuItem(
-                new ExecutableItem(() => { functionAppDaemonHost.RunFunctionApp(methodName, functionName, projectFilePath); }),
-                new RichText(javaPropertiesLoader.GetLocalizedString("gutter.function_app.run", functionName)),
+                new ExecutableItem(() => { functionAppDaemonHost.RunFunctionApp(projectFilePath); }),
+                new RichText(javaPropertiesLoader.GetLocalizedString("gutter.function_app.run.all")),
                 RunMarkersThemedIcons.RunThis.Id,
                 BulbMenuAnchors.PermanentItem);
 
             yield return new BulbMenuItem(
-                new ExecutableItem(() => { functionAppDaemonHost.DebugFunctionApp(methodName, functionName, projectFilePath); }),
-                new RichText(javaPropertiesLoader.GetLocalizedString("gutter.function_app.debug", functionName)),
+                new ExecutableItem(() => { functionAppDaemonHost.DebugFunctionApp(projectFilePath); }),
+                new RichText(javaPropertiesLoader.GetLocalizedString("gutter.function_app.debug.all")),
                 RunMarkersThemedIcons.DebugThis.Id,
                 BulbMenuAnchors.PermanentItem);
+            
+            yield return new BulbMenuItem(
+                new ExecutableItem(() => { functionAppDaemonHost.RunFunctionApp(projectFilePath, methodName, functionName); }),
+                new RichText(javaPropertiesLoader.GetLocalizedString("gutter.function_app.run", functionName)),
+                RunMarkersThemedIcons.RunThis.Id,
+                subAnchor);
 
             yield return new BulbMenuItem(
-                new ExecutableItem(() => { functionAppDaemonHost.TriggerFunctionApp(methodName, functionName, projectFilePath); }),
+                new ExecutableItem(() => { functionAppDaemonHost.DebugFunctionApp(projectFilePath, methodName, functionName); }),
+                new RichText(javaPropertiesLoader.GetLocalizedString("gutter.function_app.debug", functionName)),
+                RunMarkersThemedIcons.DebugThis.Id,
+                subAnchor);
+
+            yield return new BulbMenuItem(
+                new ExecutableItem(() => { functionAppDaemonHost.TriggerFunctionApp(projectFilePath, methodName, functionName); }),
                 new RichText(javaPropertiesLoader.GetLocalizedString("gutter.function_app.trigger", functionName)),
                 FunctionAppRunMarkersThemedIcons.Trigger.Id,
-                BulbMenuAnchors.PermanentItem);
+                subAnchor);
         }
     }
 
