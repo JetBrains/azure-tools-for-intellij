@@ -25,6 +25,7 @@ package org.jetbrains.plugins.azure.functions.coreTools
 import com.google.gson.annotations.SerializedName
 import com.intellij.ide.ui.IdeUiService
 import com.intellij.util.net.ssl.CertificateManager
+import com.jetbrains.rd.platform.util.applicationOrNull
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -46,12 +47,14 @@ interface FunctionsCoreToolsReleaseFeedService {
 
         private fun createHttpClient(): OkHttpClient {
             val httpClientBuilder = OkHttpClient.Builder()
-            runCatching { // For unit tests - IdeUiService.getInstance() throws NullReferenceException
-                IdeUiService.getInstance()?.sslSocketFactory?.let {
+
+            if (applicationOrNull != null) { // For unit tests - IdeUiService.getInstance() throws NullReferenceException
+                IdeUiService.getInstance().sslSocketFactory?.let {
                     // Inject IDEA SSL socket factory and trust manager
                     httpClientBuilder.sslSocketFactory(it, CertificateManager.getInstance().trustManager)
                 }
             }
+
             return httpClientBuilder.build()
         }
     }
