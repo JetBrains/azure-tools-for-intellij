@@ -25,7 +25,7 @@
       <html>
         <p>[3.50.0-2022.2]</p>
         <ul>
-          <li>Compatibility with Rider 2022.2 EAP 9</li>
+          <li>Compatibility with Rider 2022.2</li>
           <li>Azure Functions: Isolated functions project template is in net6-isolated folder in newer host versions (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/599">#599</a>)</li>
           <li>Azure Functions: Use arm64 build of Azure Functions Core tools on mac M1 (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/610">#610</a>)</li>
           <li>Azure Functions: Initial support for .NET 7 projects (isolated worker) (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/615">#615</a>)</li>
