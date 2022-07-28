@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.MSBuild;
@@ -45,21 +46,36 @@ namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp
             _model.GetAzureFunctionsVersion.Set(GetAzureFunctionsVersionHandler);
         }
         
-        public void RunFunctionApp(string methodName, string functionName, string projectFilePath)
-        {
-            _model.RunFunctionApp(new FunctionAppRequest(methodName, functionName, projectFilePath));
-        }
+        public void RunFunctionApp([NotNull] string projectFilePath) => _model.RunFunctionApp(
+            new FunctionAppRunDebugRequest(
+                projectFilePath: projectFilePath,
+                methodName: null,
+                functionName: null));
 
-        public void DebugFunctionApp(string methodName, string functionName, string projectFilePath)
-        {
-            _model.DebugFunctionApp(new FunctionAppRequest(methodName, functionName, projectFilePath));
-        }
+        public void DebugFunctionApp([NotNull] string projectFilePath) => _model.DebugFunctionApp(
+            new FunctionAppRunDebugRequest(
+                projectFilePath: projectFilePath, 
+                methodName: null, 
+                functionName: null));
 
-        public void TriggerFunctionApp(string methodName, string functionName, string projectFilePath)
-        {
-            _model.TriggerFunctionApp(new FunctionAppRequest(methodName, functionName, projectFilePath));
-        }
-        
+        public void RunFunctionApp([NotNull] string projectFilePath, [NotNull] string methodName, [NotNull] string functionName) => _model.RunFunctionApp(
+            new FunctionAppRunDebugRequest(
+                projectFilePath: projectFilePath, 
+                methodName: methodName, 
+                functionName: functionName));
+
+        public void DebugFunctionApp([NotNull] string projectFilePath, [NotNull] string methodName, [NotNull] string functionName) => _model.DebugFunctionApp(
+            new FunctionAppRunDebugRequest(
+                projectFilePath: projectFilePath, 
+                methodName: methodName, 
+                functionName: functionName));
+
+        public void TriggerFunctionApp([NotNull] string projectFilePath, [NotNull] string methodName, [NotNull] string functionName) => _model.TriggerFunctionApp(
+            new FunctionAppTriggerRequest(
+                projectFilePath: projectFilePath, 
+                methodName: methodName, 
+                functionName: functionName));
+
         private RdTask<string> GetAzureFunctionsVersionHandler(Lifetime lifetime, AzureFunctionsVersionRequest request)
         {
             using (ReadLockCookie.Create())

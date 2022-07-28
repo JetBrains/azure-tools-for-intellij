@@ -50,10 +50,16 @@ object DaemonCSharpGenerator : ExternalGenerator(
 @Suppress("unused")
 object FunctionAppDaemonModel : Ext(SolutionModel.Solution) {
 
-    private val FunctionAppRequest = structdef {
+    private val FunctionAppRunDebugRequest = structdef {
+        field("projectFilePath", string)
+        field("methodName", string.nullable)
+        field("functionName", string.nullable)
+    }
+
+    private val FunctionAppTriggerRequest = structdef {
+        field("projectFilePath", string)
         field("methodName", string)
         field("functionName", string)
-        field("projectFilePath", string)
     }
 
     private val AzureFunctionsVersionRequest = structdef {
@@ -69,13 +75,13 @@ object FunctionAppDaemonModel : Ext(SolutionModel.Solution) {
                     generator == DaemonCSharpGenerator.generator
         }
 
-        sink("runFunctionApp", FunctionAppRequest)
+        sink("runFunctionApp", FunctionAppRunDebugRequest)
                 .doc("Signal from backend to run a Function App locally.")
 
-        sink("debugFunctionApp", FunctionAppRequest)
+        sink("debugFunctionApp", FunctionAppRunDebugRequest)
                 .doc("Signal from backend to debug a Function App locally.")
 
-        sink("triggerFunctionApp", FunctionAppRequest)
+        sink("triggerFunctionApp", FunctionAppTriggerRequest)
                 .doc("Signal from backend to trigger a Function App.")
 
         call("getAzureFunctionsVersion", AzureFunctionsVersionRequest, string.nullable)
