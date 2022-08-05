@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 JetBrains s.r.o.
+ * Copyright (c) 2021-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -51,7 +51,6 @@ import com.jetbrains.rider.runtime.DotNetExecutable
 import com.jetbrains.rider.runtime.DotNetRuntime
 import com.jetbrains.rider.runtime.apply
 import com.microsoft.intellij.util.PluginUtil
-import org.apache.commons.lang.StringUtils
 import org.jetbrains.plugins.azure.RiderAzureBundle
 import java.time.Duration
 
@@ -65,6 +64,7 @@ class AzureFunctionsDotNetCoreIsolatedDebugProfile(
         private val logger = Logger.getInstance(AzureFunctionsDotNetCoreIsolatedDebugProfile::class.java)
         private val waitDuration = Duration.ofMinutes(1)
         private const val DOTNET_ISOLATED_DEBUG_ARGUMENT = "--dotnet-isolated-debug"
+        private val controlCharsRegex = "\u001B\\[[\\d;]*[^\\d;]".toRegex()
     }
 
     private var processId = 0
@@ -90,6 +90,15 @@ class AzureFunctionsDotNetCoreIsolatedDebugProfile(
         // Wait until we get a process ID (or the process terminates)
         pumpMessages(waitDuration) {
             processId != 0 || targetProcessHandler.isProcessTerminated
+        }
+        if (targetProcessHandler.isProcessTerminated) {
+            logger.warn("Azure Functions host process terminated before the debugger could attach.")
+
+            // Notify user
+            PluginUtil.showErrorNotificationProject(
+                    executionEnvironment.project,
+                    RiderAzureBundle.message("run_config.run_function_app.debug.notification.title"),
+                    RiderAzureBundle.message("run_config.run_function_app.debug.notification.isolated_worker_process_terminated"))
         }
         if (processId == 0) {
             logger.warn("Azure Functions host did not return isolated worker process id.")
@@ -138,13 +147,13 @@ class AzureFunctionsDotNetCoreIsolatedDebugProfile(
             }
 
             override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-                val line = event.text
+                val processText = event.text.replace(controlCharsRegex, "")
 
                 if (processId == 0 &&
-                        StringUtils.containsIgnoreCase(line, "Azure Functions .NET Worker (PID: ") &&
-                        StringUtils.containsIgnoreCase(line, ") initialized")) {
+                        processText.contains("Azure Functions .NET Worker (PID: ", ignoreCase = true) &&
+                        processText.contains(") initialized", ignoreCase = true)) {
 
-                    val pidFromLog = line.substringAfter("PID: ")
+                    val pidFromLog = processText.substringAfter("PID: ")
                             .dropWhile { !it.isDigit() }
                             .takeWhile { it.isDigit() }
                             .toInt()
