@@ -19,6 +19,7 @@
           <li>MSBuildEvaluator timeout breaks right-click + publish (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/611">#611</a>)</li>
           <li>Dispose of response body when retrying is needed (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/616">#616</a>)</li>
           <li>SSLHandshakeException connecting to Azure Functions Core Tools release feed (<a href="https://youtrack.jetbrains.com/issue/RIDER-79897">RIDER-79897</a>)</li>
+          <li>Azure Functions: Isolated worker process ID not recognized when control characters are present in process output (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/623">#623</a>)</li>
         </ul>
     </html>
     ]]>
