@@ -37,6 +37,8 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.impl.local.FileWatcher
 import com.intellij.util.execution.ParametersListUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.threading.SpinWait
@@ -50,8 +52,10 @@ import com.jetbrains.rider.run.*
 import com.jetbrains.rider.runtime.DotNetExecutable
 import com.jetbrains.rider.runtime.DotNetRuntime
 import com.jetbrains.rider.runtime.apply
+import com.microsoft.azuretools.utils.JsonUtils
 import com.microsoft.intellij.util.PluginUtil
 import org.jetbrains.plugins.azure.RiderAzureBundle
+import java.io.File
 import java.time.Duration
 
 class AzureFunctionsDotNetCoreIsolatedDebugProfile(
@@ -64,6 +68,8 @@ class AzureFunctionsDotNetCoreIsolatedDebugProfile(
         private val logger = Logger.getInstance(AzureFunctionsDotNetCoreIsolatedDebugProfile::class.java)
         private val waitDuration = Duration.ofMinutes(1)
         private const val DOTNET_ISOLATED_DEBUG_ARGUMENT = "--dotnet-isolated-debug"
+        private const val DOTNET_ENABLE_JSON_OUTPUT_ARGUMENT = "--enable-json-output"
+        private const val DOTNET_JSON_OUTPUT_FILE_ARGUMENT = "--json-output-file"
         private val controlCharsRegex = "\u001B\\[[\\d;]*[^\\d;]".toRegex()
     }
 
@@ -117,10 +123,35 @@ class AzureFunctionsDotNetCoreIsolatedDebugProfile(
     private fun launchAzureFunctionsHost() {
 
         val programParameters = ParametersListUtil.parse(dotNetExecutable.programParameterString)
+
+        // Enable isolated worker debugger
         if (!programParameters.contains(DOTNET_ISOLATED_DEBUG_ARGUMENT)) {
             programParameters.add(DOTNET_ISOLATED_DEBUG_ARGUMENT)
         }
 
+        // We will need to read the worker process PID, so the debugger can later attach to it.
+        //
+        // In typical scenarios, the PID is written to the process output,
+        // which we will read further down this method.
+        //
+        // However, there are cases where the PID is not printed to console
+        // (see https://github.com/Azure/azure-functions-dotnet-worker/issues/900).
+        // For those cases, we're adding a backup of writing the PID to a temporary file.
+
+        val tempPidFile = FileUtil.createTempFile(
+                File(FileUtil.getTempDirectory()),
+                "Rider-AzureFunctions-IsolatedWorker-",
+                "json.pid", true, true)
+
+        if (!programParameters.contains(DOTNET_ENABLE_JSON_OUTPUT_ARGUMENT)) {
+            programParameters.add(DOTNET_ENABLE_JSON_OUTPUT_ARGUMENT)
+        }
+        if (!programParameters.contains(DOTNET_JSON_OUTPUT_FILE_ARGUMENT)) {
+            programParameters.add(DOTNET_JSON_OUTPUT_FILE_ARGUMENT)
+            programParameters.add(tempPidFile.path)
+        }
+
+        // Start the Azure Functions host
         val commandLine = dotNetExecutable
                 .copy(
                         useExternalConsole = false,
@@ -149,6 +180,7 @@ class AzureFunctionsDotNetCoreIsolatedDebugProfile(
             override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
                 val processText = event.text.replace(controlCharsRegex, "")
 
+                // Typical approach: read PID from process output
                 if (processId == 0 &&
                         processText.contains("Azure Functions .NET Worker (PID: ", ignoreCase = true) &&
                         processText.contains(") initialized", ignoreCase = true)) {
@@ -158,8 +190,29 @@ class AzureFunctionsDotNetCoreIsolatedDebugProfile(
                             .takeWhile { it.isDigit() }
                             .toInt()
 
+                    logger.info("Got functions isolated worker process id from console output.")
                     logger.info("Functions isolated worker process id: $pidFromLog")
                     processId = pidFromLog
+                }
+
+                // Case where the PID is emitted to the temporary file
+                if (processId == 0) {
+                    // Example contents: { "name":"dotnet-worker-startup", "workerProcessId" : 28460 }
+                    val pidFileJson = JsonUtils.readJsonFile(tempPidFile)
+                    if (pidFileJson != null) {
+                        if (pidFileJson.has("workerProcessId")) {
+                            val pidFromJson = pidFileJson.get("workerProcessId").asInt
+
+                            logger.info("Got functions isolated worker process id from JSON output.")
+                            logger.info("Functions isolated worker process id: $pidFromJson")
+                            processId = pidFromJson
+                        }
+                    }
+                }
+
+                // No need to keep listening when the PID is known
+                if (processId != 0) {
+                    targetProcessHandler.removeProcessListener(this)
                 }
 
                 super.onTextAvailable(event, outputType)
