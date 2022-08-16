@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2021 JetBrains s.r.o.
+ * Copyright (c) 2018-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -63,6 +63,7 @@ class WebAppPublishModel {
         private const val AZURE_WEB_APP_NET_CORE_RUNTIME           = "AZURE_WEB_APP_NET_CORE_RUNTIME"
         private const val AZURE_WEB_APP_IS_DEPLOY_TO_SLOT          = "AZURE_WEB_APP_IS_DEPLOY_TO_SLOT"
         private const val AZURE_WEB_APP_SLOT_NAME                  = "AZURE_WEB_APP_SLOT_NAME"
+        private const val AZURE_WEB_APP_OPEN_BROWSER_PUBLISH       = "AZURE_WEB_APP_OPEN_BROWSER_PUBLISH"
     }
 
     @Attribute(value = "name", converter = WebBrowserReferenceConverter::class)
@@ -89,6 +90,8 @@ class WebAppPublishModel {
 
     var isDeployToSlot = false
     var slotName = ""
+
+    var openInBrowserAfterPublish = false
 
     /**
      * Reset the model with values after creating a new instance
@@ -152,6 +155,8 @@ class WebAppPublishModel {
 
         isDeployToSlot = JDOMExternalizerUtil.readField(element, AZURE_WEB_APP_IS_DEPLOY_TO_SLOT) == "1"
         slotName = JDOMExternalizerUtil.readField(element, AZURE_WEB_APP_SLOT_NAME) ?: ""
+
+        openInBrowserAfterPublish = JDOMExternalizerUtil.readField(element, AZURE_WEB_APP_OPEN_BROWSER_PUBLISH, "0") == "1"
     }
 
     fun writeExternal(element: Element) {
@@ -179,5 +184,7 @@ class WebAppPublishModel {
 
         JDOMExternalizerUtil.writeField(element, AZURE_WEB_APP_IS_DEPLOY_TO_SLOT, if (isDeployToSlot) "1" else "0")
         JDOMExternalizerUtil.writeField(element, AZURE_WEB_APP_SLOT_NAME, slotName)
+
+        JDOMExternalizerUtil.writeField(element, AZURE_WEB_APP_OPEN_BROWSER_PUBLISH, if (openInBrowserAfterPublish) "1" else "0")
     }
 }

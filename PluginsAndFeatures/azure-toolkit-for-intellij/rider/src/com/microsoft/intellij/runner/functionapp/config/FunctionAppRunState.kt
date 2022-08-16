@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2021 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -179,11 +179,7 @@ class FunctionAppRunState(project: Project, private val myModel: FunctionAppSett
 
         showPublishNotification(message("notification.publish.publish_complete"), NotificationType.INFORMATION)
 
-        val isOpenBrowser = PropertiesComponent.getInstance().getBoolean(
-                AzureRiderSettings.PROPERTY_WEB_APP_OPEN_IN_BROWSER_NAME,
-                AzureRiderSettings.OPEN_IN_BROWSER_AFTER_PUBLISH_DEFAULT_VALUE)
-
-        if (isOpenBrowser) {
+        if (myModel.functionAppModel.openInBrowserAfterPublish) {
             openAppInBrowser(app, processHandler)
         }
     }

@@ -74,6 +74,7 @@ class FunctionAppPublishModel {
         private const val AZURE_FUNCTION_APP_STORAGE_ACCOUNT_TYPE       = "AZURE_FUNCTION_APP_STORAGE_ACCOUNT_TYPE"
         private const val AZURE_FUNCTION_APP_IS_DEPLOY_TO_SLOT          = "AZURE_FUNCTION_APP_IS_DEPLOY_TO_SLOT"
         private const val AZURE_FUNCTION_APP_SLOT_NAME                  = "AZURE_FUNCTION_APP_SLOT_NAME"
+        private const val AZURE_FUNCTION_APP_OPEN_BROWSER_PUBLISH       = "AZURE_FUNCTION_APP_OPEN_BROWSER_PUBLISH"
     }
 
     var publishableProject: PublishableProjectModel? = null
@@ -103,6 +104,8 @@ class FunctionAppPublishModel {
 
     var isDeployToSlot = false
     var slotName = ""
+
+    var openInBrowserAfterPublish = false
 
     /**
      * Reset the model with values after creating a new instance
@@ -180,6 +183,8 @@ class FunctionAppPublishModel {
 
         isDeployToSlot = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_IS_DEPLOY_TO_SLOT) == "1"
         slotName = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_SLOT_NAME) ?: ""
+
+        openInBrowserAfterPublish = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_OPEN_BROWSER_PUBLISH, "0") == "1"
     }
 
     fun writeExternal(element: Element) {
@@ -212,5 +217,7 @@ class FunctionAppPublishModel {
 
         JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_IS_DEPLOY_TO_SLOT, if (isDeployToSlot) "1" else "0")
         JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_SLOT_NAME, slotName)
+
+        JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_OPEN_BROWSER_PUBLISH, if (openInBrowserAfterPublish) "1" else "0")
     }
 }
