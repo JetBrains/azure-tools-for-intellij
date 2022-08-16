@@ -11,6 +11,7 @@
           <li>Azure Functions: Use arm64 build of Azure Functions Core tools on mac M1 (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/610">#610</a>)</li>
           <li>Azure Functions: Initial support for .NET 7 projects (isolated worker) (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/615">#615</a>)</li>
           <li>Azure Functions: Add Run all/Debug all to editor bulb menu (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/620">#620</a>)</li>
+          <li>Azure Functions: Get process ID from JSON output as fallback (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/625">#625</a>)</li>
         </ul>
         <h4>Fixed bugs:</h4>
         <ul>
