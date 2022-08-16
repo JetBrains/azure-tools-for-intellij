@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2020 JetBrains s.r.o.
+ * Copyright (c) 2018-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -22,7 +22,6 @@
 
 package com.microsoft.intellij.runner.webapp.config.ui
 
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -36,7 +35,6 @@ import com.microsoft.azure.management.resources.ResourceGroup
 import com.microsoft.azure.management.resources.Subscription
 import com.microsoft.azuretools.core.mvp.model.AzureMvpModel
 import com.microsoft.azuretools.core.mvp.model.ResourceEx
-import com.microsoft.intellij.configuration.AzureRiderSettings
 import com.microsoft.intellij.runner.webapp.model.WebAppPublishModel
 import com.microsoft.intellij.ui.component.AzureComponent
 import com.microsoft.intellij.ui.component.ExistingOrNewSelector
@@ -131,12 +129,7 @@ class WebAppPublishComponent(private val lifetime: Lifetime,
         }
 
         // Settings
-        val isOpenInBrowser = PropertiesComponent.getInstance().getBoolean(
-                AzureRiderSettings.PROPERTY_WEB_APP_OPEN_IN_BROWSER_NAME,
-                AzureRiderSettings.OPEN_IN_BROWSER_AFTER_PUBLISH_DEFAULT_VALUE)
-
-        if (isOpenInBrowser)
-            pnlWebAppPublishSettings.checkBoxOpenInBrowserAfterPublish.doClick()
+        pnlWebAppPublishSettings.isOpenInBrowser = config.openInBrowserAfterPublish
 
         pnlExistingWebApp.pnlExistingAppTable.btnRefresh.isEnabled = false
     }
@@ -207,6 +200,8 @@ class WebAppPublishComponent(private val lifetime: Lifetime,
         val slotSettings = pnlExistingWebApp.pnlDeploymentSlotSettings
         model.isDeployToSlot = slotSettings.checkBoxIsEnabled.isSelected
         model.slotName = slotSettings.cbDeploymentSlots.getSelectedValue()?.name() ?: model.slotName
+
+        model.openInBrowserAfterPublish = pnlWebAppPublishSettings.isOpenInBrowser
     }
 
     //region Fill Values
