@@ -7,30 +7,22 @@ package com.microsoft.azure.toolkit.intellij.database.connection;
 
 import com.intellij.openapi.project.Project;
 import com.microsoft.azure.toolkit.intellij.common.AzureFormJPanel;
-import com.microsoft.azure.toolkit.intellij.connector.AzureServiceResource;
-import com.microsoft.azure.toolkit.intellij.connector.Connection;
-import com.microsoft.azure.toolkit.intellij.connector.Password;
-import com.microsoft.azure.toolkit.intellij.connector.PasswordStore;
-import com.microsoft.azure.toolkit.intellij.connector.Resource;
-import com.microsoft.azure.toolkit.intellij.connector.spring.SpringSupported;
+import com.microsoft.azure.toolkit.intellij.connector.*;
 import com.microsoft.azure.toolkit.lib.common.exception.AzureToolkitRuntimeException;
 import com.microsoft.azure.toolkit.lib.database.JdbcUrl;
 import com.microsoft.azure.toolkit.lib.database.entity.IDatabase;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jdom.Attribute;
 import org.jdom.Element;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 
-public abstract class SqlDatabaseResourceDefinition<T extends IDatabase> extends AzureServiceResource.Definition<T> implements SpringSupported<T> {
+public abstract class SqlDatabaseResourceDefinition<T extends IDatabase> extends AzureServiceResource.Definition<T> {
     protected SqlDatabaseResourceDefinition(String name, String title, String icon) {
         super(name, title, icon);
     }
@@ -43,15 +35,6 @@ public abstract class SqlDatabaseResourceDefinition<T extends IDatabase> extends
         env.put(String.format("%s_USERNAME", Connection.ENV_PREFIX), resource.getUsername());
         env.put(String.format("%s_PASSWORD", Connection.ENV_PREFIX), Optional.ofNullable(resource.loadPassword()).or(() -> Optional.ofNullable(resource.inputPassword(project))).orElse(""));
         return env;
-    }
-
-    @Override
-    public List<Pair<String, String>> getSpringProperties() {
-        final List<Pair<String, String>> properties = new ArrayList<>();
-        properties.add(Pair.of("spring.datasource.url", String.format("${%s_URL}", Connection.ENV_PREFIX)));
-        properties.add(Pair.of("spring.datasource.username", String.format("${%s_USERNAME}", Connection.ENV_PREFIX)));
-        properties.add(Pair.of("spring.datasource.password", String.format("${%s_PASSWORD}", Connection.ENV_PREFIX)));
-        return properties;
     }
 
     @Override

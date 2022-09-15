@@ -1,0 +1,7 @@
+intellij {
+}
+
+dependencies {
+    compile project(':azure-intellij-plugin-database')
+    compile project(':azure-intellij-resource-connector-lib-java')
+}

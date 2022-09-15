@@ -7,7 +7,7 @@ intellij {
 dependencies {
     compile project(':azure-intellij-plugin-lib')
     compile project(':azure-intellij-plugin-guidance')
-    compile project(':azure-intellij-resource-connector-lib')
+    compile project(':azure-intellij-resource-connector-lib-java')
     compile 'com.microsoft.azure:azure-toolkit-common-lib'
     aspect 'com.microsoft.azure:azure-toolkit-common-lib'
     compile 'com.microsoft.azure:azure-toolkit-ide-common-lib'

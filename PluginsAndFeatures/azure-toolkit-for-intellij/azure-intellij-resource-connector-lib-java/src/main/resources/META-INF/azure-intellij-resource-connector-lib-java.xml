@@ -1,0 +1,20 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+
+    <xi:include href="/META-INF/azure-intellij-resource-connector-lib.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <runConfigurationExtension implementation="com.microsoft.azure.toolkit.intellij.connector.MyRunConfigurationExtension"/>
+        <completion.contributor language="Properties" implementationClass="com.microsoft.azure.toolkit.intellij.connector.spring.SpringPropertiesCompletionContributor"/>
+        <codeInsight.lineMarkerProvider language="Properties" implementationClass="com.microsoft.azure.toolkit.intellij.connector.spring.SpringPropertiesLineMarkerProvider"/>
+    </extensions>
+
+    <projectListeners>
+        <listener class="com.microsoft.azure.toolkit.intellij.connector.BeforeRunTaskAdder"
+                  topic="com.intellij.execution.RunManagerListener" />
+        <listener class="com.microsoft.azure.toolkit.intellij.connector.BeforeRunTaskAdder"
+                  topic="com.microsoft.azure.toolkit.intellij.connector.ConnectionTopics$ConnectionChanged" />
+        <listener class="com.microsoft.azure.toolkit.intellij.connector.BeforeRunTaskAdder"
+                  topic="com.microsoft.azure.toolkit.intellij.common.runconfig.IWebAppRunConfiguration$ModuleChangedListener" />
+    </projectListeners>
+
+</idea-plugin>
