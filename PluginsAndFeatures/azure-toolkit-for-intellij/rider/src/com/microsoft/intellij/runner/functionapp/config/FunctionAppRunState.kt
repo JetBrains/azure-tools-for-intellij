@@ -23,12 +23,13 @@
 package com.microsoft.intellij.runner.functionapp.config
 
 import com.intellij.execution.process.ProcessOutputTypes
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
-import com.microsoft.azure.management.appservice.*
+import com.microsoft.azure.management.appservice.FunctionApp
+import com.microsoft.azure.management.appservice.OperatingSystem
+import com.microsoft.azure.management.appservice.WebAppBase
 import com.microsoft.azure.management.sql.SqlDatabase
 import com.microsoft.azure.toolkit.intellij.common.AzureRunProfileState
 import com.microsoft.azuretools.core.mvp.model.AzureMvpModel
@@ -37,7 +38,6 @@ import com.microsoft.azuretools.core.mvp.model.database.AzureSqlDatabaseMvpModel
 import com.microsoft.azuretools.core.mvp.model.functionapp.AzureFunctionAppMvpModel
 import com.microsoft.azuretools.core.mvp.model.storage.AzureStorageAccountMvpModel
 import com.microsoft.intellij.RunProcessHandler
-import com.microsoft.intellij.configuration.AzureRiderSettings
 import com.microsoft.intellij.runner.appbase.config.runstate.AppDeployStateUtil.getAppUrl
 import com.microsoft.intellij.runner.appbase.config.runstate.AppDeployStateUtil.openAppInBrowser
 import com.microsoft.intellij.runner.appbase.config.runstate.AppDeployStateUtil.refreshAzureExplorer
@@ -77,13 +77,9 @@ class FunctionAppRunState(project: Project, private val myModel: FunctionAppSett
         val subscriptionId = myModel.functionAppModel.subscription?.subscriptionId()
                 ?: throw RuntimeException(message("process_event.publish.subscription.not_defined"))
 
-        val collectArtifactsTimeoutMs = PropertiesComponent.getInstance().getInt(
-                AzureRiderSettings.PROPERTY_COLLECT_ARTIFACTS_TIMEOUT_MINUTES_NAME,
-                AzureRiderSettings.VALUE_COLLECT_ARTIFACTS_TIMEOUT_MINUTES_DEFAULT) * 60000L
-
         val app = getOrCreateFunctionAppFromConfiguration(myModel.functionAppModel, processHandler)
         tryConfigureAzureFunctionRuntimeStack(app, subscriptionId, processHandler)
-        deployToAzureFunctionApp(project, publishableProject, app, processHandler, collectArtifactsTimeoutMs)
+        deployToAzureFunctionApp(project, publishableProject, app, processHandler)
 
         isFunctionAppCreated = true
 

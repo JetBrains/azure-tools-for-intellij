@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2021 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -54,8 +54,6 @@ import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.nio.file.Path
 import java.util.*
-import java.util.concurrent.Future
-import java.util.concurrent.TimeUnit
 import java.util.zip.ZipOutputStream
 
 object AppDeployStateUtil {
@@ -125,23 +123,22 @@ object AppDeployStateUtil {
      *
      * @param project IDEA [Project] instance
      * @param publishableProject contains information about project to be published (isDotNetCore, path to project file)
-     * @param timeoutMs timeout for collecting artifacts
      *
      * @return [File] to project content to be published
      */
-    fun collectProjectArtifacts(project: Project, publishableProject: PublishableProjectModel, timeoutMs: Long): File {
+    fun collectProjectArtifacts(project: Project, publishableProject: PublishableProjectModel): File {
         // Get out parameters
         val publishService = MsBuildPublishingService.getInstance(project)
         val (targetProperties, outPath) = publishService.getPublishToTempDirParameterAndPath()
 
-        val buildResultFuture =
+        val buildStatus =
             if (publishableProject.isDotNetCore) {
                 invokeMsBuild(project, publishableProject, listOf(targetProperties), false, true, true)
             } else {
                 webPublishToFileSystem(project, publishableProject.projectFilePath, outPath, false, true)
             }
 
-        val buildResult = buildResultFuture.get(timeoutMs, TimeUnit.MILLISECONDS)?.buildResultKind
+        val buildResult = buildStatus.buildResultKind
         if (buildResult != BuildResultKind.Successful && buildResult != BuildResultKind.HasWarnings) {
             val errorMessage = message("process_event.publish.project.artifacts.collecting_failed")
             logger.error(errorMessage)
@@ -248,7 +245,7 @@ object AppDeployStateUtil {
                               extraProperties: List<CustomTargetExtraProperty>,
                               diagnosticsMode: Boolean,
                               silentMode: Boolean = false,
-                              noRestore: Boolean = false): Future<BuildStatus> {
+                              noRestore: Boolean = false): BuildStatus {
         val buildParameters = BuildParameters(
                 CustomTargetWithExtraProperties(
                         "Publish",
@@ -256,14 +253,14 @@ object AppDeployStateUtil {
                 ), listOf(projectModel.projectFilePath), diagnosticsMode, silentMode, noRestore = noRestore
         )
 
-        return BuildTaskThrottler.getInstance(project).runBuildWithThrottling(buildParameters)
+        return BuildTaskThrottler.getInstance(project).buildSequentiallySync(buildParameters)
     }
 
     private fun webPublishToFileSystem(project: Project,
                                        pathToProject: String,
                                        outPath: Path,
                                        diagnosticsMode: Boolean = false,
-                                       silentMode: Boolean = false): Future<BuildStatus> {
+                                       silentMode: Boolean = false): BuildStatus {
         val buildParameters = BuildParameters(
                 CustomTargetWithExtraProperties(
                         "WebPublish",
@@ -273,6 +270,6 @@ object AppDeployStateUtil {
                 ), listOf(pathToProject), diagnosticsMode, silentMode
         )
 
-        return BuildTaskThrottler.getInstance(project).runBuildWithThrottling(buildParameters)
+        return BuildTaskThrottler.getInstance(project).buildSequentiallySync(buildParameters)
     }
 }

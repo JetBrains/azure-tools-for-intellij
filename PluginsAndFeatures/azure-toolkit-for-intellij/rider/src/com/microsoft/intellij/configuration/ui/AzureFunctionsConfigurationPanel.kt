@@ -40,7 +40,7 @@ import com.intellij.ui.layout.panel
 import com.intellij.ui.table.JBTable
 import com.intellij.ui.table.TableView
 import com.intellij.util.PathUtil
-import com.intellij.util.castSafelyTo
+import com.intellij.util.asSafely
 import com.intellij.util.ui.AbstractTableCellEditor
 import com.intellij.util.ui.ColumnInfo
 import com.intellij.util.ui.JBUI
@@ -163,7 +163,7 @@ class AzureFunctionsConfigurationPanel: AzureRiderAbstractConfigurablePanel {
 
                     override fun getCellEditorValue(): String {
                         // Allow for manual input
-                        comboBox.editor.item.castSafelyTo<String>()?.let { textEntry ->
+                        comboBox.editor.item.asSafely<String>()?.let { textEntry ->
                             if (textEntry.isEmpty()) {
                                 return ""
                             }
