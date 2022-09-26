@@ -41,7 +41,7 @@ import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.workspaceModel.ide.WorkspaceModel
-import com.intellij.workspaceModel.ide.impl.virtualFile
+import com.intellij.workspaceModel.ide.impl.toVirtualFile
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import com.jetbrains.rider.projectView.workspace.containingProjectEntity
 import com.jetbrains.rider.projectView.workspace.getProjectModelEntities
@@ -311,7 +311,7 @@ class RegisterApplicationInAzureAdAction
     }
 
     private fun tryGetAppSettingsJsonVirtualFile(entity: ProjectModelEntity): VirtualFile? {
-        val itemVirtualFile = entity.url?.virtualFile
+        val itemVirtualFile = entity.url?.toVirtualFile()
 
         if (isAppSettingsJsonFileName(itemVirtualFile?.name)) return itemVirtualFile
 

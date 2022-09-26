@@ -60,13 +60,6 @@ configurations {
 dependencies {
     implementation rootProject
 
-    // REVIEW: these should come from the rootProject, no?
-    //
-    // Any improvements to only have to declare these once would be appreciated.
-    // ---
-    implementation "org.aspectj:aspectjtools:${aspectj_tools_version}"
-    // ---
-
     implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.3'
     implementation group: 'jaxen', name: 'jaxen', version: '1.2.0'
     implementation 'com.microsoft.azure:azure-toolkit-springcloud-lib:0.3.0', { force = true }

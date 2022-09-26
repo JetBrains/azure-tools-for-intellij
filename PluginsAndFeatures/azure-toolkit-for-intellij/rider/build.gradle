@@ -16,32 +16,6 @@ dependencies {
     implementation "org.java-websocket:Java-WebSocket:$web_socket_version"
 
     testImplementation rootProject
-
-    // REVIEW: these should come from the rootProject, but somehow don't.
-    //
-    // This is visible e.g. in com/microsoft/intellij/helpers/validator/WebAppValidator.kt:79,
-    // where AzureModel from one of these dependencies is not resolved.
-    //
-    // Any improvements to only have to declare these once would be appreciated.
-    // ---
-    implementation "org.aspectj:aspectjtools:${aspectj_tools_version}"
-    implementation 'com.microsoft.azuretools:azuretools-core:3.50.0', {
-        exclude group: "com.microsoft.azure", module: "azure-client-authentication"
-        exclude group: "com.microsoft.azure", module: "azure-client-runtime"
-        exclude group: "javax.xml.bind", module: "jaxb-api"
-    }
-    implementation 'com.microsoft.azuretools:azure-explorer-common:3.50.0', {
-        exclude group: "com.microsoft.azure", module: "azure-client-authentication"
-        exclude group: "com.microsoft.azure", module: "azure-client-runtime"
-        exclude group: "javax.xml.bind", module: "jaxb-api"
-    }
-    implementation 'com.microsoft.azuretools:hdinsight-node-common:3.50.0', {
-        exclude group: "com.microsoft.azure", module: "azure-client-authentication"
-        exclude group: "com.microsoft.azure", module: "azure-client-runtime"
-        exclude group: "javax.xml.bind", module: "jaxb-api"
-    }
-    implementation group: 'com.microsoft.azure', name: 'azure-auth-helper', version: '0.6.0'
-    // ---
 }
 
 configurations {
