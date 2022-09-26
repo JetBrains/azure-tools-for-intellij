@@ -24,6 +24,7 @@ dependencies {
     //
     // Any improvements to only have to declare these once would be appreciated.
     // ---
+    implementation "org.aspectj:aspectjtools:${aspectj_tools_version}"
     implementation 'com.microsoft.azuretools:azuretools-core:3.50.0', {
         exclude group: "com.microsoft.azure", module: "azure-client-authentication"
         exclude group: "com.microsoft.azure", module: "azure-client-runtime"
