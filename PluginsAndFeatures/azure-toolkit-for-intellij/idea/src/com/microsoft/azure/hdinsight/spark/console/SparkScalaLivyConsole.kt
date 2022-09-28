@@ -25,7 +25,6 @@ package com.microsoft.azure.hdinsight.spark.console
 import com.intellij.execution.console.ConsoleHistoryController
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.module.Module
-import org.jetbrains.plugins.scala.console.ScalaConsoleInfo
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsole
 
 class SparkScalaLivyConsole(module: Module) : ScalaLanguageConsole(module), SparkConsole {
@@ -37,7 +36,8 @@ class SparkScalaLivyConsole(module: Module) : ScalaLanguageConsole(module), Spar
         super.attachToProcess(processHandler)
 
         // Remove self from ScalaConsoleInfo
-        ScalaConsoleInfo.disposeConsole(this)
+        // TODO[JetBrains]: Figure out how to replace this.
+        // ScalaConsoleInfo.disposeConsole(this)
 
         // Add to Spark Console Manager
         val controller = ConsoleHistoryController.getController(this)

@@ -29,9 +29,9 @@ import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.actionSystem.ex.ActionManagerEx
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.microsoft.azure.hdinsight.common.logger.ILogger
@@ -41,8 +41,8 @@ import com.microsoft.azure.hdinsight.spark.run.action.SelectSparkApplicationType
 import com.microsoft.azure.hdinsight.spark.run.action.SparkApplicationType
 import com.microsoft.azure.hdinsight.spark.run.configuration.LivySparkBatchJobRunConfiguration
 import com.microsoft.azure.hdinsight.spark.run.configuration.LivySparkBatchJobRunConfigurationType
-import com.microsoft.intellij.AzureAnAction
 import com.microsoft.azuretools.telemetrywrapper.Operation
+import com.microsoft.intellij.AzureAnAction
 import com.microsoft.intellij.telemetry.TelemetryKeys
 import com.microsoft.intellij.util.runInReadAction
 import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
@@ -80,7 +80,7 @@ abstract class RunSparkScalaConsoleAction
 
             val batchConfigurationType = SelectSparkApplicationTypeAction.getRunConfigurationType()
             if (batchConfigurationType == null) {
-                val action = ActionManagerEx.getInstance().getAction(selectedMenuActionId)
+                val action = ActionManager.getInstance().getAction(selectedMenuActionId)
                 action?.actionPerformed(event)
                 operation?.complete()
                 return false
