@@ -15,7 +15,7 @@ public class DockerHostRunRunner extends DefaultProgramRunner {
 
     @Override
     public boolean canRun(@NotNull String executorId, @NotNull RunProfile profile) {
-        return DefaultRunExecutor.EXECUTOR_ID.equals(executorId) && profile instanceof DockerHostRunConfiguration;
+        return DefaultRunExecutor.EXECUTOR_ID.equals(executorId) && profile instanceof DockerHostRunConfigurationBase;
     }
 
     @NotNull

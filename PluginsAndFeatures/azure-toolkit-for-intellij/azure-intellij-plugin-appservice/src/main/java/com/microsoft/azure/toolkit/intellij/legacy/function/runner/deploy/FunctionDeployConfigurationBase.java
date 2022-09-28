@@ -5,23 +5,17 @@
 
 package com.microsoft.azure.toolkit.intellij.legacy.function.runner.deploy;
 
-import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.configurations.RunProfileWithCompileBeforeLaunchOption;
-import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.util.xmlb.XmlSerializer;
 import com.microsoft.azure.toolkit.ide.appservice.function.FunctionAppConfig;
 import com.microsoft.azure.toolkit.intellij.legacy.common.AzureRunConfigurationBase;
-import com.microsoft.azure.toolkit.intellij.legacy.function.runner.core.FunctionUtils;
 import com.microsoft.azure.toolkit.lib.appservice.model.JavaVersion;
 import com.microsoft.azure.toolkit.lib.appservice.model.OperatingSystem;
 import com.microsoft.azure.toolkit.lib.appservice.model.Runtime;
@@ -29,7 +23,6 @@ import com.microsoft.azure.toolkit.lib.common.model.Subscription;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Map;
@@ -38,13 +31,13 @@ import java.util.Optional;
 
 import static com.microsoft.azure.toolkit.intellij.common.AzureBundle.message;
 
-public class FunctionDeployConfiguration extends AzureRunConfigurationBase<FunctionDeployModel>
+public abstract class FunctionDeployConfigurationBase extends AzureRunConfigurationBase<FunctionDeployModel>
         implements RunProfileWithCompileBeforeLaunchOption {
 
     private FunctionDeployModel functionDeployModel;
-    private Module module;
+    protected Module module;
 
-    public FunctionDeployConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory, String name) {
+    public FunctionDeployConfigurationBase(@NotNull Project project, @NotNull ConfigurationFactory factory, String name) {
         super(project, factory, name);
         functionDeployModel = new FunctionDeployModel();
     }
@@ -76,28 +69,12 @@ public class FunctionDeployConfiguration extends AzureRunConfigurationBase<Funct
                 .map(FunctionAppConfig::getSubscription).map(Subscription::getId).orElse(StringUtils.EMPTY);
     }
 
-    @NotNull
-    @Override
-    public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-        return new FunctionDeploymentSettingEditor(getProject(), this);
-    }
-
-    @Nullable
-    @Override
-    public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment executionEnvironment) {
-        return new FunctionDeploymentState(getProject(), this);
-    }
-
     public void setDeploymentStagingDirectory(String deploymentStagingDirectory) {
         this.functionDeployModel.setDeploymentStagingDirectoryPath(deploymentStagingDirectory);
     }
 
     public String getDeploymentStagingDirectory() {
         return this.functionDeployModel.getDeploymentStagingDirectoryPath();
-    }
-
-    public Module getModule() {
-        return module == null ? FunctionUtils.getFunctionModuleByName(getProject(), functionDeployModel.getModuleName()) : module;
     }
 
     public void saveTargetModule(Module module) {

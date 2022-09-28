@@ -1,0 +1,8 @@
+intellij {
+    plugins = ['java', 'maven', 'maven-model', 'gradle', 'gradle-java']
+}
+
+dependencies {
+    compile project(':azure-intellij-plugin-appservice')
+    compile project(':azure-intellij-plugin-lib-java')
+}

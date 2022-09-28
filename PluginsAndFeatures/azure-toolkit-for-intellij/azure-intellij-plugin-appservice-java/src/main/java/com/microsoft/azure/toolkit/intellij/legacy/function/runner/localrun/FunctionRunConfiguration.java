@@ -20,7 +20,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
-import com.microsoft.azure.toolkit.intellij.legacy.common.AzureRunConfigurationBase;
+import com.microsoft.azure.toolkit.intellij.legacy.common.AzureJavaRunConfigurationBase;
 import com.microsoft.azure.toolkit.intellij.legacy.function.runner.core.FunctionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +33,7 @@ import java.util.Map;
 
 import static com.microsoft.azure.toolkit.intellij.common.AzureBundle.message;
 
-public class FunctionRunConfiguration extends AzureRunConfigurationBase<FunctionRunModel>
+public class FunctionRunConfiguration extends AzureJavaRunConfigurationBase<FunctionRunModel>
     implements LocatableConfiguration, RunProfileWithCompileBeforeLaunchOption {
     private JsonObject appSettingsJsonObject;
     private FunctionRunModel functionRunModel;

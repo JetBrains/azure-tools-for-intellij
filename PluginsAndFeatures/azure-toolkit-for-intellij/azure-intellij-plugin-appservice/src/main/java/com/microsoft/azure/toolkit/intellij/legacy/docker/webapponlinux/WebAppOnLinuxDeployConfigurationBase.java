@@ -5,25 +5,18 @@
 
 package com.microsoft.azure.toolkit.intellij.legacy.docker.webapponlinux;
 
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.microsoft.azure.toolkit.intellij.legacy.common.AzureRunConfigurationBase;
 import com.microsoft.azuretools.core.mvp.model.webapp.PrivateRegistryImageSetting;
 import com.microsoft.azuretools.core.mvp.model.webapp.WebAppOnLinuxDeployModel;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Paths;
 
-public class WebAppOnLinuxDeployConfiguration extends AzureRunConfigurationBase<WebAppOnLinuxDeployModel> {
+public abstract class WebAppOnLinuxDeployConfigurationBase extends AzureRunConfigurationBase<WebAppOnLinuxDeployModel> {
 
     private static final String MISSING_SERVER_URL = "Please specify a valid Server URL.";
     private static final String MISSING_USERNAME = "Please specify Username.";
@@ -55,9 +48,9 @@ public class WebAppOnLinuxDeployConfiguration extends AzureRunConfigurationBase<
     private static final int TAG_LENGTH = 128;
     private static final int REPO_LENGTH = 255;
 
-    private final WebAppOnLinuxDeployModel deployModel;
+    protected final WebAppOnLinuxDeployModel deployModel;
 
-    protected WebAppOnLinuxDeployConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory, String
+    protected WebAppOnLinuxDeployConfigurationBase(@NotNull Project project, @NotNull ConfigurationFactory factory, String
             name) {
         super(project, factory, name);
         deployModel = new WebAppOnLinuxDeployModel();
@@ -66,19 +59,6 @@ public class WebAppOnLinuxDeployConfiguration extends AzureRunConfigurationBase<
     @Override
     public WebAppOnLinuxDeployModel getModel() {
         return this.deployModel;
-    }
-
-    @NotNull
-    @Override
-    public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-        return new WebAppOnLinuxDeploySettingsEditor(this.getProject());
-    }
-
-    @Nullable
-    @Override
-    public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment executionEnvironment)
-            throws ExecutionException {
-        return new WebAppOnLinuxDeployState(getProject(), deployModel);
     }
 
     /**
