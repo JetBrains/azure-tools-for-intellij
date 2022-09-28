@@ -2,7 +2,7 @@ plugins {
 }
 
 intellij {
-    plugins = ['java', 'maven', 'maven-model', "properties", 'terminal', 'gradle', 'gradle-java']
+    plugins = ["properties", 'terminal']
 }
 
 dependencies {

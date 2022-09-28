@@ -12,16 +12,10 @@ import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.execution.impl.RunDialog;
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.microsoft.azure.toolkit.intellij.legacy.docker.AzureDockerSupportConfigurationType;
-import com.microsoft.azure.toolkit.intellij.legacy.docker.utils.Constant;
-import com.microsoft.azure.toolkit.lib.common.operation.AzureOperation;
 import com.microsoft.azure.toolkit.lib.common.task.AzureTaskManager;
 import com.microsoft.intellij.AzureAnAction;
 import com.microsoft.azuretools.telemetry.TelemetryConstants;
@@ -32,18 +26,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PushImageAction extends AzureAnAction {
-    private static final String NOTIFICATION_GROUP_ID = "Azure Plugin";
-    private static final String DIALOG_TITLE = "Push Image";
-    private final AzureDockerSupportConfigurationType configType = AzureDockerSupportConfigurationType.getInstance();
+public abstract class RunOnDockerHostActionBase extends AzureAnAction {
+
+    private static final String DIALOG_TITLE = "Run on Docker Host";
 
     @Override
-    @AzureOperation(name = "docker.push_image", type = AzureOperation.Type.ACTION)
     public boolean onActionPerformed(@NotNull AnActionEvent event, @Nullable Operation operation) {
-
         Module module = DataKeys.MODULE.getData(event.getDataContext());
         if (module == null) {
-            notifyError(Constant.ERROR_NO_SELECTED_PROJECT);
             return true;
         }
         AzureTaskManager.getInstance().runLater(() -> runConfiguration(module));
@@ -52,19 +42,19 @@ public class PushImageAction extends AzureAnAction {
 
     @Override
     protected String getServiceName(AnActionEvent event) {
-        return TelemetryConstants.ACR;
+        return TelemetryConstants.WEBAPP;
     }
 
     @Override
     protected String getOperationName(AnActionEvent event) {
-        return TelemetryConstants.ACR_PUSHIMAGE;
+        return TelemetryConstants.DEPLOY_WEBAPP_DOCKERHOST;
     }
 
     @SuppressWarnings({"deprecation", "Duplicates"})
     private void runConfiguration(Module module) {
         Project project = module.getProject();
         final RunManagerEx manager = RunManagerEx.getInstanceEx(project);
-        final ConfigurationFactory factory = configType.getPushImageRunConfigurationFactory();
+        final ConfigurationFactory factory = getDockerHostRunConfigurationFactory();
         RunnerAndConfigurationSettings settings = manager.findConfigurationByName(
                 String.format("%s: %s:%s", factory.getName(), project.getName(), module.getName()));
         if (settings == null) {
@@ -80,8 +70,5 @@ public class PushImageAction extends AzureAnAction {
         }
     }
 
-    private void notifyError(String msg) {
-        Notification notification = new Notification(NOTIFICATION_GROUP_ID, DIALOG_TITLE, msg, NotificationType.ERROR);
-        Notifications.Bus.notify(notification);
-    }
+    protected abstract ConfigurationFactory getDockerHostRunConfigurationFactory();
 }

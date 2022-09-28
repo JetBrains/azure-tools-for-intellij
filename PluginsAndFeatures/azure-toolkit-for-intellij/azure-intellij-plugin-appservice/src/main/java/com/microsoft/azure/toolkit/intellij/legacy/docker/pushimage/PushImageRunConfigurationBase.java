@@ -5,28 +5,20 @@
 
 package com.microsoft.azure.toolkit.intellij.legacy.docker.pushimage;
 
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.microsoft.azure.toolkit.lib.containerregistry.ContainerRegistry;
+import com.microsoft.azure.toolkit.intellij.legacy.common.AzureRunConfigurationBase;
 import com.microsoft.azuretools.core.mvp.model.container.pojo.PushImageRunModel;
 import com.microsoft.azuretools.core.mvp.model.webapp.PrivateRegistryImageSetting;
-
-import com.microsoft.azure.toolkit.intellij.legacy.common.AzureRunConfigurationBase;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Paths;
 import java.util.Objects;
 
-public class PushImageRunConfiguration extends AzureRunConfigurationBase<PushImageRunModel> {
+public abstract class PushImageRunConfigurationBase extends AzureRunConfigurationBase<PushImageRunModel> {
     // TODO: move to util
     private static final String MISSING_ARTIFACT = "A web archive (.war) artifact has not been configured.";
     private static final String MISSING_SERVER_URL = "Please specify a valid Server URL.";
@@ -53,9 +45,9 @@ public class PushImageRunConfiguration extends AzureRunConfigurationBase<PushIma
     private static final int TAG_LENGTH = 128;
     private static final int REPO_LENGTH = 255;
 
-    private final PushImageRunModel dataModel;
+    protected final PushImageRunModel dataModel;
 
-    protected PushImageRunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory, String name) {
+    protected PushImageRunConfigurationBase(@NotNull Project project, @NotNull ConfigurationFactory factory, String name) {
         super(project, factory, name);
         dataModel = new PushImageRunModel();
     }
@@ -63,12 +55,6 @@ public class PushImageRunConfiguration extends AzureRunConfigurationBase<PushIma
     @Override
     public PushImageRunModel getModel() {
         return dataModel;
-    }
-
-    @NotNull
-    @Override
-    public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-        return new PushImageRunSettingsEditor(this.getProject());
     }
 
     /**
@@ -141,13 +127,6 @@ public class PushImageRunConfiguration extends AzureRunConfigurationBase<PushIma
     @Override
     public String getSubscriptionId() {
         return "";
-    }
-
-    @Nullable
-    @Override
-    public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment executionEnvironment)
-            throws ExecutionException {
-        return new PushImageRunState(getProject(), dataModel);
     }
 
     @Override

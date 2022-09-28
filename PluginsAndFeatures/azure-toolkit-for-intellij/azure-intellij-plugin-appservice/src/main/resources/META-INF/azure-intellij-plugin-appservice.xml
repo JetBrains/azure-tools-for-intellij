@@ -3,13 +3,7 @@
     <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
         <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.appservice.function.FunctionAppNodeProvider"/>
         <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.appservice.webapp.WebAppNodeProvider"/>
-        <actions implementation="com.microsoft.azure.toolkit.intellij.appservice.AppServiceIntelliJActionsContributor"/>
-        <actions implementation="com.microsoft.azure.toolkit.ide.appservice.AppServiceActionsContributor"/>
-        <actions implementation="com.microsoft.azure.toolkit.ide.appservice.webapp.WebAppActionsContributor"/>
-        <actions implementation="com.microsoft.azure.toolkit.ide.appservice.file.AppServiceFileActionsContributor"/>
-        <actions implementation="com.microsoft.azure.toolkit.ide.appservice.function.FunctionAppActionsContributor"/>
         <guidanceInputProvider implementation="com.microsoft.azure.toolkit.intellij.appservice.AppServiceInputProvider"/>
-        <guidanceTaskProvider implementation="com.microsoft.azure.toolkit.intellij.appservice.AppServiceTaskProvider"/>
     </extensions>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -18,57 +12,19 @@
         <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.legacy.webapp.WebAppPropertyViewProvider"/>
         <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.legacy.webapp.DeploymentSlotPropertyViewProvider"/>
 
-        <configurationType implementation="com.microsoft.azure.toolkit.intellij.legacy.webapp.runner.WebAppConfigurationType"/>
-        <configurationType implementation="com.microsoft.azure.toolkit.intellij.legacy.function.runner.AzureFunctionSupportConfigurationType"/>
-        <configurationType implementation="com.microsoft.azure.toolkit.intellij.legacy.docker.AzureDockerSupportConfigurationType"/>
-
         <programRunner implementation="com.microsoft.azure.toolkit.intellij.legacy.function.runner.deploy.FunctionDeploymentRunner"/>
-        <programRunner implementation="com.microsoft.azure.toolkit.intellij.legacy.function.runner.localrun.FunctionLocalRunner"/>
-        <programRunner implementation="com.microsoft.azure.toolkit.intellij.legacy.webapp.runner.webappconfig.WebAppRunner"/>
 
         <stepsBeforeRunProvider implementation="com.microsoft.azure.toolkit.intellij.function.remotedebug.FunctionPortForwardingTaskProvider" id="PortForwardingTaskProviderId"/>
         <facetType implementation="com.microsoft.azure.toolkit.intellij.legacy.function.wizard.facet.FunctionsFacetType"/>
-        <moduleBuilder builderClass="com.microsoft.azure.toolkit.intellij.legacy.function.wizard.module.FunctionsModuleBuilder"/>
-        <runConfigurationProducer implementation="com.microsoft.azure.toolkit.intellij.legacy.function.runner.FunctionRunConfigurationProducer"/>
-        <runLineMarkerContributor language="JAVA" id="functionRunLineMarkerProvider"
-                                  implementationClass="com.microsoft.azure.toolkit.intellij.legacy.function.runner.FunctionRunLineMarkerProvider"/>
     </extensions>
 
     <actions>
-        <action id="Actions.WebDeployAction" class="com.microsoft.azure.toolkit.intellij.legacy.webapp.action.WebDeployAction"
-                text="Deploy to Azure Web Apps" description="Deploy to Azure Web Apps"
-                icon="/icons/WebApp/Deploy.svg">
-        </action>
         <!-- Functions Start -->
-        <action id="Actions.RunFunction" class="com.microsoft.azure.toolkit.intellij.legacy.function.action.RunFunctionAction"
-                text="Run Function" description="Run function project locally"
-                icon="/icons/FunctionApp/Run.svg">
-        </action>
-        <action id="Actions.DeployFunction" class="com.microsoft.azure.toolkit.intellij.legacy.function.action.DeployFunctionAction"
-                text="Deploy to Azure Functions" description="Deploy Java Function to Azure"
-                icon="/icons/FunctionApp/Deploy.svg">
-        </action>
         <action id="page.new" class="com.microsoft.azure.toolkit.intellij.function.CreateFunctionAction"
                 text="Azure Function Class"
                 description="Create New Azure Function Class">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
         <!-- Functions End -->
-        <action id="Actions.AddDockerSupport" class="com.microsoft.azure.toolkit.intellij.legacy.docker.action.AddDockerSupportAction"
-                text="Add Docker Support" description="Add Docker Support"
-                icon="/icons/DockerSupport/DockerSupport.svg">
-        </action>
-        <action id="Actions.RunOnDockerHost" class="com.microsoft.azure.toolkit.intellij.legacy.docker.action.RunOnDockerHostAction"
-                text="Docker Run" description="Docker Run"
-                icon="/icons/DockerSupport/Run.svg">
-        </action>
-        <action id="Actions.PushImage" class="com.microsoft.azure.toolkit.intellij.legacy.docker.action.PushImageAction"
-                text="Push Image" description="Push Image"
-                icon="/icons/DockerSupport/PushImage.svg">
-        </action>
-        <action id="Actions.WebAppOnLinux" class="com.microsoft.azure.toolkit.intellij.legacy.docker.action.WebAppOnLinuxAction"
-                text="Run on Web App for Containers" description="Run on Web App for Containers"
-                icon="/icons/DockerSupport/RunOnWebApp.svg">
-        </action>
     </actions>
 </idea-plugin>

@@ -16,35 +16,30 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.microsoft.azure.toolkit.intellij.legacy.docker.AzureDockerSupportConfigurationType;
-import com.microsoft.azure.toolkit.lib.common.task.AzureTaskManager;
-import com.microsoft.intellij.AzureAnAction;
+import com.microsoft.azure.toolkit.lib.common.operation.AzureOperation;
 import com.microsoft.azuretools.telemetry.TelemetryConstants;
 import com.microsoft.azuretools.telemetrywrapper.Operation;
+import com.microsoft.intellij.AzureAnAction;
+import com.microsoft.intellij.util.AzureLoginHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RunOnDockerHostAction extends AzureAnAction {
+public abstract class WebAppOnLinuxActionBase extends AzureAnAction {
 
-    private static final String DIALOG_TITLE = "Run on Docker Host";
-
-    private final AzureDockerSupportConfigurationType configType;
-
-    public RunOnDockerHostAction() {
-        this.configType = AzureDockerSupportConfigurationType.getInstance();
-    }
+    private static final String DIALOG_TITLE = "Run on Web App for Containers";
 
     @Override
+    @AzureOperation(name = "docker.start_app", type = AzureOperation.Type.ACTION)
     public boolean onActionPerformed(@NotNull AnActionEvent event, @Nullable Operation operation) {
         Module module = DataKeys.MODULE.getData(event.getDataContext());
         if (module == null) {
             return true;
         }
-        AzureTaskManager.getInstance().runLater(() -> runConfiguration(module));
-        return true;
+        AzureLoginHelper.requireSignedIn(module.getProject(), () -> runConfiguration(module));
+        return false;
     }
 
     @Override
@@ -54,14 +49,14 @@ public class RunOnDockerHostAction extends AzureAnAction {
 
     @Override
     protected String getOperationName(AnActionEvent event) {
-        return TelemetryConstants.DEPLOY_WEBAPP_DOCKERHOST;
+        return TelemetryConstants.DEPLOY_WEBAPP_CONTAINER;
     }
 
     @SuppressWarnings({"deprecation", "Duplicates"})
     private void runConfiguration(Module module) {
         Project project = module.getProject();
         final RunManagerEx manager = RunManagerEx.getInstanceEx(project);
-        final ConfigurationFactory factory = configType.getDockerHostRunConfigurationFactory();
+        final ConfigurationFactory factory = getWebAppOnLinuxDeployConfigurationFactory();
         RunnerAndConfigurationSettings settings = manager.findConfigurationByName(
                 String.format("%s: %s:%s", factory.getName(), project.getName(), module.getName()));
         if (settings == null) {
@@ -76,4 +71,6 @@ public class RunOnDockerHostAction extends AzureAnAction {
             ProgramRunnerUtil.executeConfiguration(project, settings, DefaultRunExecutor.getRunExecutorInstance());
         }
     }
+
+    protected abstract ConfigurationFactory getWebAppOnLinuxDeployConfigurationFactory();
 }

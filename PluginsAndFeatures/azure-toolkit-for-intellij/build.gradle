@@ -183,6 +183,7 @@ dependencies {
     compile project(':azure-intellij-plugin-database')
     compile project(':azure-intellij-plugin-database-java')
     compile project(':azure-intellij-plugin-appservice')
+    compile project(':azure-intellij-plugin-appservice-java')
     compile project(':azure-intellij-plugin-arm')
     compile project(':azure-intellij-plugin-containerregistry')
     compile project(':azure-intellij-plugin-containerservice')

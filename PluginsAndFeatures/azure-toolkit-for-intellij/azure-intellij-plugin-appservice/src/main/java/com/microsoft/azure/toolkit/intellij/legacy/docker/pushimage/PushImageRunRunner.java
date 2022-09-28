@@ -16,7 +16,7 @@ public class PushImageRunRunner extends DefaultProgramRunner {
 
     @Override
     public boolean canRun(@NotNull String executorId, @NotNull RunProfile profile) {
-        return DefaultRunExecutor.EXECUTOR_ID.equals(executorId) && profile instanceof PushImageRunConfiguration;
+        return DefaultRunExecutor.EXECUTOR_ID.equals(executorId) && profile instanceof PushImageRunConfigurationBase;
     }
 
     @NotNull

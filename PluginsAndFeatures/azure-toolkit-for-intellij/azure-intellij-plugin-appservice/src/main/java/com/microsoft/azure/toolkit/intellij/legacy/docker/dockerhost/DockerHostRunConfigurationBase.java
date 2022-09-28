@@ -5,25 +5,17 @@
 
 package com.microsoft.azure.toolkit.intellij.legacy.docker.dockerhost;
 
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
-import com.microsoft.azuretools.core.mvp.model.container.pojo.DockerHostRunSetting;
-
 import com.microsoft.azure.toolkit.intellij.legacy.common.AzureRunConfigurationBase;
+import com.microsoft.azuretools.core.mvp.model.container.pojo.DockerHostRunSetting;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Paths;
 
-public class DockerHostRunConfiguration extends AzureRunConfigurationBase<DockerHostRunSetting> {
+public abstract class DockerHostRunConfigurationBase extends AzureRunConfigurationBase<DockerHostRunSetting> {
     // TODO: move to util
     private static final String MISSING_ARTIFACT = "A web archive (.war) artifact has not been configured.";
     private static final String INVALID_WAR_FILE = "The artifact name %s is invalid. "
@@ -35,9 +27,9 @@ public class DockerHostRunConfiguration extends AzureRunConfigurationBase<Docker
     private static final String INVALID_DOCKER_FILE = "Please specify a valid docker file.";
     private static final String INVALID_CERT_PATH = "Please specify a valid certificate path.";
     private static final String MISSING_IMAGE_NAME = "Please specify a valid image name.";
-    private final DockerHostRunSetting dataModel;
+    protected final DockerHostRunSetting dataModel;
 
-    protected DockerHostRunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory, String name) {
+    protected DockerHostRunConfigurationBase(@NotNull Project project, @NotNull ConfigurationFactory factory, String name) {
         super(project, factory, name);
         dataModel = new DockerHostRunSetting();
     }
@@ -47,11 +39,6 @@ public class DockerHostRunConfiguration extends AzureRunConfigurationBase<Docker
         return dataModel;
     }
 
-    @NotNull
-    @Override
-    public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-        return new DockerHostRunSettingsEditor(this.getProject());
-    }
 
     /**
      * Validate input value.
@@ -84,13 +71,6 @@ public class DockerHostRunConfiguration extends AzureRunConfigurationBase<Docker
         if (!dataModel.getTargetName().matches(ARTIFACT_NAME_REGEX)) {
             throw new ConfigurationException(String.format(INVALID_WAR_FILE, dataModel.getTargetName()));
         }
-    }
-
-    @Nullable
-    @Override
-    public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment executionEnvironment)
-            throws ExecutionException {
-        return new DockerHostRunState(getProject(), dataModel);
     }
 
     public String getDockerHost() {

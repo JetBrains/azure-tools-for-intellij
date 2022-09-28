@@ -5,21 +5,12 @@
 
 package com.microsoft.azure.toolkit.intellij.legacy.docker.pushimage;
 
-import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.openapi.project.Project;
-import com.microsoft.azure.toolkit.ide.common.icon.AzureIcons;
-import com.microsoft.azure.toolkit.intellij.common.IntelliJAzureIcons;
-
 import com.microsoft.azure.toolkit.intellij.legacy.docker.AzureDockerSupportConfigurationType;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.Icon;
-
-public class PushImageRunConfigurationFactory extends ConfigurationFactory {
-    private static final String FACTORY_NAME = "Push Image";
-
+public class PushImageRunConfigurationFactory extends PushImageRunConfigurationFactoryBase {
     public PushImageRunConfigurationFactory(AzureDockerSupportConfigurationType configurationType) {
         super(configurationType);
     }
@@ -31,22 +22,7 @@ public class PushImageRunConfigurationFactory extends ConfigurationFactory {
     }
 
     @Override
-    public String getName() {
-        return FACTORY_NAME;
-    }
-
-    @Override
     public RunConfiguration createConfiguration(String name, RunConfiguration template) {
         return new PushImageRunConfiguration(template.getProject(), this, name);
-    }
-
-    @Override
-    public Icon getIcon() {
-        return IntelliJAzureIcons.getIcon(AzureIcons.DockerSupport.PUSH_IMAGE);
-    }
-
-    @Override
-    public @NotNull @NonNls String getId() {
-        return FACTORY_NAME;
     }
 }
