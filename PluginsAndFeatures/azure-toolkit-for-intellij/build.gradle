@@ -189,6 +189,7 @@ dependencies {
     compile project(':azure-intellij-plugin-containerregistry')
     compile project(':azure-intellij-plugin-containerservice')
     compile project(':azure-intellij-plugin-applicationinsights')
+    compile project(':azure-intellij-plugin-applicationinsights-java')
     compile project(':azure-intellij-plugin-guidance')
     compile 'com.microsoft.azure:azure-toolkit-ide-appservice-lib'
     compile 'com.microsoft.azure:azure-toolkit-applicationinsights-lib'
