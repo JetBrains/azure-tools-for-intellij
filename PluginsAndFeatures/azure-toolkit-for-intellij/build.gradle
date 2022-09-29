@@ -13,12 +13,6 @@ plugins {
     id "io.freefair.aspectj.post-compile-weaving" version "${aspectj_version}"
 }
 
-configurations {
-    compile.exclude module: 'slf4j-api'
-    compile.exclude module: 'log4j'
-    compile.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
-}
-
 dependencies {
     implementation 'com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8'
     implementation 'commons-io:commons-io:2.7'
@@ -175,6 +169,12 @@ configure(mainProjects) {
         annotationProcessor "org.projectlombok:lombok:${lombok_version}"
 
         testImplementation "org.assertj:assertj-core:${assertj_version}"
+    }
+
+    configurations {
+        implementation.exclude module: 'slf4j-api'
+        implementation.exclude module: 'log4j'
+        implementation.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
 
     tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
