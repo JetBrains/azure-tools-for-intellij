@@ -13,57 +13,6 @@ plugins {
     id "io.freefair.aspectj.post-compile-weaving" version "${aspectj_version}"
 }
 
-dependencies {
-    implementation 'com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8'
-    implementation 'commons-io:commons-io:2.7'
-    implementation group: 'org.apache.commons', name: 'commons-text', version: '1.8'
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
-    implementation 'net.minidev:json-smart:2.3'
-    implementation 'com.microsoft.azure:azure-client-runtime:1.7.5', { force = true }
-    implementation 'com.microsoft.azure:azure-client-authentication:1.7.5', { force = true }
-    aspect 'com.microsoft.azure:azure-toolkit-common-lib:0.3.0'
-    implementation 'com.microsoft.azuretools:azuretools-core:3.50.0', {
-        exclude group: "com.microsoft.azure", module: "azure-client-authentication"
-        exclude group: "com.microsoft.azure", module: "azure-client-runtime"
-        exclude group: "javax.xml.bind", module: "jaxb-api"
-    }
-    implementation 'com.microsoft.azuretools:azure-explorer-common:3.50.0', {
-        exclude group: "com.microsoft.azure", module: "azure-client-authentication"
-        exclude group: "com.microsoft.azure", module: "azure-client-runtime"
-        exclude group: "javax.xml.bind", module: "jaxb-api"
-    }
-    implementation 'com.microsoft.azuretools:hdinsight-node-common:3.50.0', {
-        exclude group: "com.microsoft.azure", module: "azure-client-authentication"
-        exclude group: "com.microsoft.azure", module: "azure-client-runtime"
-        exclude group: "javax.xml.bind", module: "jaxb-api"
-    }
-    implementation group: 'com.microsoft.azure', name: 'azure-auth-helper', version: '0.6.0'
-    implementation 'com.microsoft.azure:azure-tools-common:0.10.0'
-    implementation group: 'com.microsoft.azure.appplatform.v2020_07_01', name: 'azure-mgmt-appplatform', version: '1.0.0-beta'
-    implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.3', {
-        exclude group: "javax.xml.stream", module: "stax-api"
-        exclude group: "xpp3", module: "xpp3"
-        exclude group: "pull-parser", module: "pull-parser"
-        exclude group: "net.java.dev.msv", module: "xsdlib"
-    }
-    implementation group: 'jaxen', name: 'jaxen', version: '1.2.0'
-    implementation group: 'com.microsoft.azure.appplatform.v2019_05_01_preview', name: 'azure-mgmt-appplatform', version: '1.0.0-beta-2'
-    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
-
-    implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:${jackson_kotlin_version}"
-
-    implementation group: 'com.jcraft', name: 'jsch', version: '0.1.55'
-    implementation group: 'com.neovisionaries', name: 'nv-websocket-client', version: '2.9'
-    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.23'
-
-    // https://mvnrepository.com/artifact/org.projectlombok/lombok
-    compileOnly "org.projectlombok:lombok:${lombok_version}"
-    annotationProcessor "org.projectlombok:lombok:${lombok_version}"
-
-    testImplementation "org.assertj:assertj-core:${assertj_version}"
-}
-
 allprojects {
     apply plugin: 'kotlin'
     apply plugin: 'java'
