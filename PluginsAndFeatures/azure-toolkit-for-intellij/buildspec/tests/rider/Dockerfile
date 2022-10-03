@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim-stretch
+FROM openjdk:17.0.1-jdk-slim
 LABEL maintainer="Sergey Dubov <sergey.dubov@jetbrains.com>"
 
 ENV LOCAL_ENV_RUN=true
@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         gpg \
         dirmngr \
         curl \
+        gpg-agent \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dotnet-sdks
@@ -32,10 +33,10 @@ RUN apt-get update \
 
 # Install Mono
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
-&& echo "deb https://download.mono-project.com/repo/debian stable-stretch main" | tee /etc/apt/sources.list.d/mono-official-stable.list \
-&& apt-get update \
-&& DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-    mono-complete \
-    referenceassemblies-pcl \
-    msbuild \
-&& apt-get clean all
+    && echo "deb https://download.mono-project.com/repo/debian stable-stretch main" | tee /etc/apt/sources.list.d/mono-official-stable.list \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
+       mono-complete \
+       referenceassemblies-pcl \
+       msbuild \
+    && apt-get clean all
