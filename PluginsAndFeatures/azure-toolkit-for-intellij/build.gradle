@@ -161,6 +161,10 @@ configure(mainProjects) {
         testLogging.exceptionFormat "full"
     }
 
+    tasks.named("processTestResources") {
+        duplicatesStrategy DuplicatesStrategy.INCLUDE
+    }
+
     buildSearchableOptions.onlyIf { false }
 }
 
