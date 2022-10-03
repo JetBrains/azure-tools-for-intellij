@@ -17,7 +17,7 @@
     ```
 * **Using JDK 8**, run the following command under the project base path:
     ```
-    $ ./mvn clean install -f Utils/pom.xml
+    $ ./mvnw clean install -f Utils/pom.xml
     ```
 
     (If you have problems, make sure `JAVA_HOME` environment variable points to `<JDK8>/bin`.)
