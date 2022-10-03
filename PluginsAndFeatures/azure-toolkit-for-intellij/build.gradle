@@ -124,6 +124,7 @@ configure(mainProjects) {
         implementation.exclude module: 'slf4j-api'
         implementation.exclude module: 'log4j'
         implementation.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+        implementation.exclude module: 'stax-api'
     }
 
     tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }

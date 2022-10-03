@@ -19,9 +19,6 @@ dependencies {
 }
 
 configurations {
-    compile.exclude module: 'stax-api'
-    compile.exclude module: 'slf4j-api'
-    compile.exclude module: 'log4j'
     integrationTestImplementation.extendsFrom testImplementation
     integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
