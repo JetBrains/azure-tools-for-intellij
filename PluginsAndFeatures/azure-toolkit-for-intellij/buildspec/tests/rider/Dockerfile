@@ -1,4 +1,4 @@
-FROM openjdk:11.0.3-jdk-slim-stretch
+FROM openjdk:17-jdk-slim-stretch
 LABEL maintainer="Sergey Dubov <sergey.dubov@jetbrains.com>"
 
 ENV LOCAL_ENV_RUN=true
@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install dotnet-sdk-5.0
+# Install dotnet-sdks
 RUN wget -O - https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg \
     && mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/ \
     && wget https://packages.microsoft.com/config/debian/9/prod.list \
