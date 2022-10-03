@@ -1,4 +1,14 @@
-## Azure Toolkit for IntelliJ IDEA
+## Azure Toolkit for Rider
+### Prerequisites
+- Install [Corretto JDK 8](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html)
+- Install [Corretto JDK 17](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html)
+
+#### Windows
+- Make sure to install [Visual Studio 2010 C++ Redistributable](https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?
+  view=msvc-170#visual-studio-2010-vc-100-sp1-no-longer-supported).
+
+  Otherwise, you'll get errors related to exit code -1073741515 during the Utils project installation.
+
 ### Building
 * Clone and Build [azure-maven-plugins/azure-toolkit-libs](https://github.com/microsoft/azure-maven-plugins/tree/develop/azure-toolkit-libs) first. 
   Azure Toolkit for Intellij doesn't depend on our maven plugins, but they share some code together.
@@ -9,14 +19,16 @@
     ```
 * Clone the repository with HTTPS or SSH:
     ```
-    $ git clone https://github.com/Microsoft/azure-tools-for-java.git
-    $ cd azure-tools-for-java
+    $ git clone https://github.com/JetBrains/azure-tools-for-intellij.git
+    $ cd azure-tools-for-intellij
     ```
-* Run the following command under the project base path:
+* **Using JDK 8**, run the following command under the project base path:
     ```
-    $ mvn clean install -f Utils/pom.xml
+    $ ./mvnw clean install -f Utils/pom.xml
     ```
-* Use Gradle to build the plugin
+
+    (If you have problems, make sure `JAVA_HOME` environment variable points to `<JDK8>/bin`.)
+* **Using JDK 17**, use Gradle to build the plugin
     ```
     $ ./gradlew -b PluginsAndFeatures/azure-toolkit-for-intellij/build.gradle buildPlugin
     ```
