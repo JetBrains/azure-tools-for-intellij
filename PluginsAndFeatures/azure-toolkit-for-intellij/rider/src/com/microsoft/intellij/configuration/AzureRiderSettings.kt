@@ -88,10 +88,6 @@ object AzureRiderSettings {
                 pathEntries.map { it.toStringEntry() })
     }
 
-    // Web deploy
-    const val PROPERTY_COLLECT_ARTIFACTS_TIMEOUT_MINUTES_NAME = "AzureDeployCollectArtifactsTimeoutMinutes"
-    const val VALUE_COLLECT_ARTIFACTS_TIMEOUT_MINUTES_DEFAULT = 3
-
     // Azurite
     const val PROPERTY_AZURITE_NODE_INTERPRETER = "AzureAzuriteNodeInterpreter"
     const val PROPERTY_AZURITE_NODE_PACKAGE = "AzureAzuriteNodePackage"

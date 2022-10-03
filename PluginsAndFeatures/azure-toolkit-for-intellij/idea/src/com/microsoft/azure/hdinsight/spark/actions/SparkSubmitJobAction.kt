@@ -26,9 +26,9 @@ import com.intellij.execution.ExecutorRegistry
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.actionSystem.ex.ActionManagerEx
 import com.microsoft.azure.hdinsight.sdk.cluster.IClusterDetail
 import com.microsoft.azure.hdinsight.spark.actions.SparkDataKeys.*
 import com.microsoft.azure.hdinsight.spark.run.SparkBatchJobRunExecutor
@@ -37,16 +37,16 @@ import com.microsoft.azure.hdinsight.spark.run.action.SelectSparkApplicationType
 import com.microsoft.azure.hdinsight.spark.run.action.SeqActions
 import com.microsoft.azure.hdinsight.spark.run.action.SparkApplicationType
 import com.microsoft.azure.hdinsight.spark.run.configuration.LivySparkBatchJobRunConfiguration
-import com.microsoft.intellij.AzureAnAction
 import com.microsoft.azuretools.telemetry.TelemetryConstants
 import com.microsoft.azuretools.telemetrywrapper.Operation
+import com.microsoft.intellij.AzureAnAction
 import com.microsoft.intellij.telemetry.TelemetryKeys
 
 
 open class SparkSubmitJobAction : AzureAnAction() {
     open fun submitWithPopupMenu(anActionEvent: AnActionEvent) : Boolean {
         return if (SelectSparkApplicationTypeAction.getSelectedSparkApplicationType() == SparkApplicationType.None) {
-            val action = ActionManagerEx.getInstance().getAction("Actions.SparkSubmitJobActionGroups")
+            val action = ActionManager.getInstance().getAction("Actions.SparkSubmitJobActionGroups")
             action?.actionPerformed(anActionEvent)
             true
         } else {

@@ -40,9 +40,7 @@ class AzureFunctionsVersionInspection : XmlSuppressableInspectionTool() {
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return object : XmlElementVisitor() {
-            override fun visitXmlTag(tag: XmlTag?) {
-                if (tag == null) return
-
+            override fun visitXmlTag(tag: XmlTag) {
                 val tagName = tag.name.lowercase()
                 if (tagName.equals(FunctionsCoreToolsMsBuild.PROPERTY_AZURE_FUNCTIONS_VERSION, ignoreCase = true)) {
 

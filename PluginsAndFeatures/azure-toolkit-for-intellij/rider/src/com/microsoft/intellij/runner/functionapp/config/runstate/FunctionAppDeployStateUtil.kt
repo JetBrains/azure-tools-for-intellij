@@ -162,21 +162,19 @@ object FunctionAppDeployStateUtil {
     fun deployToAzureFunctionApp(project: Project,
                                  publishableProject: PublishableProjectModel,
                                  app: WebAppBase,
-                                 processHandler: RunProcessHandler,
-                                 collectArtifactsTimeoutMs: Long) {
+                                 processHandler: RunProcessHandler) {
 
-        packAndDeploy(project, publishableProject, app, processHandler, collectArtifactsTimeoutMs)
+        packAndDeploy(project, publishableProject, app, processHandler)
         processHandler.setText(message("process_event.publish.deploy_succeeded"))
     }
 
     private fun packAndDeploy(project: Project,
                               publishableProject: PublishableProjectModel,
                               app: WebAppBase,
-                              processHandler: RunProcessHandler,
-                              collectArtifactsTimeoutMs: Long) {
+                              processHandler: RunProcessHandler) {
         try {
             processHandler.setText(message("process_event.publish.project.artifacts.collecting", publishableProject.projectName))
-            val outDir = collectProjectArtifacts(project, publishableProject, collectArtifactsTimeoutMs)
+            val outDir = collectProjectArtifacts(project, publishableProject)
             // Note: we need to do it only for Linux Azure instances (we might add this check to speed up)
             projectAssemblyRelativePath = getAssemblyRelativePath(publishableProject, outDir)
 

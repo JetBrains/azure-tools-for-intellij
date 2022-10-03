@@ -23,7 +23,6 @@
 package com.microsoft.intellij.runner.webapp.config
 
 import com.intellij.execution.process.ProcessOutputTypes
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
@@ -36,7 +35,6 @@ import com.microsoft.azure.toolkit.intellij.common.AzureRunProfileState
 import com.microsoft.azuretools.core.mvp.model.AzureMvpModel
 import com.microsoft.azuretools.core.mvp.model.database.AzureSqlDatabaseMvpModel
 import com.microsoft.intellij.RunProcessHandler
-import com.microsoft.intellij.configuration.AzureRiderSettings
 import com.microsoft.intellij.helpers.UiConstants
 import com.microsoft.intellij.runner.appbase.config.runstate.AppDeployStateUtil.getAppUrl
 import com.microsoft.intellij.runner.appbase.config.runstate.AppDeployStateUtil.openAppInBrowser
@@ -89,12 +87,8 @@ class RiderWebAppRunState(project: Project,
         val subscriptionId = myModel.webAppModel.subscription?.subscriptionId()
                 ?: throw RuntimeException(message("process_event.publish.subscription.not_defined"))
 
-        val collectArtifactsTimeoutMs = PropertiesComponent.getInstance().getInt(
-                AzureRiderSettings.PROPERTY_COLLECT_ARTIFACTS_TIMEOUT_MINUTES_NAME,
-                AzureRiderSettings.VALUE_COLLECT_ARTIFACTS_TIMEOUT_MINUTES_DEFAULT) * 60000L
-
         val appTarget = getOrCreateWebAppFromConfiguration(myModel.webAppModel, processHandler)
-        deployToAzureWebApp(project, publishableProject, appTarget, processHandler, collectArtifactsTimeoutMs)
+        deployToAzureWebApp(project, publishableProject, appTarget, processHandler)
 
         if (myModel.webAppModel.isCreatingNewApp && myModel.webAppModel.operatingSystem == OperatingSystem.LINUX &&
                 publishableProject.isDotNetCore) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2021 JetBrains s.r.o.
+ * Copyright (c) 2018-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -26,7 +26,6 @@ import com.intellij.application.options.OptionsContainingConfigurable
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
-import com.microsoft.intellij.configuration.ui.AzureAppServicesConfigurationPanel
 import com.microsoft.intellij.configuration.ui.AzureFunctionsConfigurationPanel
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import org.jetbrains.plugins.azure.identity.managed.AzureManagedIdentityConfigurationPanel
@@ -47,7 +46,6 @@ class AzureRiderConfigurable(private val project: Project) :
 
     override fun buildConfigurables(): Array<Configurable> {
         val panels = listOf<Configurable>(
-                AzureRiderAbstractConfigurable(AzureAppServicesConfigurationPanel()),
                 AzureRiderAbstractConfigurable(AzureFunctionsConfigurationPanel()),
                 AzureRiderAbstractConfigurable(AzureManagedIdentityConfigurationPanel(project)),
                 AzureRiderAbstractConfigurable(AzuriteConfigurationPanel(project))

@@ -1,4 +1,4 @@
-FROM openjdk:11.0.3-jdk-slim-stretch
+FROM openjdk:17.0.1-jdk-slim
 LABEL maintainer="Sergey Dubov <sergey.dubov@jetbrains.com>"
 
 RUN mkdir -p /usr/share/man/man1
@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         gpg \
         dirmngr \
         curl \
+        gpg-agent \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dotnet-sdk 3.1. and 5.0
@@ -25,14 +26,15 @@ RUN wget -O - https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor 
 RUN apt-get update \
     && apt-get update \
     && apt-get install -y dotnet-sdk-3.1 \
-    && apt-get install -y dotnet-sdk-5.0
+    && apt-get install -y dotnet-sdk-5.0 \
+    && apt-get install -y dotnet-sdk-6.0
 
 # Install Mono
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
-&& echo "deb https://download.mono-project.com/repo/debian stable-stretch main" | tee /etc/apt/sources.list.d/mono-official-stable.list \
-&& apt-get update \
-&& DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-    mono-complete \
-    referenceassemblies-pcl \
-    msbuild \
-&& apt-get clean all
+    && echo "deb https://download.mono-project.com/repo/debian stable-stretch main" | tee /etc/apt/sources.list.d/mono-official-stable.list \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
+       mono-complete \
+       referenceassemblies-pcl \
+       msbuild \
+    && apt-get clean all

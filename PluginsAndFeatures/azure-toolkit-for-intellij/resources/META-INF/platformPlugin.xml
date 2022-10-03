@@ -6,22 +6,7 @@
     <html>
         <h4>Added:</h4>
         <ul>
-          <li>Compatibility with Rider 2022.2</li>
-          <li>Azure Functions: Isolated functions project template is in net6-isolated folder in newer host versions (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/599">#599</a>)</li>
-          <li>Azure Functions: Use arm64 build of Azure Functions Core tools on mac M1 (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/610">#610</a>)</li>
-          <li>Azure Functions: Initial support for .NET 7 projects (isolated worker) (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/615">#615</a>)</li>
-          <li>Azure Functions: Add Run all/Debug all to editor bulb menu (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/620">#620</a>)</li>
-          <li>Azure Functions: Get process ID from JSON output as fallback (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/625">#625</a>)</li>
-        </ul>
-        <h4>Fixed bugs:</h4>
-        <ul>
-          <li>Azure Functions: Deployment slots not appearing in the IDE (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/596">#596</a>)</li>
-          <li>Azure Functions: Can't debug from gutter mark in some v4 projects (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/602">#602</a> / <a href="https://youtrack.jetbrains.com/issue/RIDER-78053">RIDER-78053</a>)</li>
-          <li>MSBuildEvaluator timeout breaks right-click + publish (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/611">#611</a>)</li>
-          <li>Dispose of response body when retrying is needed (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/616">#616</a>)</li>
-          <li>SSLHandshakeException connecting to Azure Functions Core Tools release feed (<a href="https://youtrack.jetbrains.com/issue/RIDER-79897">RIDER-79897</a>)</li>
-          <li>Azure Functions: Isolated worker process ID not recognized when control characters are present in process output (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/623">#623</a>)</li>
-          <li>Open in browser after publish option in Run configuration is not saved (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/626">#626</a>)</li>
+          <li>Compatibility with Rider 2022.3 EAP</li>
         </ul>
     </html>
     ]]>

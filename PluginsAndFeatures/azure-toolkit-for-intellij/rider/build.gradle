@@ -11,17 +11,16 @@ sourceSets {
 }
 
 dependencies {
-    compile rootProject
-    compile "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation rootProject
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     implementation "org.java-websocket:Java-WebSocket:$web_socket_version"
 
     testImplementation rootProject
+    testImplementation "org.jetbrains.kotlin:kotlin-test:${kotlin_version}"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-testng:${kotlin_version}"
 }
 
 configurations {
-    compile.exclude module: 'stax-api'
-    compile.exclude module: 'slf4j-api'
-    compile.exclude module: 'log4j'
     integrationTestImplementation.extendsFrom testImplementation
     integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
@@ -48,7 +47,7 @@ intellij {
 
     // Workaround for https://youtrack.jetbrains.com/issue/IDEA-179607
     def extraPlugins = [ "rider-plugins-appender" ]
-    plugins = ['DatabaseTools', 'CSS', 'JavaScriptLanguage', 'terminal', 'restClient'] + extraPlugins
+    plugins = ['DatabaseTools', 'css-impl', 'javascript-impl', 'nodeJS', 'terminal', 'restClient'] + extraPlugins
 
     updateSinceUntilBuild = Boolean.valueOf(updateVersionRange)
     downloadSources = Boolean.valueOf(sources)

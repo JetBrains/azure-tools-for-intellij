@@ -53,35 +53,35 @@ intellij {
 configurations {
     compile.exclude module:'stax-api'
     cucumberRuntime {
-        extendsFrom testRuntime
+        extendsFrom testRuntimeOnly
     }
 }
 
 dependencies {
-    compile rootProject
+    implementation rootProject
 
-    compile group: 'org.dom4j', name: 'dom4j', version: '2.1.3'
-    compile group: 'jaxen', name: 'jaxen', version: '1.2.0'
-    compile 'com.microsoft.azure:azure-toolkit-springcloud-lib:0.3.0', { force = true }
+    implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.3'
+    implementation group: 'jaxen', name: 'jaxen', version: '1.2.0'
+    implementation 'com.microsoft.azure:azure-toolkit-springcloud-lib:0.3.0', { force = true }
 
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compileOnly "org.projectlombok:lombok:${lombok_version}"
     annotationProcessor "org.projectlombok:lombok:${lombok_version}"
 
-    testCompile 'junit:junit:4.13'
-    testCompile 'info.cukes:cucumber-junit:1.2.6'
-    testCompile 'info.cukes:cucumber-java:1.2.6'
-    testCompile 'org.mockito:mockito-core:2.7.22'
-    testCompile 'org.assertj:assertj-swing-junit:3.9.2'
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'info.cukes:cucumber-junit:1.2.6'
+    testImplementation 'info.cukes:cucumber-java:1.2.6'
+    testImplementation 'org.mockito:mockito-core:2.7.22'
+    testImplementation 'org.assertj:assertj-swing-junit:3.9.2'
 
-    testCompile 'com.github.tomakehurst:wiremock:2.26.3'
-    testCompile 'org.powermock:powermock-module-junit4:1.7.0RC4'
-    testCompile 'org.powermock:powermock-api-mockito2:1.7.0RC4'
-    testCompile 'javax.servlet:javax.servlet-api:3.1.0'
+    testImplementation 'com.github.tomakehurst:wiremock:2.26.3'
+    testImplementation 'org.powermock:powermock-module-junit4:1.7.0RC4'
+    testImplementation 'org.powermock:powermock-api-mockito2:1.7.0RC4'
+    testImplementation 'javax.servlet:javax.servlet-api:3.1.0'
 
-    testCompile "org.jetbrains.kotlin:kotlin-stdlib"
-    testCompile "org.jetbrains.kotlin:kotlin-test"
-    testCompile "org.jetbrains.kotlin:kotlin-test-junit"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib"
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit"
 
     spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.11.0'
 }
