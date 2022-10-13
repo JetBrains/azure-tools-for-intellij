@@ -1,11 +1,11 @@
 ---
-guid: bfccc7d5-0a43-4fc2-a4d4-580d1265b536
+guid: 9fccc7d5-0a43-4fc2-a4d4-580d1265b536
 type: File
 reformat: True
 shortenReferences: True
 image: AzureFunctionsTrigger
 customProperties: Extension=fs, FileName=QueueTrigger, ValidateFileName=True
-scopes: InAzureFunctionsFSharpProject;MustUseAzureFunctionsDefaultWorker
+scopes: InAzureFunctionsFSharpProject;MustUseAzureFunctionsIsolatedWorker
 parameterOrder: (HEADER), (NAMESPACE), (CLASS), PATHVALUE, (CONNECTIONVALUE)
 HEADER-expression: fileheader()
 NAMESPACE-expression: fileDefaultNamespace()
@@ -20,13 +20,19 @@ CONNECTIONVALUE-expression: constant("")
 $HEADER$namespace $NAMESPACE$
 
 open System
-open Microsoft.Azure.WebJobs
-open Microsoft.Azure.WebJobs.Host
+open Microsoft.Azure.Functions.Worker
 open Microsoft.Extensions.Logging
 
 module $CLASS$ =
-    [<FunctionName("$CLASS$")>]
-    let run([<QueueTrigger("$PATHVALUE$", Connection = "$CONNECTIONVALUE$")>]myQueueItem: string, log: ILogger) =
-        let msg = sprintf "F# Queue trigger function processed: %s" myQueueItem
+    [<Function("$CLASS$")>]
+    let run
+        (
+            [<QueueTrigger("$PATHVALUE$", Connection = "$CONNECTIONVALUE$")>] myQueueItem: string,
+            context: FunctionContext
+        ) =
+        let msg =
+            sprintf "F# Queue trigger function processed: %s" myQueueItem
+
+        let logger = context.GetLogger "QueueTriggerFSharp"
         log.LogInformation msg$END$
 ```

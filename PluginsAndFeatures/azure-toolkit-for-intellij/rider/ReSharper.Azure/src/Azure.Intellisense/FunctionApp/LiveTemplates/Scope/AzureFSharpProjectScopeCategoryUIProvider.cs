@@ -36,6 +36,7 @@ namespace JetBrains.ReSharper.Azure.Intellisense.FunctionApp.LiveTemplates.Scope
         {
             yield return new InAzureFunctionsFSharpProject();
             yield return new MustUseAzureFunctionsDefaultWorker();
+            yield return new MustUseAzureFunctionsIsolatedWorker();
         }
 
         public override string CategoryCaption => "Azure (F#)";

@@ -17,7 +17,7 @@ CONNECTIONVALUE-expression: constant("")
 # Blob Trigger
 
 ```
-namespace $NAMESPACE$
+$HEADER$namespace $NAMESPACE$
 
 open System.IO
 open Microsoft.Azure.WebJobs

@@ -7,6 +7,7 @@
         <h4>Added:</h4>
         <ul>
           <li>Compatibility with Rider 2022.3 EAP</li>
+          <li>Azure Functions: Add F# item templates for isolated worker (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/635">#635</a>)</li>
         </ul>
     </html>
     ]]>
