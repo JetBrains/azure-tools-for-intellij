@@ -22,7 +22,7 @@
 
 package org.jetbrains.plugins.azure.functions.coreTools
 
-import com.intellij.database.util.isNotNullOrEmpty
+import com.intellij.database.util.common.isNotNullOrEmpty
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator

@@ -22,7 +22,7 @@
 
 package com.microsoft.intellij.runner.functionapp.model
 
-import com.intellij.database.util.isNotNullOrEmpty
+import com.intellij.database.util.common.isNotNullOrEmpty
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createLifetime
 import com.intellij.openapi.util.JDOMExternalizerUtil
