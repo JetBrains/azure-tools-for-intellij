@@ -16,7 +16,7 @@ AUTHLEVELVALUE-expression: list("Function,Anonymous,Admin")
 # HTTP Trigger
 
 ```
-namespace $NAMESPACE$
+$HEADER$namespace $NAMESPACE$
 
 open System
 open System.IO

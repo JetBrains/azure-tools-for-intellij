@@ -16,7 +16,7 @@ SCHEDULE-expression: constant("0 */5 * * * *")
 # Timer Trigger
 
 ```
-namespace $NAMESPACE$
+$HEADER$namespace $NAMESPACE$
 
 open System
 open Microsoft.Azure.WebJobs

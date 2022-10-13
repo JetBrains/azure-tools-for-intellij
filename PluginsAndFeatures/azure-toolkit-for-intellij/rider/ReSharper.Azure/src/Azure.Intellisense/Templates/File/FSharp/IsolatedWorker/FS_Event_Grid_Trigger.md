@@ -1,11 +1,11 @@
 ---
-guid: 4c32fa2b-ec21-4789-ba43-b5a897fb8f5b
+guid: 9c32fa2b-ec21-4789-ba43-b5a897fb8f5b
 type: File
 reformat: True
 shortenReferences: True
 image: AzureFunctionsTrigger
 customProperties: Extension=fs, FileName=EventGridTrigger, ValidateFileName=True
-scopes: InAzureFunctionsFSharpProject;MustUseAzureFunctionsDefaultWorker
+scopes: InAzureFunctionsFSharpProject;MustUseAzureFunctionsIsolatedWorker
 parameterOrder: (HEADER), (NAMESPACE), (CLASS)
 HEADER-expression: fileheader()
 NAMESPACE-expression: fileDefaultNamespace()
@@ -19,14 +19,23 @@ $HEADER$namespace $NAMESPACE$
 // Default URL for triggering event grid function in the local environment.
 // http://localhost:7071/runtime/webhooks/EventGrid?functionName={functionname}
 
-open Microsoft.Azure.WebJobs
-open Microsoft.Azure.WebJobs.Host
-open Microsoft.Azure.EventGrid.Models
-open Microsoft.Azure.WebJobs.Extensions.EventGrid
+open System
+open Microsoft.Azure.Functions.Worker
 open Microsoft.Extensions.Logging
 
 module $CLASS$ =
-    [<FunctionName("$CLASS$")>]
-    let run ([<EventGridTrigger>] eventGridEvent: EventGridEvent, log: ILogger) =
+    type MyEvent =
+        { Id: string
+          Topic: string
+          Subject: string
+          EventType: string
+          EventTime: DateTime
+          Data: object }
+
+    [<Function("$CLASS$")>]
+    let run ([<EventGridTrigger>] eventGridEvent: MyEvent, context: FunctionContext) =
+        let logger =
+            context.GetLogger("EventGridTriggerFSharp")
+
         log.LogInformation(eventGridEvent.Data.ToString())$END$
 ```

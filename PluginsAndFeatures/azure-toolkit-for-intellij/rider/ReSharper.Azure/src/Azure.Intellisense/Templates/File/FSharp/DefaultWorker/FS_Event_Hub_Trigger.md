@@ -17,7 +17,7 @@ CONNECTIONVALUE-expression: constant("")
 # Event Hub Trigger
 
 ```
-namespace $NAMESPACE$
+$HEADER$namespace $NAMESPACE$
 
 open System
 open System.Text
