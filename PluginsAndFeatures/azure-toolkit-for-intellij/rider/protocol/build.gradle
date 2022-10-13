@@ -1,4 +1,5 @@
 buildscript {
+    ext.kotlin_version = '1.7.20'
     // https://www.myget.org/feed/rd-snapshots/package/maven/com.jetbrains.rd/rd-gen
     ext.rd_version = rd_version
 
@@ -10,6 +11,7 @@ buildscript {
 
     dependencies {
         classpath "com.jetbrains.rd:rd-gen:$rd_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -24,11 +26,13 @@ repositories {
 }
 
 apply plugin: 'com.jetbrains.rdgen'
+apply plugin: 'kotlin'
 
 // Add dependencies to make it discoverable inside protocol models.
 dependencies {
     implementation name: 'rider-model'
     implementation "com.jetbrains.rd:rd-gen:$rd_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 def protocolGroup = 'protocol'
@@ -75,5 +79,15 @@ task cleanProtocolModels {
                 dir.deleteDir()
             }
         }
+    }
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
