@@ -9,6 +9,10 @@
           <li>Compatibility with Rider 2022.3 EAP</li>
           <li>Azure Functions: Add F# item templates for isolated worker (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/635">#635</a>)</li>
         </ul>
+        <h4>Fixed bugs:</h4>
+        <ul>
+          <li>No F1 tier on Web API with linux (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/638">#638</a>)</li>
+        </ul>
     </html>
     ]]>
   </change-notes>
