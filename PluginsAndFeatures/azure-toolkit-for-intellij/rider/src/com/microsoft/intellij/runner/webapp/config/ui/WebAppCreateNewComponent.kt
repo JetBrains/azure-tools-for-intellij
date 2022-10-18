@@ -151,11 +151,11 @@ class WebAppCreateNewComponent(lifetime: Lifetime) :
     /**
      * Filter Pricing Tier based on Operating System
      *
-     * Note: We should hide "Free" and "Shared" Pricing Tiers for Linux OS
+     * Note: We should hide "Shared" Pricing Tiers for Linux OS
      */
     private fun filterPricingTiers(operatingSystem: OperatingSystem,
                                    prices: List<PricingTier>): List<PricingTier> {
         if (operatingSystem == OperatingSystem.WINDOWS) return prices
-        return prices.filter { it != PricingTier.FREE_F1 && it != PricingTier.SHARED_D1 }
+        return prices.filter { it != PricingTier.SHARED_D1 }
     }
 }
