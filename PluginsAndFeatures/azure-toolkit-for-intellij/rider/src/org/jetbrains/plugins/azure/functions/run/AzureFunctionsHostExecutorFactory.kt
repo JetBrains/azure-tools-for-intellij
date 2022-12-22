@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2022 JetBrains s.r.o.
+ * Copyright (c) 2019-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -29,7 +29,9 @@ import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.rider.run.configurations.IExecutorFactory
+import com.jetbrains.rider.runtime.msNet.MsNetRuntime
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsInfoProvider
+import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsMsBuild
 import org.jetbrains.plugins.azure.functions.run.localsettings.FunctionLocalSettingsUtil
 import org.jetbrains.plugins.azure.functions.run.localsettings.FunctionsWorkerRuntime
 import java.io.File
@@ -46,6 +48,11 @@ class AzureFunctionsHostExecutorFactory(
 
         val projectKind = parameters.projectKind
         logger.info("Project kind is $projectKind")
+
+        // Retrieve Azure Functions version
+        val azureFunctionsVersion = FunctionsCoreToolsMsBuild.requestAzureFunctionsVersion(
+                parameters.project, parameters.projectFilePath)
+        logger.info("Azure Functions version: $azureFunctionsVersion")
 
         // Retrieve Azure Functions Core Tools information.
         @Suppress("DialogTitleCapitalization")
@@ -67,7 +74,15 @@ class AzureFunctionsHostExecutorFactory(
 
         // Set up executor based on Azure Functions Core Tools and worker runtime
         val dotNetExecutable = parameters.toDotNetExecutable(coreToolsInfo)
-        val runtimeToExecute = AzureFunctionsDotNetCoreRuntime(coreToolsInfo, workerRuntime)
+
+        val runtimeToExecute = if (azureFunctionsVersion.equals("v1", ignoreCase = true)) {
+            // For Azure Functions v1, assume a .NET runtime
+            MsNetRuntime()
+        } else {
+            // For Azure Functions v2+, assume a .NET Core runtime
+            AzureFunctionsDotNetCoreRuntime(coreToolsInfo, workerRuntime)
+        }
+
         logger.info("Configuration will be executed on ${runtimeToExecute.javaClass.name}")
         return when (executorId) {
             DefaultRunExecutor.EXECUTOR_ID -> runtimeToExecute.createRunState(dotNetExecutable, environment)

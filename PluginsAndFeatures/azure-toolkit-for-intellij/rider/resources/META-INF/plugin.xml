@@ -30,6 +30,7 @@
         </ul>
         <h4>Fixed bugs:</h4>
         <ul>
+          <li>Azure Functions: func.exe passed as argument to func.exe (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/646">#646</a>)</li>
           <li>No F1 tier on Web API with linux (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/638">#638</a>)</li>
         </ul>
         <p>[3.50.0-2022.2]</p>
