@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2021 JetBrains s.r.o.
+ * Copyright (c) 2019-2022 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -26,15 +26,18 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.util.SystemInfo
 import com.jetbrains.rider.run.DotNetProcessRunProfileState
 import com.jetbrains.rider.run.IDotNetDebugProfileState
 import com.jetbrains.rider.run.dotNetCore.DotNetCoreDebugProfile
+import com.jetbrains.rider.run.msNet.MsNetDebugProfileState
 import com.jetbrains.rider.runtime.DotNetExecutable
 import com.jetbrains.rider.runtime.DotNetRuntime
 import com.jetbrains.rider.runtime.RunningAssemblyInfo
 import com.jetbrains.rider.runtime.SuspendedAttachableDotNetRuntime
 import com.jetbrains.rider.runtime.dotNetCore.DotNetCoreRuntime
 import com.jetbrains.rider.runtime.dotNetCore.DotNetCoreRuntimeType
+import com.jetbrains.rider.runtime.msNet.MsNetRuntime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsInfo
 import org.jetbrains.plugins.azure.functions.run.localsettings.FunctionsWorkerRuntime
@@ -57,11 +60,11 @@ class AzureFunctionsDotNetCoreRuntime(val coreToolsInfo: FunctionsCoreToolsInfo,
     override fun patchRunCommandLine(commandLine: GeneralCommandLine, runtimeArguments: List<String>) {
         if (commandLine.exePath.endsWith(".dll", true)) {
             val exePath = commandLine.exePath
-            commandLine.parametersList.addAt(0, exePath)
-            for (arg in runtimeArguments.reversed()) {
-                commandLine.parametersList.addAt(0, arg)
+            if (commandLine.parametersList.parametersCount > 0 &&
+                    commandLine.parametersList[0] != exePath) {
+                commandLine.parametersList.prepend(exePath)
             }
-            commandLine.withExePath(coreToolsInfo.coreToolsExecutable)
+            commandLine.exePath = coreToolsInfo.coreToolsExecutable
         }
     }
 
