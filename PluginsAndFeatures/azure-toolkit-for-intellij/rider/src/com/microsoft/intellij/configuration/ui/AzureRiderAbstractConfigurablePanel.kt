@@ -32,5 +32,7 @@ interface AzureRiderAbstractConfigurablePanel {
 
     fun isModified(): Boolean
 
+    fun doResetAction()
+
     fun doOKAction()
 }

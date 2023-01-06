@@ -178,5 +178,7 @@ class AzureManagedIdentityConfigurationPanel(private val project: Project) : Azu
 
     override fun isModified() = panel.isModified()
 
+    override fun doResetAction() = panel.reset()
+
     override fun doOKAction() = panel.apply()
 }

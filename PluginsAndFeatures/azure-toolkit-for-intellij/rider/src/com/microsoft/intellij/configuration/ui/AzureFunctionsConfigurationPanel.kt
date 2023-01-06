@@ -34,9 +34,9 @@ import com.intellij.ui.InsertPathAction
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.TableSpeedSearch
 import com.intellij.ui.components.fields.ExtendableTextField
-import com.intellij.ui.layout.PropertyBinding
-import com.intellij.ui.layout.noGrowY
-import com.intellij.ui.layout.panel
+import com.intellij.ui.dsl.builder.AlignX
+import com.intellij.ui.dsl.builder.bindText
+import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.table.JBTable
 import com.intellij.ui.table.TableView
 import com.intellij.util.PathUtil
@@ -55,7 +55,7 @@ import javax.swing.table.TableCellEditor
 import javax.swing.table.TableCellRenderer
 
 @Suppress("UnstableApiUsage")
-class AzureFunctionsConfigurationPanel: AzureRiderAbstractConfigurablePanel, Disposable {
+class AzureFunctionsConfigurationPanel : AzureRiderAbstractConfigurablePanel, Disposable {
 
     private val disposable = Disposer.newDisposable()
     private val properties: PropertiesComponent = PropertiesComponent.getInstance()
@@ -208,38 +208,38 @@ class AzureFunctionsConfigurationPanel: AzureRiderAbstractConfigurablePanel, Dis
             columnModel.getColumn(1).preferredWidth = JBUI.scale(750)
         }
 
-        noteRow(message("settings.app_services.function_app.core_tools.description"))
+        row {
+            text(message("settings.app_services.function_app.core_tools.description"))
+        }
 
         row {
-            cell(isFullWidth = true) {
-                scrollPane(coreToolsEditor).noGrowY().onApply {
+            scrollCell(coreToolsEditor).onApply {
                     AzureRiderSettings.setAzureCoreToolsPathEntries(properties, coreToolsEditorModel.items)
-                }
-            }
+            }.align(AlignX.FILL)
         }
 
         if (isCoreToolsFeedEnabled) {
-            row(message("settings.app_services.function_app.core_tools.download_path")) { }
             row {
-                cell(isFullWidth = true) {
-                    var value = FileUtil.toSystemDependentName(properties.getValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH)
-                            .orWhenNullOrEmpty(AzureRiderSettings.VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH))
+                text(message("settings.app_services.function_app.core_tools.download_path"))
+            }
+            row {
+                var value = FileUtil.toSystemDependentName(properties.getValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH)
+                        .orWhenNullOrEmpty(AzureRiderSettings.VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH))
 
-                    textFieldWithBrowseButton(
-                            { value },
-                            { value = FileUtil.toSystemIndependentName(it) },
-                            message("settings.app_services.function_app.core_tools.download_path_description"),
-                            null,
-                            FileChooserDescriptorFactory.createSingleFolderDescriptor()
-                    )
-                        .onApply { properties.setValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH, value) }
-                        .withValidationOnInput { validationForPath(it) }
-                }
+                textFieldWithBrowseButton(
+                        message("settings.app_services.function_app.core_tools.download_path_description"),
+                        null,
+                        FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                )
+                    .bindText({ value }, { value = FileUtil.toSystemIndependentName(it) })
+                    .onApply { properties.setValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH, value) }
+                    .validationOnInput { validationForPath(it) }
+                    .align(AlignX.FILL)
             }
         }
 
         row {
-            placeholder().constraints(growY, pushY)
+            placeholder()
         }
     }
 
@@ -257,6 +257,8 @@ class AzureFunctionsConfigurationPanel: AzureRiderAbstractConfigurablePanel, Dis
 
     override fun isModified() = panel.isModified()
 
+    override fun doResetAction() = panel.reset()
+
     override fun doOKAction() {
         panel.apply()
         Disposer.dispose(disposable)
@@ -271,3 +273,4 @@ class AzureFunctionsConfigurationPanel: AzureRiderAbstractConfigurablePanel, Dis
         override fun toString() = label
     }
 }
+

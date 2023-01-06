@@ -43,6 +43,8 @@ class AzureRiderAbstractConfigurable(private val panel: AzureRiderAbstractConfig
 
     override fun createComponent() = panel.panel
 
+    override fun reset() = panel.doResetAction()
+
     override fun apply() = panel.doOKAction()
 
     override fun isModified() = panel.isModified()
