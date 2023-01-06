@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2023 JetBrains s.r.o.
  * 
  * All rights reserved.
  * 
@@ -61,14 +61,12 @@ class StartAzuriteAction
     private val azuriteService = service<AzuriteService>()
 
     override fun update(e: AnActionEvent) {
-        val project = e.project ?: return
-
         if (azuriteService.isRunning) {
             e.presentation.isEnabled = false
             return
         }
 
-        val properties = PropertiesComponent.getInstance(project)
+        val properties = PropertiesComponent.getInstance()
         val packagePath = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_PACKAGE) ?: return
         val azuritePackage = Azurite.PackageDescriptor.createPackage(packagePath)
         e.presentation.isEnabled = !azuritePackage.isEmptyPath
@@ -81,7 +79,7 @@ class StartAzuriteAction
             return
         }
 
-        val properties = PropertiesComponent.getInstance(project)
+        val properties = PropertiesComponent.getInstance()
         val nodeJsInterpreterRef = NodeJsInterpreterRef.create(properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_INTERPRETER) ?: "project")
         val nodeJsInterpreter = nodeJsInterpreterRef.resolve(project)
         if (nodeJsInterpreter == null) {

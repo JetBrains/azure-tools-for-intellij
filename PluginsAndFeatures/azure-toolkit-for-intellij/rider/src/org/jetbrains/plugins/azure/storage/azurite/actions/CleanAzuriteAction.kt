@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 JetBrains s.r.o.
+ * Copyright (c) 2020-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -48,7 +48,7 @@ class CleanAzuriteAction
     override fun update(e: AnActionEvent) {
         val project = e.project ?: return
 
-        val properties = PropertiesComponent.getInstance(project)
+        val properties = PropertiesComponent.getInstance()
         val packagePath = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_PACKAGE) ?: return
         val azuritePackage = Azurite.PackageDescriptor.createPackage(packagePath)
         e.presentation.isEnabled = !azuriteService.isRunning && !azuritePackage.isEmptyPath && AzureRiderSettings.getAzuriteWorkspacePath(properties, project).exists()
@@ -57,7 +57,7 @@ class CleanAzuriteAction
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 
-        val properties = PropertiesComponent.getInstance(project)
+        val properties = PropertiesComponent.getInstance()
         e.presentation.isEnabled = AzureRiderSettings.getAzuriteWorkspacePath(properties, project).exists()
 
         val shouldPerformClean = ConfirmationDialog.requestForConfirmation(VcsShowConfirmationOption.STATIC_SHOW_CONFIRMATION,

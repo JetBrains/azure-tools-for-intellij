@@ -51,6 +51,8 @@ object AzureRiderSettings {
     @Deprecated("To be removed with 2022.3")
     const val PROPERTY_FUNCTIONS_MIGRATE_CORETOOLS_PATH_NOTIFICATION = "AzureFunctionsCoreToolsPath_Migration_Notify"
 
+    const val PROPERTY_FUNCTIONS_AZURITE_AUTOSTART = "AzureFunctionsAzuriteAutoStart"
+
     data class AzureCoreToolsPathEntry(var functionsVersion: String, var coreToolsPath: String) {
 
         fun toStringEntry() = "$functionsVersion|$coreToolsPath"

@@ -22,6 +22,7 @@
 
 package com.microsoft.intellij.configuration.ui
 
+import com.intellij.ide.BrowserUtil
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -34,9 +35,7 @@ import com.intellij.ui.InsertPathAction
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.TableSpeedSearch
 import com.intellij.ui.components.fields.ExtendableTextField
-import com.intellij.ui.dsl.builder.AlignX
-import com.intellij.ui.dsl.builder.bindText
-import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.table.JBTable
 import com.intellij.ui.table.TableView
 import com.intellij.util.application
@@ -45,8 +44,10 @@ import com.intellij.util.asSafely
 import com.intellij.util.ui.*
 import com.microsoft.intellij.configuration.AzureRiderSettings
 import com.microsoft.intellij.ui.extension.getSelectedValue
+import org.jetbrains.plugins.azure.RiderAzureBundle
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import org.jetbrains.plugins.azure.orWhenNullOrEmpty
+import org.jetbrains.plugins.azure.storage.azurite.Azurite
 import java.io.File
 import javax.swing.JTable
 import javax.swing.JTextField
@@ -189,56 +190,72 @@ class AzureFunctionsConfigurationPanel : AzureRiderAbstractConfigurablePanel, Di
 
     private fun createPanel(): DialogPanel = panel {
 
-        val coreToolsConfiguration = AzureRiderSettings.getAzureCoreToolsPathEntries(properties)
+        group(message("settings.app_services.function_app.core_tools.group")) {
+            val coreToolsConfiguration = AzureRiderSettings.getAzureCoreToolsPathEntries(properties)
 
-        coreToolsEditorModel = ListTableModel(
-                coreToolsEditorColumns,
-                coreToolsConfiguration,
-                0
-        )
+            coreToolsEditorModel = ListTableModel(
+                    coreToolsEditorColumns,
+                    coreToolsConfiguration,
+                    0
+            )
 
-        coreToolsEditor = TableView(coreToolsEditorModel).apply {
-            setShowGrid(false)
-            setEnableAntialiasing(true)
-            preferredScrollableViewportSize = JBUI.size(200, 100)
+            coreToolsEditor = TableView(coreToolsEditorModel).apply {
+                setShowGrid(false)
+                setEnableAntialiasing(true)
+                preferredScrollableViewportSize = JBUI.size(200, 100)
 
-            emptyText.text = message("settings.app_services.function_app.core_tools.configuration.empty_list")
+                emptyText.text = message("settings.app_services.function_app.core_tools.configuration.empty_list")
 
-            TableSpeedSearch(this)
+                TableSpeedSearch(this)
 
-            selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
+                selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
 
-            columnModel.getColumn(0).preferredWidth = JBUI.scale(250)
-            columnModel.getColumn(1).preferredWidth = JBUI.scale(750)
-        }
-
-        row {
-            text(message("settings.app_services.function_app.core_tools.description"))
-        }
-
-        row {
-            scrollCell(coreToolsEditor).onApply {
-                    AzureRiderSettings.setAzureCoreToolsPathEntries(properties, coreToolsEditorModel.items)
-            }.align(AlignX.FILL)
-        }
-
-        if (isCoreToolsFeedEnabled) {
-            row {
-                text(message("settings.app_services.function_app.core_tools.download_path"))
+                columnModel.getColumn(0).preferredWidth = JBUI.scale(250)
+                columnModel.getColumn(1).preferredWidth = JBUI.scale(750)
             }
-            row {
-                var value = FileUtil.toSystemDependentName(properties.getValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH)
-                        .orWhenNullOrEmpty(AzureRiderSettings.VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH))
 
-                textFieldWithBrowseButton(
-                        message("settings.app_services.function_app.core_tools.download_path_description"),
-                        null,
-                        FileChooserDescriptorFactory.createSingleFolderDescriptor()
-                )
-                    .bindText({ value }, { value = FileUtil.toSystemIndependentName(it) })
-                    .onApply { properties.setValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH, value) }
-                    .validationOnInput { validationForPath(it) }
-                    .align(AlignX.FILL)
+            row {
+                text(message("settings.app_services.function_app.core_tools.description"))
+            }
+
+            row {
+                scrollCell(coreToolsEditor).onApply {
+                        AzureRiderSettings.setAzureCoreToolsPathEntries(properties, coreToolsEditorModel.items)
+                }.align(AlignX.FILL)
+            }
+
+            if (isCoreToolsFeedEnabled) {
+                row {
+                    text(message("settings.app_services.function_app.core_tools.download_path"))
+                }
+                row {
+                    var value = FileUtil.toSystemDependentName(properties.getValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH)
+                            .orWhenNullOrEmpty(AzureRiderSettings.VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH))
+
+                    textFieldWithBrowseButton(
+                            message("settings.app_services.function_app.core_tools.download_path_description"),
+                            null,
+                            FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                    )
+                        .bindText({ value }, { value = FileUtil.toSystemIndependentName(it) })
+                        .onApply { properties.setValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH, value) }
+                        .validationOnInput { validationForPath(it) }
+                        .align(AlignX.FILL)
+                }
+            }
+        }
+
+        group(message("settings.app_services.function_app.azurite.group")) {
+            row {
+                text(message("settings.app_services.function_app.azurite.group.description"))
+            }
+
+            row {
+                var value = properties.getBoolean(AzureRiderSettings.PROPERTY_FUNCTIONS_AZURITE_AUTOSTART, true)
+
+                checkBox(message("settings.app_services.function_app.azurite.automaticstart"))
+                        .bindSelected(MutableProperty({ value }, { value = it }))
+                        .onApply { properties.setValue(AzureRiderSettings.PROPERTY_FUNCTIONS_AZURITE_AUTOSTART, value) }
             }
         }
 

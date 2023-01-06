@@ -282,6 +282,7 @@ class AzuriteConfigurationPanel : AzureRiderAbstractConfigurablePanel, Disposabl
     }
 
     override val displayName: String = RiderAzureBundle.message("settings.azurite.name")
+
     override fun isModified() = panel.isModified()
 
     override fun doResetAction() = panel.reset()
