@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2022 JetBrains s.r.o.
+ * Copyright (c) 2019-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -23,11 +23,10 @@
 package com.microsoft.intellij.configuration.ui
 
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
-import com.intellij.openapi.ui.BrowseFolderRunnable
-import com.intellij.openapi.ui.ComboBox
-import com.intellij.openapi.ui.TextComponentAccessor
-import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.openapi.ui.*
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.ui.ColoredTableCellRenderer
@@ -35,21 +34,19 @@ import com.intellij.ui.InsertPathAction
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.TableSpeedSearch
 import com.intellij.ui.components.fields.ExtendableTextField
+import com.intellij.ui.layout.PropertyBinding
 import com.intellij.ui.layout.noGrowY
 import com.intellij.ui.layout.panel
 import com.intellij.ui.table.JBTable
 import com.intellij.ui.table.TableView
 import com.intellij.util.PathUtil
 import com.intellij.util.asSafely
-import com.intellij.util.ui.AbstractTableCellEditor
-import com.intellij.util.ui.ColumnInfo
-import com.intellij.util.ui.JBUI
-import com.intellij.util.ui.ListTableModel
+import com.intellij.util.ui.*
 import com.microsoft.intellij.configuration.AzureRiderSettings
 import com.microsoft.intellij.ui.extension.getSelectedValue
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
+import org.jetbrains.plugins.azure.orWhenNullOrEmpty
 import java.io.File
-import javax.swing.JPanel
 import javax.swing.JTable
 import javax.swing.JTextField
 import javax.swing.ListSelectionModel
@@ -58,13 +55,13 @@ import javax.swing.table.TableCellEditor
 import javax.swing.table.TableCellRenderer
 
 @Suppress("UnstableApiUsage")
-class AzureFunctionsConfigurationPanel: AzureRiderAbstractConfigurablePanel {
+class AzureFunctionsConfigurationPanel: AzureRiderAbstractConfigurablePanel, Disposable {
 
+    private val disposable = Disposer.newDisposable()
     private val properties: PropertiesComponent = PropertiesComponent.getInstance()
 
     private lateinit var coreToolsEditorModel: ListTableModel<AzureRiderSettings.AzureCoreToolsPathEntry>
     private lateinit var coreToolsEditor: JBTable
-    private lateinit var coreToolsDownloadPathEditor: TextFieldWithBrowseButton
 
     private val isCoreToolsFeedEnabled = Registry.`is`("azure.function_app.core_tools.feed.enabled")
 
@@ -186,7 +183,7 @@ class AzureFunctionsConfigurationPanel: AzureRiderAbstractConfigurablePanel {
 
     override val displayName: String = message("settings.app_services.function_app.name")
 
-    override val panel: JPanel = panel {
+    private fun createPanel(): DialogPanel = panel {
 
         val coreToolsConfiguration = AzureRiderSettings.getAzureCoreToolsPathEntries(properties)
 
@@ -211,28 +208,13 @@ class AzureFunctionsConfigurationPanel: AzureRiderAbstractConfigurablePanel {
             columnModel.getColumn(1).preferredWidth = JBUI.scale(750)
         }
 
-        coreToolsDownloadPathEditor = TextFieldWithBrowseButton().apply {
-            addBrowseFolderListener(
-                    "",
-                    message("settings.app_services.function_app.core_tools.download_path_description"),
-                    null,
-                    FileChooserDescriptorFactory.createSingleFolderDescriptor(),
-                    TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
-            )
-
-            InsertPathAction.addTo(textField, FileChooserDescriptorFactory.createSingleFolderDescriptor())
-
-            text = FileUtil.toSystemDependentName(
-                    properties.getValue(
-                            AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH,
-                            AzureRiderSettings.VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH))
-        }
-
         noteRow(message("settings.app_services.function_app.core_tools.description"))
 
         row {
             cell(isFullWidth = true) {
-                scrollPane(coreToolsEditor).noGrowY()
+                scrollPane(coreToolsEditor).noGrowY().onApply {
+                    AzureRiderSettings.setAzureCoreToolsPathEntries(properties, coreToolsEditorModel.items)
+                }
             }
         }
 
@@ -240,7 +222,18 @@ class AzureFunctionsConfigurationPanel: AzureRiderAbstractConfigurablePanel {
             row(message("settings.app_services.function_app.core_tools.download_path")) { }
             row {
                 cell(isFullWidth = true) {
-                    component(coreToolsDownloadPathEditor)
+                    var value = FileUtil.toSystemDependentName(properties.getValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH)
+                            .orWhenNullOrEmpty(AzureRiderSettings.VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH))
+
+                    textFieldWithBrowseButton(
+                            { value },
+                            { value = FileUtil.toSystemIndependentName(it) },
+                            message("settings.app_services.function_app.core_tools.download_path_description"),
+                            null,
+                            FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                    )
+                        .onApply { properties.setValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH, value) }
+                        .withValidationOnInput { validationForPath(it) }
                 }
             }
         }
@@ -250,15 +243,27 @@ class AzureFunctionsConfigurationPanel: AzureRiderAbstractConfigurablePanel {
         }
     }
 
+    private fun validationForPath(textField: TextFieldWithBrowseButton) =
+            if (!textField.text.isNullOrEmpty() && !File(textField.text).exists()) {
+                ValidationInfo(message("settings.app_services.function_app.core_tools.download_path.invalid"), textField)
+            } else {
+                null
+            }
+
+    override val panel = createPanel().apply {
+        registerValidators(disposable)
+        reset()
+    }
+
+    override fun isModified() = panel.isModified()
+
     override fun doOKAction() {
+        panel.apply()
+        Disposer.dispose(disposable)
+    }
 
-        AzureRiderSettings.setAzureCoreToolsPathEntries(properties, coreToolsEditorModel.items)
-
-        if (coreToolsDownloadPathEditor.text != "" && File(coreToolsDownloadPathEditor.text).exists()) {
-            properties.setValue(
-                    AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH,
-                    FileUtil.toSystemIndependentName(coreToolsDownloadPathEditor.text))
-        }
+    override fun dispose() {
+        Disposer.dispose(disposable)
     }
 
     private data class CoreToolsComboBoxItem(val label: String, val value: String, val isPredefinedEntry: Boolean) {

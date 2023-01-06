@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -28,6 +28,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
+import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBList
 import com.intellij.ui.layout.Row
 import com.intellij.ui.layout.applyToComponent
@@ -175,7 +176,7 @@ class AzureManagedIdentityConfigurationPanel(private val project: Project) : Azu
 
     override val displayName: String = RiderAzureBundle.message("settings.managedidentity.name")
 
-    override fun doOKAction() {
-        panel.apply()
-    }
+    override fun isModified() = panel.isModified()
+
+    override fun doOKAction() = panel.apply()
 }
