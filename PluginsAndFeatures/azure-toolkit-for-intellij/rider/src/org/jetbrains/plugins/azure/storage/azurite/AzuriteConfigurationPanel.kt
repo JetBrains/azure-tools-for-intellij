@@ -53,7 +53,6 @@ import javax.swing.*
 @Suppress("UNUSED_LAMBDA_EXPRESSION")
 class AzuriteConfigurationPanel : AzureRiderAbstractConfigurablePanel, Disposable {
 
-    private val disposable = Disposer.newDisposable()
     private val properties = PropertiesComponent.getInstance()
     private val project = ProjectManager.getInstance().defaultProject
 
@@ -278,7 +277,7 @@ class AzuriteConfigurationPanel : AzureRiderAbstractConfigurablePanel, Disposabl
             }
 
     override val panel = createPanel().apply {
-        registerValidators(disposable)
+        registerValidators(this@AzuriteConfigurationPanel)
         reset()
     }
 
@@ -287,12 +286,7 @@ class AzuriteConfigurationPanel : AzureRiderAbstractConfigurablePanel, Disposabl
 
     override fun doResetAction() = panel.reset()
 
-    override fun doOKAction() {
-        panel.apply()
-        Disposer.dispose(disposable)
-    }
+    override fun doOKAction() = panel.apply()
 
-    override fun dispose() {
-        Disposer.dispose(disposable)
-    }
+    override fun dispose() = Disposer.dispose(this)
 }
