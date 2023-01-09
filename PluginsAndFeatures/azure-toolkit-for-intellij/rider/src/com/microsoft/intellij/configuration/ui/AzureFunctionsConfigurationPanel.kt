@@ -39,6 +39,7 @@ import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.table.JBTable
 import com.intellij.ui.table.TableView
+import com.intellij.util.application
 import com.intellij.util.PathUtil
 import com.intellij.util.asSafely
 import com.intellij.util.ui.*
@@ -57,13 +58,16 @@ import javax.swing.table.TableCellRenderer
 @Suppress("UnstableApiUsage")
 class AzureFunctionsConfigurationPanel : AzureRiderAbstractConfigurablePanel, Disposable {
 
-    private val disposable = Disposer.newDisposable()
     private val properties: PropertiesComponent = PropertiesComponent.getInstance()
 
     private lateinit var coreToolsEditorModel: ListTableModel<AzureRiderSettings.AzureCoreToolsPathEntry>
     private lateinit var coreToolsEditor: JBTable
 
     private val isCoreToolsFeedEnabled = Registry.`is`("azure.function_app.core_tools.feed.enabled")
+
+    init {
+        Disposer.register(application, this)
+    }
 
     private val coreToolsEditorColumns = arrayOf<ColumnInfo<*, *>>(
             object : ColumnInfo<AzureRiderSettings.AzureCoreToolsPathEntry, String>(message("settings.app_services.function_app.core_tools.configuration.column.functionsVersion")) {
@@ -251,7 +255,7 @@ class AzureFunctionsConfigurationPanel : AzureRiderAbstractConfigurablePanel, Di
             }
 
     override val panel = createPanel().apply {
-        registerValidators(disposable)
+        registerValidators(this@AzureFunctionsConfigurationPanel)
         reset()
     }
 
@@ -259,14 +263,9 @@ class AzureFunctionsConfigurationPanel : AzureRiderAbstractConfigurablePanel, Di
 
     override fun doResetAction() = panel.reset()
 
-    override fun doOKAction() {
-        panel.apply()
-        Disposer.dispose(disposable)
-    }
+    override fun doOKAction() = panel.apply()
 
-    override fun dispose() {
-        Disposer.dispose(disposable)
-    }
+    override fun dispose() = Disposer.dispose(this)
 
     private data class CoreToolsComboBoxItem(val label: String, val value: String, val isPredefinedEntry: Boolean) {
 
