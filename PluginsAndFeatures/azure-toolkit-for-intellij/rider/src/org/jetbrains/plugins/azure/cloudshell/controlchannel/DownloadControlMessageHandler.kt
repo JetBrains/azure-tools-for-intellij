@@ -1,18 +1,18 @@
 /**
- * Copyright (c) 2018-2020 JetBrains s.r.o.
- * <p/>
+ * Copyright (c) 2018-2023 JetBrains s.r.o.
+ *
  * All rights reserved.
- * <p/>
+ *
  * MIT License
- * <p/>
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
  * to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * <p/>
+ *
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of
  * the Software.
- * <p/>
+ *
  * THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
  * THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
@@ -23,10 +23,13 @@ package org.jetbrains.plugins.azure.cloudshell.controlchannel
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import com.intellij.ide.BrowserUtil
 import com.intellij.ide.actions.RevealFileAction
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationListener
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileChooser.FileChooserFactory
@@ -95,19 +98,12 @@ class DownloadControlMessageHandler(
                                 outputStream.close()
 
                                 AzureNotifications.notify(project,
-                                        RiderAzureBundle.message("common.azure"),
-                                        RiderAzureBundle.message("notification.cloud_shell.download_file.subtitle", fileName),
-                                        RiderAzureBundle.message("notification.cloud_shell.download_file.message", fileName) +
-                                                " <a href='show'>" + RiderAzureBundle.message("notification.cloud_shell.download_file.message.show_file") + "</a>",
-                                        NotificationType.INFORMATION,
-                                        object : NotificationListener.Adapter() {
-                                            override fun hyperlinkActivated(notification: Notification, e: HyperlinkEvent) {
-                                                if (!project.isDisposed) {
-                                                    when (e.description) {
-                                                        "show" -> RevealFileAction.openFile(File(virtualFile.presentableUrl))
-                                                    }
-                                                }
-                                            }
+                                        title = RiderAzureBundle.message("common.azure"),
+                                        subtitle = RiderAzureBundle.message("notification.cloud_shell.download_file.subtitle", fileName),
+                                        content = RiderAzureBundle.message("notification.cloud_shell.download_file.message", fileName),
+                                        type = NotificationType.INFORMATION,
+                                        action = object : AnAction(RiderAzureBundle.message("notification.cloud_shell.download_file.message.show_file")) {
+                                            override fun actionPerformed(e: AnActionEvent) = RevealFileAction.openFile(File(virtualFile.presentableUrl))
                                         })
                             } catch (e: IOException) {
                                 logger.error(e)

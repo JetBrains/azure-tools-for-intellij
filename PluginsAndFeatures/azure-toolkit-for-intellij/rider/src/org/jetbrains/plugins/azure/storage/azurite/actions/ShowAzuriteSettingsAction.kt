@@ -26,12 +26,13 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import org.jetbrains.plugins.azure.RiderAzureBundle
+import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import org.jetbrains.plugins.azure.storage.azurite.Azurite
 
 class ShowAzuriteSettingsAction
     : AnAction(
-        RiderAzureBundle.message("action.azurite.show_settings.name"),
-        RiderAzureBundle.message("action.azurite.show_settings.description"),
+        message("action.azurite.show_settings.name"),
+        message("action.azurite.show_settings.description"),
         AllIcons.Actions.EditSource) {
 
     override fun actionPerformed(e: AnActionEvent) = Azurite.showSettings(e.project)
