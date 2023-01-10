@@ -23,29 +23,31 @@
 package com.microsoft.intellij.configuration
 
 import com.intellij.application.options.OptionsContainingConfigurable
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.Configurable
-import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.options.SearchableConfigurable
+import com.intellij.openapi.ui.DialogPanel
+import com.intellij.openapi.util.Disposer
 import com.microsoft.intellij.AzureConfigurable.AZURE_CONFIGURABLE_PREFIX
-import com.microsoft.intellij.configuration.ui.AzureRiderAbstractConfigurablePanel
-import com.microsoft.intellij.ui.messages.AzureBundle
 import org.jetbrains.annotations.Nls
 
-class AzureRiderAbstractConfigurable(private val panel: AzureRiderAbstractConfigurablePanel, private val isProjectLevelConfigurable: Boolean = true) :
-        SearchableConfigurable, OptionsContainingConfigurable, Configurable.VariableProjectAppLevel {
+abstract class AzureRiderAbstractConfigurable(private val displayName: String, protected val parentDisposable: Disposable)
+    : SearchableConfigurable, OptionsContainingConfigurable, Configurable.VariableProjectAppLevel {
+
+    abstract val panel: DialogPanel
 
     @Nls
-    override fun getDisplayName()= panel.displayName
+    override fun getDisplayName() = displayName
 
     override fun getHelpTopic(): String? = null
 
     override fun processListOptions(): Set<String> = emptySet()
 
-    override fun createComponent() = panel.panel
+    override fun createComponent() = panel
 
-    override fun reset() = panel.doResetAction()
+    override fun reset() = panel.reset()
 
-    override fun apply() = panel.doOKAction()
+    override fun apply() = panel.apply()
 
     override fun isModified() = panel.isModified()
 
@@ -53,5 +55,7 @@ class AzureRiderAbstractConfigurable(private val panel: AzureRiderAbstractConfig
 
     override fun enableSearch(option: String?) = null
 
-    override fun isProjectLevel() = isProjectLevelConfigurable
+    override fun disposeUIResources() {
+        Disposer.dispose(parentDisposable)
+    }
 }

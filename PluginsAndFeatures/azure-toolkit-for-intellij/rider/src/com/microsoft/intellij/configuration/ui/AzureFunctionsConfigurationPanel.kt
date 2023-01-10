@@ -22,12 +22,10 @@
 
 package com.microsoft.intellij.configuration.ui
 
-import com.intellij.ide.BrowserUtil
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.ui.*
-import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.ui.ColoredTableCellRenderer
@@ -38,16 +36,14 @@ import com.intellij.ui.components.fields.ExtendableTextField
 import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.table.JBTable
 import com.intellij.ui.table.TableView
-import com.intellij.util.application
 import com.intellij.util.PathUtil
 import com.intellij.util.asSafely
 import com.intellij.util.ui.*
+import com.microsoft.intellij.configuration.AzureRiderAbstractConfigurable
 import com.microsoft.intellij.configuration.AzureRiderSettings
 import com.microsoft.intellij.ui.extension.getSelectedValue
-import org.jetbrains.plugins.azure.RiderAzureBundle
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import org.jetbrains.plugins.azure.orWhenNullOrEmpty
-import org.jetbrains.plugins.azure.storage.azurite.Azurite
 import java.io.File
 import javax.swing.JTable
 import javax.swing.JTextField
@@ -57,7 +53,8 @@ import javax.swing.table.TableCellEditor
 import javax.swing.table.TableCellRenderer
 
 @Suppress("UnstableApiUsage")
-class AzureFunctionsConfigurationPanel : AzureRiderAbstractConfigurablePanel, Disposable {
+class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
+    : AzureRiderAbstractConfigurable(message("settings.app_services.function_app.name"), parentDisposable) {
 
     private val properties: PropertiesComponent = PropertiesComponent.getInstance()
 
@@ -65,10 +62,6 @@ class AzureFunctionsConfigurationPanel : AzureRiderAbstractConfigurablePanel, Di
     private lateinit var coreToolsEditor: JBTable
 
     private val isCoreToolsFeedEnabled = Registry.`is`("azure.function_app.core_tools.feed.enabled")
-
-    init {
-        Disposer.register(application, this)
-    }
 
     private val coreToolsEditorColumns = arrayOf<ColumnInfo<*, *>>(
             object : ColumnInfo<AzureRiderSettings.AzureCoreToolsPathEntry, String>(message("settings.app_services.function_app.core_tools.configuration.column.functionsVersion")) {
@@ -186,8 +179,6 @@ class AzureFunctionsConfigurationPanel : AzureRiderAbstractConfigurablePanel, Di
             }
     )
 
-    override val displayName: String = message("settings.app_services.function_app.name")
-
     private fun createPanel(): DialogPanel = panel {
 
         group(message("settings.app_services.function_app.core_tools.group")) {
@@ -272,17 +263,11 @@ class AzureFunctionsConfigurationPanel : AzureRiderAbstractConfigurablePanel, Di
             }
 
     override val panel = createPanel().apply {
-        registerValidators(this@AzureFunctionsConfigurationPanel)
+        registerValidators(parentDisposable)
         reset()
     }
 
-    override fun isModified() = panel.isModified()
-
-    override fun doResetAction() = panel.reset()
-
-    override fun doOKAction() = panel.apply()
-
-    override fun dispose() = Disposer.dispose(this)
+    override fun isProjectLevel() = false
 
     private data class CoreToolsComboBoxItem(val label: String, val value: String, val isPredefinedEntry: Boolean) {
 

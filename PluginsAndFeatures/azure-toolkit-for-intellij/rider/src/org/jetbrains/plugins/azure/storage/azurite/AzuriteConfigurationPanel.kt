@@ -35,30 +35,26 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.ui.ValidationInfo
-import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.layout.selectedValueIs
-import com.intellij.util.application
+import com.microsoft.intellij.configuration.AzureRiderAbstractConfigurable
 import com.microsoft.intellij.configuration.AzureRiderSettings
-import com.microsoft.intellij.configuration.ui.AzureRiderAbstractConfigurablePanel
 import com.microsoft.intellij.helpers.validator.IpAddressInputValidator
 import org.jetbrains.plugins.azure.RiderAzureBundle
+import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import org.jetbrains.plugins.azure.orWhenNullOrEmpty
 import java.io.File
 import javax.swing.*
 
 @Suppress("UNUSED_LAMBDA_EXPRESSION")
-class AzuriteConfigurationPanel : AzureRiderAbstractConfigurablePanel, Disposable {
+class AzuriteConfigurationPanel(parentDisposable: Disposable)
+    : AzureRiderAbstractConfigurable(message("settings.azurite.name"), parentDisposable) {
 
     private val properties = PropertiesComponent.getInstance()
     private val project = ProjectManager.getInstance().defaultProject
-
-    init {
-        Disposer.register(application, this)
-    }
 
     private fun createPanel(): DialogPanel =
             panel {
@@ -277,17 +273,9 @@ class AzuriteConfigurationPanel : AzureRiderAbstractConfigurablePanel, Disposabl
             }
 
     override val panel = createPanel().apply {
-        registerValidators(this@AzuriteConfigurationPanel)
+        registerValidators(parentDisposable)
         reset()
     }
 
-    override val displayName: String = RiderAzureBundle.message("settings.azurite.name")
-
-    override fun isModified() = panel.isModified()
-
-    override fun doResetAction() = panel.reset()
-
-    override fun doOKAction() = panel.apply()
-
-    override fun dispose() = Disposer.dispose(this)
+    override fun isProjectLevel() = false
 }
