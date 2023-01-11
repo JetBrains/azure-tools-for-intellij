@@ -271,9 +271,8 @@
 
     <projectConfigurable groupId="tools"
                          id="com.microsoft.intellij.configuration.AzureRiderConfigurable"
-                         provider="com.microsoft.intellij.configuration.AzureRiderConfigurableProvider"
+                         instance="com.microsoft.intellij.configuration.AzureRiderConfigurable"
                          dynamic="true"/>
-
 
     <projectConfigurable parentId="FileTemplatesSettingsId"
                          instance="org.jetbrains.plugins.azure.functions.settings.templates.RiderAzureCSharpFileTemplatesOptionPage"

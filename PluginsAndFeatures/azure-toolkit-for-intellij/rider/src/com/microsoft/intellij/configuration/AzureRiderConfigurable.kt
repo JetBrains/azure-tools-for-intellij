@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2022 JetBrains s.r.o.
+ * Copyright (c) 2018-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -32,27 +32,27 @@ import org.jetbrains.plugins.azure.identity.managed.AzureManagedIdentityConfigur
 import org.jetbrains.plugins.azure.storage.azurite.AzuriteConfigurationPanel
 
 class AzureRiderConfigurable(private val project: Project) :
-        SearchableConfigurable.Parent.Abstract(), OptionsContainingConfigurable {
+        SearchableConfigurable.Parent.Abstract(), OptionsContainingConfigurable, Configurable.VariableProjectAppLevel {
 
     companion object {
         private const val AZURE_CONFIGURATION_ID = "com.intellij"
     }
 
-    private var myPanels = listOf<Configurable>()
+    private var configurables = listOf<Configurable>()
 
     override fun getId() = AZURE_CONFIGURATION_ID
 
     override fun getDisplayName() = message("common.azure")
 
     override fun buildConfigurables(): Array<Configurable> {
-        val panels = listOf<Configurable>(
-                AzureRiderAbstractConfigurable(AzureFunctionsConfigurationPanel()),
+        configurables = listOf<Configurable>(
+                AzureRiderAbstractConfigurable(AzureFunctionsConfigurationPanel(), isProjectLevelConfigurable = false),
                 AzureRiderAbstractConfigurable(AzureManagedIdentityConfigurationPanel(project)),
-                AzureRiderAbstractConfigurable(AzuriteConfigurationPanel(project))
+                AzureRiderAbstractConfigurable(AzuriteConfigurationPanel(), isProjectLevelConfigurable = false)
         )
-        myPanels = panels
-        return panels.toTypedArray()
+        return configurables.toTypedArray()
     }
 
     override fun processListOptions() = hashSetOf<String>()
+    override fun isProjectLevel() = false
 }
