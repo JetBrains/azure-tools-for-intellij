@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2022 JetBrains s.r.o.
+ * Copyright (c) 2018-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -279,21 +279,12 @@ class StartAzureCloudShellAction : AnAction() {
         logger.warn("Azure Cloud Shell is not configured in any Azure subscription.")
 
         AzureNotifications.notify(project,
-                RiderAzureBundle.message("common.azure"),
-                RiderAzureBundle.message("notification.cloud_shell.start.failed_to_start.subtitle"),
-                RiderAzureBundle.message("notification.cloud_shell.start.failed_to_start.message") +
-                        " <a href='shellportal'>" +
-                        RiderAzureBundle.message("notification.cloud_shell.start.failed_to_start.message.configure_cloud_shell") +
-                        "</a>",
-                NotificationType.WARNING,
-                object : NotificationListener.Adapter() {
-                    override fun hyperlinkActivated(notification: Notification, e: HyperlinkEvent) {
-                        if (!project.isDisposed) {
-                            when (e.description) {
-                                "shellportal" -> BrowserUtil.browse("https://shell.azure.com")
-                            }
-                        }
-                    }
+                title = RiderAzureBundle.message("common.azure"),
+                subtitle = RiderAzureBundle.message("notification.cloud_shell.start.failed_to_start.subtitle"),
+                content = RiderAzureBundle.message("notification.cloud_shell.start.failed_to_start.message"),
+                type = NotificationType.WARNING,
+                action = object : AnAction(RiderAzureBundle.message("notification.cloud_shell.start.failed_to_start.message.configure_cloud_shell")) {
+                    override fun actionPerformed(e: AnActionEvent) = BrowserUtil.browse("https://shell.azure.com")
                 })
     }
 }

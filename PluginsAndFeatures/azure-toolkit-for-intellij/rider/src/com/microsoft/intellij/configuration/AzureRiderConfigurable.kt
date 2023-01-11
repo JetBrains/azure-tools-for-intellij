@@ -23,9 +23,11 @@
 package com.microsoft.intellij.configuration
 
 import com.intellij.application.options.OptionsContainingConfigurable
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.microsoft.intellij.configuration.ui.AzureFunctionsConfigurationPanel
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import org.jetbrains.plugins.azure.identity.managed.AzureManagedIdentityConfigurationPanel
@@ -38,6 +40,8 @@ class AzureRiderConfigurable(private val project: Project) :
         private const val AZURE_CONFIGURATION_ID = "com.intellij"
     }
 
+    private val disposable = Disposer.newDisposable()
+
     private var configurables = listOf<Configurable>()
 
     override fun getId() = AZURE_CONFIGURATION_ID
@@ -46,13 +50,17 @@ class AzureRiderConfigurable(private val project: Project) :
 
     override fun buildConfigurables(): Array<Configurable> {
         configurables = listOf<Configurable>(
-                AzureRiderAbstractConfigurable(AzureFunctionsConfigurationPanel(), isProjectLevelConfigurable = false),
-                AzureRiderAbstractConfigurable(AzureManagedIdentityConfigurationPanel(project)),
-                AzureRiderAbstractConfigurable(AzuriteConfigurationPanel(), isProjectLevelConfigurable = false)
+                AzureFunctionsConfigurationPanel(disposable),
+                AzureManagedIdentityConfigurationPanel(disposable, project),
+                AzuriteConfigurationPanel(disposable)
         )
         return configurables.toTypedArray()
     }
 
     override fun processListOptions() = hashSetOf<String>()
     override fun isProjectLevel() = false
+
+    override fun disposeUIResources() {
+        Disposer.dispose(disposable)
+    }
 }

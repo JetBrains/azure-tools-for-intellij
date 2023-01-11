@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -271,13 +271,16 @@ class RegisterApplicationInAzureAdAction
                         } catch (e: GraphErrorException) {
                             logger.error("Failed to create application", e)
 
-                            reportError(project,
-                                    RiderAzureBundle.message("notification.identity.ad.register_app.failed.common.subtitle"),
-                                    if (e.body().code() == "403") {
-                                        RiderAzureBundle.message("notification.identity.ad.register_app.failed.create.permissions")
-                                    } else {
-                                        RiderAzureBundle.message("notification.identity.ad.register_app.failed.create.message", e.body().message())
-                                    })
+                            if (e.body().code() == "403") {
+                                reportError(project,
+                                        RiderAzureBundle.message("notification.identity.ad.register_app.failed.common.subtitle"),
+                                        RiderAzureBundle.message("notification.identity.ad.register_app.failed.create.permissions"),
+                                        "https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-how-applications-are-added#who-has-permission-to-add-applications-to-my-azure-ad-instance")
+                            } else {
+                                reportError(project,
+                                        RiderAzureBundle.message("notification.identity.ad.register_app.failed.common.subtitle"),
+                                        RiderAzureBundle.message("notification.identity.ad.register_app.failed.create.message", e.body().message()))
+                            }
 
                             return
                         }
@@ -386,20 +389,18 @@ class RegisterApplicationInAzureAdAction
         )
     }
 
-    private fun reportError(project: Project, subtitle: String, message: String) {
+    private fun reportError(project: Project, subtitle: String, message: String, helpUrl: String? = null) {
         AzureNotifications.notify(project,
-                RiderAzureBundle.message("common.azure"),
-                subtitle,
-                message,
-                NotificationType.ERROR,
-                object : NotificationListener.Adapter() {
-                    override fun hyperlinkActivated(notification: Notification, e: HyperlinkEvent) {
-                        if (!project.isDisposed) {
-                            when (e.description) {
-                                "permissions" -> BrowserUtil.browse("https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-how-applications-are-added#who-has-permission-to-add-applications-to-my-azure-ad-instance")
-                            }
-                        }
+                title = RiderAzureBundle.message("common.azure"),
+                subtitle = subtitle,
+                content = message,
+                type = NotificationType.ERROR,
+                action = if (!helpUrl.isNullOrEmpty()) {
+                    object : AnAction(RiderAzureBundle.message("notification.identity.ad.register_app.learn.more")) {
+                        override fun actionPerformed(e: AnActionEvent) = BrowserUtil.browse(helpUrl)
                     }
+                } else {
+                    null
                 })
     }
 }

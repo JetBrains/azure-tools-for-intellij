@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 JetBrains s.r.o.
+ * Copyright (c) 2020-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -34,13 +34,14 @@ import com.intellij.util.ui.ConfirmationDialog
 import com.microsoft.intellij.configuration.AzureRiderSettings
 import icons.CommonIcons
 import org.jetbrains.plugins.azure.RiderAzureBundle
+import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import org.jetbrains.plugins.azure.storage.azurite.Azurite
 import org.jetbrains.plugins.azure.storage.azurite.AzuriteService
 
 class CleanAzuriteAction
     : AnAction(
-        RiderAzureBundle.message("action.azurite.clean.name"),
-        RiderAzureBundle.message("action.azurite.clean.description"),
+        message("action.azurite.clean.name"),
+        message("action.azurite.clean.description"),
         AllIcons.Actions.Rollback) {
 
     private val azuriteService = service<AzuriteService>()
@@ -48,7 +49,7 @@ class CleanAzuriteAction
     override fun update(e: AnActionEvent) {
         val project = e.project ?: return
 
-        val properties = PropertiesComponent.getInstance(project)
+        val properties = PropertiesComponent.getInstance()
         val packagePath = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_PACKAGE) ?: return
         val azuritePackage = Azurite.PackageDescriptor.createPackage(packagePath)
         e.presentation.isEnabled = !azuriteService.isRunning && !azuritePackage.isEmptyPath && AzureRiderSettings.getAzuriteWorkspacePath(properties, project).exists()
@@ -57,17 +58,18 @@ class CleanAzuriteAction
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 
-        val properties = PropertiesComponent.getInstance(project)
+        val properties = PropertiesComponent.getInstance()
         e.presentation.isEnabled = AzureRiderSettings.getAzuriteWorkspacePath(properties, project).exists()
 
         val shouldPerformClean = ConfirmationDialog.requestForConfirmation(VcsShowConfirmationOption.STATIC_SHOW_CONFIRMATION,
                 project,
-                RiderAzureBundle.message("action.azurite.clean.confirmation.message"),
-                RiderAzureBundle.message("action.azurite.clean.confirmation.title"),
+                message("action.azurite.clean.confirmation.message"),
+                message("action.azurite.clean.confirmation.title"),
                 CommonIcons.Azurite,
-                RiderAzureBundle.message("action.azurite.clean.confirmation.confirm"),
+                message("action.azurite.clean.confirmation.confirm"),
                 CommonBundle.getCancelButtonText()
         )
+
         if (shouldPerformClean) {
             ApplicationManager.getApplication().runWriteAction {
                 azuriteService.clean(AzureRiderSettings.getAzuriteWorkspacePath(properties, project))

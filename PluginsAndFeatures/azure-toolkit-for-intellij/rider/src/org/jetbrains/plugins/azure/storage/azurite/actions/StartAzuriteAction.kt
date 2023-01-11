@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2023 JetBrains s.r.o.
  * 
  * All rights reserved.
  * 
@@ -30,6 +30,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.javascript.nodejs.interpreter.NodeJsInterpreterRef
 import com.intellij.javascript.nodejs.interpreter.local.NodeJsLocalInterpreter
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
@@ -39,9 +40,11 @@ import com.intellij.openapi.progress.PerformInBackgroundOption
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
+import com.intellij.openapi.project.Project
 import com.intellij.util.EnvironmentUtil
 import com.microsoft.intellij.configuration.AzureRiderSettings
-import org.jetbrains.plugins.azure.RiderAzureBundle
+import org.jetbrains.plugins.azure.AzureNotifications
+import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import org.jetbrains.plugins.azure.orWhenNullOrEmpty
 import org.jetbrains.plugins.azure.storage.azurite.Azurite
 import org.jetbrains.plugins.azure.storage.azurite.AzuriteService
@@ -49,8 +52,8 @@ import java.io.File
 
 class StartAzuriteAction
     : AnAction(
-        RiderAzureBundle.message("action.azurite.start.name"),
-        RiderAzureBundle.message("action.azurite.start.description"),
+        message("action.azurite.start.name"),
+        message("action.azurite.start.description"),
         AllIcons.Actions.Execute) {
 
     companion object {
@@ -61,14 +64,12 @@ class StartAzuriteAction
     private val azuriteService = service<AzuriteService>()
 
     override fun update(e: AnActionEvent) {
-        val project = e.project ?: return
-
         if (azuriteService.isRunning) {
             e.presentation.isEnabled = false
             return
         }
 
-        val properties = PropertiesComponent.getInstance(project)
+        val properties = PropertiesComponent.getInstance()
         val packagePath = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_PACKAGE) ?: return
         val azuritePackage = Azurite.PackageDescriptor.createPackage(packagePath)
         e.presentation.isEnabled = !azuritePackage.isEmptyPath
@@ -77,15 +78,19 @@ class StartAzuriteAction
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 
+        logger.info("Start Azurite storage emulator...")
+
         if (azuriteService.isRunning) {
+            logger.info("Skip start Azurite - already running")
             return
         }
 
-        val properties = PropertiesComponent.getInstance(project)
+        val properties = PropertiesComponent.getInstance()
         val nodeJsInterpreterRef = NodeJsInterpreterRef.create(properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_INTERPRETER) ?: "project")
         val nodeJsInterpreter = nodeJsInterpreterRef.resolve(project)
         if (nodeJsInterpreter == null) {
-            Azurite.showSettings(project)
+            logger.warn("Can not start Azurite - invalid configuration (no Node interpreter is configured)")
+            showInvalidConfigurationNotification(project)
             return
         }
 
@@ -93,7 +98,8 @@ class StartAzuriteAction
 
         val packagePath = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_PACKAGE)
         if (packagePath.isNullOrEmpty()) {
-            Azurite.showSettings(project)
+            logger.warn("Can not start Azurite - invalid configuration (no Azurite package is configured)")
+            showInvalidConfigurationNotification(project)
             return
         }
 
@@ -107,17 +113,17 @@ class StartAzuriteAction
 
         val application = ApplicationManager.getApplication()
 
-        ProgressManager.getInstance().run(object : Task.Backgroundable(project, RiderAzureBundle.message("service.azurite.starting.generic"), true, PerformInBackgroundOption.DEAF) {
+        ProgressManager.getInstance().run(object : Task.Backgroundable(project, message("service.azurite.starting.generic"), true, PerformInBackgroundOption.DEAF) {
             override fun run(indicator: ProgressIndicator) {
 
-                indicator.text = RiderAzureBundle.message("service.azurite.starting.check.table.storage")
+                indicator.text = message("service.azurite.starting.check.table.storage")
                 val includeTableStorageParameters = supportsTableStorage(
                         nodeJsLocalInterpreter.interpreterSystemDependentPath, azuriteJsFile.absolutePath)
                 logger.info("Azurite supports table storage: $includeTableStorageParameters")
 
                 if (indicator.isCanceled) return
 
-                indicator.text = RiderAzureBundle.message("service.azurite.starting.generic")
+                indicator.text = message("service.azurite.starting.generic")
                 application.invokeLaterOnWriteThread {
                     application.runWriteAction {
                         val commandLine = GeneralCommandLine(
@@ -179,6 +185,15 @@ class StartAzuriteAction
         })
     }
 
+    private fun showInvalidConfigurationNotification(project: Project) = AzureNotifications.notify(
+            project = project,
+            title = message("action.azurite.start.configure.title"),
+            content = message("action.azurite.start.configure.content"),
+            type = NotificationType.WARNING,
+            action = object : AnAction(message("action.azurite.start.configure.action.configure")) {
+                override fun actionPerformed(e: AnActionEvent) = Azurite.showSettings(e.project)
+            })
+
     private fun supportsTableStorage(nodeJsInterpreterPath: String, azuriteJsFilePath: String): Boolean {
 
         val nodeJsInterpreterExecutable = File(nodeJsInterpreterPath)
@@ -196,7 +211,7 @@ class StartAzuriteAction
             logger.debug("Executing ${commandLine.commandLineString}...")
 
             val processHandler = CapturingProcessHandler(commandLine)
-            val output = processHandler.runProcess(Companion.AZURITE_PROCESS_TIMEOUT_MILLIS, true)
+            val output = processHandler.runProcess(AZURITE_PROCESS_TIMEOUT_MILLIS, true)
 
             logger.debug("Result: ${output.stdout}")
 

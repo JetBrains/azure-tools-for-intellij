@@ -24,11 +24,11 @@ package org.jetbrains.plugins.azure.identity.managed
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
-import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBList
 import com.intellij.ui.layout.Row
 import com.intellij.ui.layout.applyToComponent
@@ -39,15 +39,17 @@ import com.microsoft.azuretools.authmanage.AuthMethod
 import com.microsoft.azuretools.authmanage.AuthMethodManager
 import com.microsoft.azuretools.authmanage.models.SubscriptionDetail
 import com.microsoft.intellij.actions.AzureSignInAction
-import com.microsoft.intellij.configuration.ui.AzureRiderAbstractConfigurablePanel
+import com.microsoft.intellij.configuration.AzureRiderAbstractConfigurable
 import net.miginfocom.swing.MigLayout
 import org.jetbrains.plugins.azure.RiderAzureBundle
+import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import java.io.IOException
 
 @Suppress("UNUSED_LAMBDA_EXPRESSION")
-class AzureManagedIdentityConfigurationPanel(private val project: Project) : AzureRiderAbstractConfigurablePanel {
+class AzureManagedIdentityConfigurationPanel(parentDisposable: Disposable, private val project: Project)
+    : AzureRiderAbstractConfigurable(message("settings.managedidentity.name"), parentDisposable) {
 
-    private val logger = Logger.getInstance(AzureRiderAbstractConfigurablePanel::class.java)
+    private val logger = Logger.getInstance(AzureManagedIdentityConfigurationPanel::class.java)
 
     private fun createPanel(): DialogPanel {
         lateinit var dialogPanel: DialogPanel
@@ -174,11 +176,5 @@ class AzureManagedIdentityConfigurationPanel(private val project: Project) : Azu
         reset()
     }
 
-    override val displayName: String = RiderAzureBundle.message("settings.managedidentity.name")
-
-    override fun isModified() = panel.isModified()
-
-    override fun doResetAction() = panel.reset()
-
-    override fun doOKAction() = panel.apply()
+    override fun isProjectLevel() = true
 }
