@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 JetBrains s.r.o.
+ * Copyright (c) 2020-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -22,7 +22,7 @@
 
 package org.jetbrains.plugins.azure.functions.completion.csharp
 
-import com.jetbrains.rdclient.completion.ProtocolCompletionContributor
+import com.jetbrains.rider.completion.ProtocolCompletionContributor
 
 class TimerTriggerCompletionContributor : ProtocolCompletionContributor() {
 

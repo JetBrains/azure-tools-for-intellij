@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.7.20'
+    ext.kotlin_version = kotlin_version
     // https://www.myget.org/feed/rd-snapshots/package/maven/com.jetbrains.rd/rd-gen
     ext.rd_version = rd_version
 
@@ -32,7 +32,7 @@ apply plugin: 'kotlin'
 dependencies {
     implementation name: 'rider-model'
     implementation "com.jetbrains.rd:rd-gen:$rd_version"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 
 def protocolGroup = 'protocol'
@@ -83,11 +83,11 @@ task cleanProtocolModels {
 }
 compileKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = javaVersion
     }
 }
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = javaVersion
     }
 }
