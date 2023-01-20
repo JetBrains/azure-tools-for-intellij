@@ -8,12 +8,22 @@ plugins {
 
 compileKotlin {
     kotlinOptions.jvmTarget = javaVersion
+    ajc {
+        options {
+            compilerArgs << '-Xlint:ignore'
+        }
+    }
 //    ajc {
 //        enabled = false
 //    }
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = javaVersion
+    ajc {
+        options {
+            compilerArgs << '-Xlint:ignore'
+        }
+    }
 //    ajc {
 //        enabled = false
 //    }
