@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2022 JetBrains s.r.o.
+ * Copyright (c) 2019-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -30,6 +30,7 @@ import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rider.model.*
 import com.jetbrains.rider.run.configurations.RunnableProjectKinds
 import com.jetbrains.rider.run.configurations.controls.*
+import com.jetbrains.rider.run.configurations.controls.runtimeSelection.RuntimeSelector
 import com.jetbrains.rider.run.configurations.controls.startBrowser.BrowserSettings
 import com.jetbrains.rider.run.configurations.controls.startBrowser.BrowserSettingsEditor
 import com.jetbrains.rider.run.configurations.dotNetExe.DotNetExeConfigurationViewModel
@@ -61,7 +62,7 @@ class AzureFunctionsHostConfigurationViewModel(
         programParametersEditor = programParametersEditor,
         workingDirectorySelector = workingDirectorySelector,
         environmentVariablesEditor = environmentVariablesEditor,
-        runtimeSelector = RuntimeSelector("", "Runtime"),
+        runtimeSelector = RuntimeSelector("", "Runtime", project, lifetime),
         runtimeArgumentsEditor = ProgramParametersEditor("", "Runtime_arguments", lifetime),
         trackExePathInWorkingDirectoryIfItPossible = false,
         useExternalConsoleEditor = useExternalConsoleEditor

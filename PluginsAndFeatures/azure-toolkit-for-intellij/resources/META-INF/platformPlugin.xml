@@ -6,15 +6,9 @@
     <html>
         <h4>Added:</h4>
         <ul>
-          <li>Compatibility with Rider 2022.3</li>
-          <li>Azure Functions: Add F# item templates for isolated worker (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/635">#635</a>)</li>
+          <li>Compatibility with Rider 2023.1 EAP1</li>
           <li>Azure Functions: Option to auto-start Azurite with run configurations (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/605">#605</a>)</li>
           <li>Azure Functions: Azure Functions: show a warning when Azurite is not running (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/605">#650</a>)</li>
-        </ul>
-        <h4>Fixed bugs:</h4>
-        <ul>
-          <li>Azure Functions: func.exe passed as argument to func.exe (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/646">#646</a>)</li>
-          <li>No F1 tier on Web API with linux (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/638">#638</a>)</li>
         </ul>
     </html>
     ]]>

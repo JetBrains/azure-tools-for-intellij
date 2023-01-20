@@ -23,6 +23,12 @@
   <change-notes>
     <![CDATA[
       <html>
+        <p>[3.50.0-2023.1]</p>
+        <ul>
+          <li>Compatibility with Rider 2023.1 EAP1</li>
+          <li>Azure Functions: Option to auto-start Azurite with run configurations (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/605">#605</a>)</li>
+          <li>Azure Functions: Azure Functions: show a warning when Azurite is not running (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/605">#650</a>)</li>
+        </ul>
         <p>[3.50.0-2022.3]</p>
         <ul>
           <li>Compatibility with Rider 2022.3</li>
@@ -257,7 +263,7 @@
   <xi:include href="/META-INF/platformPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
   <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-  <idea-version since-build="223" until-build="223.*"/>
+  <idea-version since-build="231" until-build="231.*"/>
 
   <resource-bundle>messages.RiderAzureMessages</resource-bundle>
 
