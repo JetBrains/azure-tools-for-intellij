@@ -83,18 +83,14 @@ object FunctionsCoreToolsManager {
         if (releasesCache.isNotEmpty()) return
 
         val azureCoreToolsFeedReleaseFilter =
-                if (SystemInfo.isWindows && CpuArch.isIntel64()) {
-                    AzureCoreToolsFeedReleaseFilter("Windows", listOf("x64"), listOf("minified", "full"))
-                } else if (SystemInfo.isWindows) {
-                    AzureCoreToolsFeedReleaseFilter("Windows", listOf("x86"), listOf("minified", "full"))
-                } else if (SystemInfo.isMac && CpuArch.isArm64()) {
-                    AzureCoreToolsFeedReleaseFilter("MacOS", listOf("arm64", "x64"), listOf("full"))
-                } else if (SystemInfo.isMac) {
-                    AzureCoreToolsFeedReleaseFilter("MacOS", listOf("x64"), listOf("full"))
-                } else if (SystemInfo.isLinux) {
-                    AzureCoreToolsFeedReleaseFilter("Linux", listOf("x64"), listOf("full"))
-                } else {
-                    AzureCoreToolsFeedReleaseFilter("Unknown", listOf("x64"), listOf("full"))
+                when {
+                    SystemInfo.isWindows && CpuArch.isIntel64() -> AzureCoreToolsFeedReleaseFilter("Windows", listOf("x64"), listOf("minified", "full"))
+                    SystemInfo.isWindows && CpuArch.isArm64() -> AzureCoreToolsFeedReleaseFilter("Windows", listOf("arm64", "x64"), listOf("minified", "full"))
+                    SystemInfo.isWindows -> AzureCoreToolsFeedReleaseFilter("Windows", listOf("x86"), listOf("minified", "full"))
+                    SystemInfo.isMac && CpuArch.isArm64() -> AzureCoreToolsFeedReleaseFilter("MacOS", listOf("arm64", "x64"), listOf("full"))
+                    SystemInfo.isMac -> AzureCoreToolsFeedReleaseFilter("MacOS", listOf("x64"), listOf("full"))
+                    SystemInfo.isLinux -> AzureCoreToolsFeedReleaseFilter("Linux", listOf("x64"), listOf("full"))
+                    else -> AzureCoreToolsFeedReleaseFilter("Unknown", listOf("x64"), listOf("full"))
                 }
 
         logger.debug("Azure Core Tools release filter: $azureCoreToolsFeedReleaseFilter")
