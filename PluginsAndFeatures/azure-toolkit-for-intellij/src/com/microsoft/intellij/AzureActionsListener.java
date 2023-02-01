@@ -143,20 +143,24 @@ public abstract class AzureActionsListener implements AppLifecycleListener, Plug
     }
 
     private void initLoggerFileHandler() {
-        try {
-            String loggerFilePath = Paths.get(CommonSettings.getSettingsBaseDir(), FILE_NAME_CORE_LIB_LOG).toString();
-            System.out.println("Logger path:" + loggerFilePath);
-            logFileHandler = new FileHandler(loggerFilePath, false);
-            java.util.logging.Logger l = java.util.logging.Logger.getLogger("");
-            logFileHandler.setFormatter(new SimpleFormatter());
-            l.addHandler(logFileHandler);
-            // TODO: use environment variable to set level
-            l.setLevel(Level.INFO);
-            l.info("=== Log session started ===");
-        } catch (IOException e) {
-            e.printStackTrace();
-            LOG.error("initLoggerFileHandler()", e);
-        }
+// --- NOTE ---
+// https://github.com/JetBrains/azure-tools-for-intellij/issues/657
+// The FILE_NAME_CORE_LIB_LOG file keeps growing, and contains a lot of the IJ platform logs.
+// It is not needed, so commenting out for now.
+//        try {
+//            String loggerFilePath = Paths.get(CommonSettings.getSettingsBaseDir(), FILE_NAME_CORE_LIB_LOG).toString();
+//            System.out.println("Logger path:" + loggerFilePath);
+//            logFileHandler = new FileHandler(loggerFilePath, false);
+//            java.util.logging.Logger l = java.util.logging.Logger.getLogger("");
+//            logFileHandler.setFormatter(new SimpleFormatter());
+//            l.addHandler(logFileHandler);
+//            // TODO: use environment variable to set level
+//            l.setLevel(Level.INFO);
+//            l.info("=== Log session started ===");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            LOG.error("initLoggerFileHandler()", e);
+//        }
     }
 
     @Override
