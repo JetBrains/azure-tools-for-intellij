@@ -25,7 +25,7 @@
       <html>
         <p>[3.50.0-2023.1]</p>
         <ul>
-          <li>Compatibility with Rider 2023.1 EAP1</li>
+          <li>Compatibility with Rider 2023.1 EAP2</li>
           <li>Azure Functions: Option to auto-start Azurite with run configurations (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/605">#605</a>)</li>
           <li>Azure Functions: Azure Functions: show a warning when Azurite is not running (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/605">#650</a>)</li>
         </ul>
