@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2022 JetBrains s.r.o.
+ * Copyright (c) 2020-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -30,7 +30,6 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.configurations.RunnableProjectKinds
 import com.jetbrains.rider.run.configurations.project.DotNetStartBrowserParameters
 import com.jetbrains.rider.runtime.RiderDotNetActiveRuntimeHost
-import com.jetbrains.rider.runtime.mono.MonoRuntime
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import org.jetbrains.plugins.azure.functions.daemon.AzureRunnableProjectKinds
 import org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfigurationParameters
@@ -245,57 +244,9 @@ abstract class FunctionHostConfigurationParametersTestBase(
         parameters.validate(createHost())
     }
 
-    @Test(expectedExceptions = [RuntimeConfigurationError::class], expectedExceptionsMessageRegExp = "Mono runtime not found\\. Please setup Mono path in settings \\(File \\| Settings \\| Build, Execution, Deployment \\| Toolset and Build\\)")
-    fun testValidate_MonoRuntime_MissingMonoConfig() {
-        val projectFilePath = File("/project/file/path").absolutePath
-
-        val parameters = createParameters(
-                project = project,
-                projectFilePath = projectFilePath,
-                trackProjectExePath = true,
-                trackProjectWorkingDirectory = true,
-                projectTfm = projectTfm
-        ).apply { useMonoRuntime = true }
-
-        val host = createHost(monoRuntime = null)
-
-        project.solution.runnableProjectsModel.projects.set(listOf(
-                createRunnableProject(
-                        kind = AzureRunnableProjectKinds.AzureFunctions,
-                        projectFilePath = projectFilePath,
-                        problems = null)
-        ))
-
-        parameters.validate(host)
-    }
-
     //endregion Invalid
 
     //region Valid
-
-    @Test
-    fun testValidate_Valid_UseMonoRuntime() {
-        val projectFilePath = File("/project/file/path").absolutePath
-
-        val parameters = createParameters(
-                project = project,
-                projectFilePath = projectFilePath,
-                trackProjectExePath = true,
-                trackProjectWorkingDirectory = true,
-                projectTfm = projectTfm
-        ).apply { useMonoRuntime = true }
-
-        val host = createHost(monoRuntime = MonoRuntime(monoExePath = ""))
-
-        project.solution.runnableProjectsModel.projects.set(listOf(
-                createRunnableProject(
-                        kind = AzureRunnableProjectKinds.AzureFunctions,
-                        projectFilePath = projectFilePath,
-                        problems = null)
-        ))
-
-        parameters.validate(host)
-    }
 
     @Test
     fun testValidate_Valid_NetCoreRuntime() {
@@ -358,12 +309,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
                     startBrowserParameters = startBrowserParameters
             )
 
-    fun createHost(monoRuntime: MonoRuntime? = null): RiderDotNetActiveRuntimeHost {
-        val host = RiderDotNetActiveRuntimeHost(project)
-        host.monoRuntime = monoRuntime
-
-        return host
-    }
+    fun createHost() = RiderDotNetActiveRuntimeHost(project)
 
     fun createRunnableProject(
             name: String = "TestName",
