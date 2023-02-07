@@ -1,5 +1,4 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude"
-             url="https://github.com/JetBrains/azure-tools-for-intellij">
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" url="https://github.com/JetBrains/azure-tools-for-intellij">
   <id>com.intellij.resharper.azure</id>
   <name>Azure Toolkit for Rider</name>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
@@ -238,10 +237,7 @@
       </html>]]>
   </change-notes>
 
-  <xi:include href="/META-INF/platformPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
-
-  <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-  <idea-version since-build="222" until-build="222.*"/>
+<!--  <xi:include href="/META-INF/platformPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>-->
 
   <resource-bundle>messages.RiderAzureMessages</resource-bundle>
 
@@ -252,200 +248,201 @@
   <depends>JavaScript</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <applicationService serviceInterface="org.jetbrains.plugins.azure.storage.azurite.AzuriteService"
-                        serviceImplementation="org.jetbrains.plugins.azure.storage.azurite.AzuriteService"/>
 
-    <projectConfigurable groupId="tools"
-                         id="com.microsoft.intellij.configuration.AzureRiderConfigurable"
-                         provider="com.microsoft.intellij.configuration.AzureRiderConfigurableProvider"
-                         dynamic="true"/>
+<!--    <applicationService serviceInterface="org.jetbrains.plugins.azure.storage.azurite.AzuriteService"-->
+<!--                        serviceImplementation="org.jetbrains.plugins.azure.storage.azurite.AzuriteService"/>-->
+
+<!--    <projectConfigurable groupId="tools"-->
+<!--                         id="com.microsoft.intellij.configuration.AzureRiderConfigurable"-->
+<!--                         provider="com.microsoft.intellij.configuration.AzureRiderConfigurableProvider"-->
+<!--                         dynamic="true"/>-->
 
 
-    <projectConfigurable parentId="FileTemplatesSettingsId"
-                         instance="org.jetbrains.plugins.azure.functions.settings.templates.RiderAzureCSharpFileTemplatesOptionPage"
-                         groupWeight="-150" />
+<!--    <projectConfigurable parentId="FileTemplatesSettingsId"-->
+<!--                         instance="org.jetbrains.plugins.azure.functions.settings.templates.RiderAzureCSharpFileTemplatesOptionPage"-->
+<!--                         groupWeight="-150" />-->
 
-    <projectConfigurable parentId="FileTemplatesSettingsId"
-                         instance="org.jetbrains.plugins.azure.functions.settings.templates.RiderAzureFSharpFileTemplatesOptionPage"
-                         groupWeight="-150" />
+<!--    <projectConfigurable parentId="FileTemplatesSettingsId"-->
+<!--                         instance="org.jetbrains.plugins.azure.functions.settings.templates.RiderAzureFSharpFileTemplatesOptionPage"-->
+<!--                         groupWeight="-150" />-->
 
-    <configurationType implementation="com.microsoft.intellij.runner.webapp.config.RiderWebAppConfigurationType"/>
-    <programRunner implementation="com.microsoft.intellij.runner.webapp.config.RiderWebAppRunner"/>
-    <rider.publishConfigurationProvider implementation="com.microsoft.intellij.runner.webapp.WebAppContextPublishProvider" order="last" />
+<!--    <configurationType implementation="com.microsoft.intellij.runner.webapp.config.RiderWebAppConfigurationType"/>-->
+<!--    <programRunner implementation="com.microsoft.intellij.runner.webapp.config.RiderWebAppRunner"/>-->
+<!--    <rider.publishConfigurationProvider implementation="com.microsoft.intellij.runner.webapp.WebAppContextPublishProvider" order="last" />-->
 
-    <configurationType implementation="com.microsoft.intellij.runner.functionapp.config.FunctionAppConfigurationType"/>
-    <programRunner implementation="com.microsoft.intellij.runner.functionapp.config.FunctionAppRunner"/>
-    <rider.publishConfigurationProvider implementation="com.microsoft.intellij.runner.functionapp.FunctionAppContextPublishProvider" order="last" />
+<!--    <configurationType implementation="com.microsoft.intellij.runner.functionapp.config.FunctionAppConfigurationType"/>-->
+<!--    <programRunner implementation="com.microsoft.intellij.runner.functionapp.config.FunctionAppRunner"/>-->
+<!--    <rider.publishConfigurationProvider implementation="com.microsoft.intellij.runner.functionapp.FunctionAppContextPublishProvider" order="last" />-->
 
-    <stepsBeforeRunProvider implementation="org.jetbrains.plugins.azure.functions.buildTasks.BuildFunctionsProjectBeforeRunTaskProvider"/>
-    <configurationType implementation="org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfigurationType"/>
-    <runConfigurationProducer implementation="org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostRunConfigurationProducer"/>
+<!--    <stepsBeforeRunProvider implementation="org.jetbrains.plugins.azure.functions.buildTasks.BuildFunctionsProjectBeforeRunTaskProvider"/>-->
+<!--    <configurationType implementation="org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfigurationType"/>-->
+<!--    <runConfigurationProducer implementation="org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostRunConfigurationProducer"/>-->
 
-    <registryKey key="azure.function_app.core_tools.feed.enabled"
-                 defaultValue="true"
-                 description="Enable downloading from Azure Functions Core Tools releases feed URL." />
-    <registryKey key="azure.function_app.core_tools.feed.url"
-                 defaultValue="https://functionscdn.azureedge.net/public/cli-feed-v4.json"
-                 description="Azure Functions Core Tools releases feed URL." />
+<!--    <registryKey key="azure.function_app.core_tools.feed.enabled"-->
+<!--                 defaultValue="true"-->
+<!--                 description="Enable downloading from Azure Functions Core Tools releases feed URL." />-->
+<!--    <registryKey key="azure.function_app.core_tools.feed.url"-->
+<!--                 defaultValue="https://functionscdn.azureedge.net/public/cli-feed-v4.json"-->
+<!--                 description="Azure Functions Core Tools releases feed URL." />-->
 
-    <postStartupActivity implementation="com.microsoft.intellij.AzureRiderPlugin" />
-    <postStartupActivity implementation="org.jetbrains.icons.RiderIconsPatcherRegistrar"/>
-    <postStartupActivity implementation="org.jetbrains.plugins.azure.functions.TryRefreshAzureCoreToolsProjectTemplatesActivity" order="last" />
-    <postStartupActivity implementation="org.jetbrains.plugins.azure.functions.CleanupDeprecatedAzureCoreToolsConfigurationActivity" order="last" />
+<!--    <postStartupActivity implementation="com.microsoft.intellij.AzureRiderPlugin" />-->
+<!--    <postStartupActivity implementation="org.jetbrains.icons.RiderIconsPatcherRegistrar"/>-->
+<!--    <postStartupActivity implementation="org.jetbrains.plugins.azure.functions.TryRefreshAzureCoreToolsProjectTemplatesActivity" order="last" />-->
+<!--    <postStartupActivity implementation="org.jetbrains.plugins.azure.functions.CleanupDeprecatedAzureCoreToolsConfigurationActivity" order="last" />-->
 
-    <projectTemplateProvider implementation="org.jetbrains.plugins.azure.functions.projectTemplating.FunctionsCoreToolsTemplatesProvider" order="first"/>
+<!--    <projectTemplateProvider implementation="org.jetbrains.plugins.azure.functions.projectTemplating.FunctionsCoreToolsTemplatesProvider" order="first"/>-->
 
-    <fileTypeStatisticProvider implementation="org.jetbrains.plugins.azure.statistics.AzureFileTypeStatisticsProvider"/>
+<!--    <fileTypeStatisticProvider implementation="org.jetbrains.plugins.azure.statistics.AzureFileTypeStatisticsProvider"/>-->
 
-    <projectService serviceImplementation="org.jetbrains.plugins.azure.cloudshell.CloudShellService" />
+<!--    <projectService serviceImplementation="org.jetbrains.plugins.azure.cloudshell.CloudShellService" />-->
 
-    <rider.projectView.actions.projectTemplating.backend.reSharperProjectTemplateCustomizer implementation="org.jetbrains.plugins.azure.functions.projectTemplating.FunctionsCoreToolsTemplateCustomizer" />
-    <editorNotificationProvider implementation="org.jetbrains.plugins.azure.functions.AzureCoreToolsMissingNupkgNotificationProvider"/>
+<!--    <rider.projectView.actions.projectTemplating.backend.reSharperProjectTemplateCustomizer implementation="org.jetbrains.plugins.azure.functions.projectTemplating.FunctionsCoreToolsTemplateCustomizer" />-->
+<!--    <editorNotificationProvider implementation="org.jetbrains.plugins.azure.functions.AzureCoreToolsMissingNupkgNotificationProvider"/>-->
 
-    <localInspection language="MSBuild"
-                     enabledByDefault="true"
-                     level="WARNING"
-                     shortName="AzureFunctionsVersionNotSpecified"
-                     displayName="Azure Functions version not specified"
-                     groupName="Azure"
-                     implementationClass="org.jetbrains.plugins.azure.functions.codeInspection.msbuild.AzureFunctionsVersionInspection"/>
+<!--    <localInspection language="MSBuild"-->
+<!--                     enabledByDefault="true"-->
+<!--                     level="WARNING"-->
+<!--                     shortName="AzureFunctionsVersionNotSpecified"-->
+<!--                     displayName="Azure Functions version not specified"-->
+<!--                     groupName="Azure"-->
+<!--                     implementationClass="org.jetbrains.plugins.azure.functions.codeInspection.msbuild.AzureFunctionsVersionInspection"/>-->
 
-    <internalFileTemplate name="Trigger Azure Function"/>
+<!--    <internalFileTemplate name="Trigger Azure Function"/>-->
 
-    <completion.contributor language="C#"
-                            implementationClass="org.jetbrains.plugins.azure.functions.completion.csharp.TimerTriggerCompletionContributor" />
+<!--    <completion.contributor language="C#"-->
+<!--                            implementationClass="org.jetbrains.plugins.azure.functions.completion.csharp.TimerTriggerCompletionContributor" />-->
 
-    <serviceViewContributor implementation="org.jetbrains.plugins.azure.storage.azurite.AzuriteServiceViewContributor" />
+<!--    <serviceViewContributor implementation="org.jetbrains.plugins.azure.storage.azurite.AzuriteServiceViewContributor" />-->
 
-    <editorNotificationProvider implementation="org.jetbrains.plugins.azure.identity.ad.notifications.DefaultAzureAdApplicationRegistrationNotificationProvider"/>
+<!--    <editorNotificationProvider implementation="org.jetbrains.plugins.azure.identity.ad.notifications.DefaultAzureAdApplicationRegistrationNotificationProvider"/>-->
 
-    <notificationGroup id="Azure" displayType="BALLOON" isLogByDefault="true"/>
-    <notificationGroup id="Azure Functions" displayType="BALLOON" isLogByDefault="true"/>
-    <notificationGroup id="Azure Web App Publish Message" displayType="BALLOON" isLogByDefault="true" toolWindowId="Run"/>
+<!--    <notificationGroup id="Azure" displayType="BALLOON" isLogByDefault="true"/>-->
+<!--    <notificationGroup id="Azure Functions" displayType="BALLOON" isLogByDefault="true"/>-->
+<!--    <notificationGroup id="Azure Web App Publish Message" displayType="BALLOON" isLogByDefault="true" toolWindowId="Run"/>-->
   </extensions>
 
-  <extensions defaultExtensionNs="com.microsoft.intellij">
-    <nodeActionsMap implementation="com.microsoft.intellij.serviceexplorer.RiderNodeActionsMap" />
-  </extensions>
+<!--  <extensions defaultExtensionNs="com.microsoft.intellij">-->
+<!--    <nodeActionsMap implementation="com.microsoft.intellij.serviceexplorer.RiderNodeActionsMap" />-->
+<!--  </extensions>-->
 
   <applicationListeners>
-    <listener class="com.microsoft.intellij.AzureRiderActionsListener" topic="com.intellij.ide.AppLifecycleListener"/>
+    <listener class="com.microsoft.intellij.AzureActionsListener" topic="com.intellij.ide.AppLifecycleListener"/>
   </applicationListeners>
 
-  <project-components>
-    <component>
-      <implementation-class>org.jetbrains.plugins.azure.functions.daemon.FunctionAppDaemonHost</implementation-class>
-    </component>
-  </project-components>
+<!--  <project-components>-->
+<!--    <component>-->
+<!--      <implementation-class>org.jetbrains.plugins.azure.functions.daemon.FunctionAppDaemonHost</implementation-class>-->
+<!--    </component>-->
+<!--  </project-components>-->
 
-  <actions>
-    <action id="Actions.AzureCodeSamples"
-            class="com.microsoft.intellij.actions.AzureDotNetCodeSamples"
-            text="Azure Code Samples"
-            description="Opens an Azure Code Samples page in your default browser"
-            icon="CommonIcons.CodeSamples">
-      <add-to-group group-id="AzureToolbarGroup" anchor="after" relative-to-action="Actions.AzureExplorerOpenAction" />
-    </action>
+<!--  <actions>-->
+<!--    <action id="Actions.AzureCodeSamples"-->
+<!--            class="com.microsoft.intellij.actions.AzureDotNetCodeSamples"-->
+<!--            text="Azure Code Samples"-->
+<!--            description="Opens an Azure Code Samples page in your default browser"-->
+<!--            icon="CommonIcons.CodeSamples">-->
+<!--      <add-to-group group-id="AzureToolbarGroup" anchor="after" relative-to-action="Actions.AzureExplorerOpenAction" />-->
+<!--    </action>-->
 
-    <group id="RiderPublishToAzureGroup"
-           text="Publish Group"
-           description="Publish Group"
-           popup="true"
-           icon="CommonIcons.PublishAzure">
-      <add-to-group group-id="AzureToolbarGroup" anchor="first" />
-    </group>
+<!--    <group id="RiderPublishToAzureGroup"-->
+<!--           text="Publish Group"-->
+<!--           description="Publish Group"-->
+<!--           popup="true"-->
+<!--           icon="CommonIcons.PublishAzure">-->
+<!--      <add-to-group group-id="AzureToolbarGroup" anchor="first" />-->
+<!--    </group>-->
 
-    <!-- Azure Cloud Shell -->
-    <group id="AzureToolkit.AzureCloudShellGroup"
-           class="com.intellij.openapi.actionSystem.DefaultActionGroup"
-           text="Azure Cloud Shell"
-           description="Contains Azure Cloud Shell actions"
-           icon="CommonIcons.CloudShell.AzureOpenCloudShell">
+<!--    &lt;!&ndash; Azure Cloud Shell &ndash;&gt;-->
+<!--    <group id="AzureToolkit.AzureCloudShellGroup"-->
+<!--           class="com.intellij.openapi.actionSystem.DefaultActionGroup"-->
+<!--           text="Azure Cloud Shell"-->
+<!--           description="Contains Azure Cloud Shell actions"-->
+<!--           icon="CommonIcons.CloudShell.AzureOpenCloudShell">-->
 
-      <add-to-group group-id="AzureToolkit.AzureActionGroup"
-                    anchor="before"
-                    relative-to-action="AzureToolkit.AzureSignIn" />
+<!--      <add-to-group group-id="AzureToolkit.AzureActionGroup"-->
+<!--                    anchor="before"-->
+<!--                    relative-to-action="AzureToolkit.AzureSignIn" />-->
 
-      <action id="AzureToolkit.StartAzureCloudShellAction"
-              class="org.jetbrains.plugins.azure.cloudshell.actions.StartAzureCloudShellAction"
-              text="Start Azure Cloud Shell..."
-              description="Start Azure Cloud Shell"
-              icon="CommonIcons.CloudShell.AzureOpenCloudShell" />
+<!--      <action id="AzureToolkit.StartAzureCloudShellAction"-->
+<!--              class="org.jetbrains.plugins.azure.cloudshell.actions.StartAzureCloudShellAction"-->
+<!--              text="Start Azure Cloud Shell..."-->
+<!--              description="Start Azure Cloud Shell"-->
+<!--              icon="CommonIcons.CloudShell.AzureOpenCloudShell" />-->
 
-      <action id="AzureToolkit.UploadToAzureCloudShellAction"
-              class="org.jetbrains.plugins.azure.cloudshell.actions.UploadToAzureCloudShellAction"
-              text="Upload file to Azure Cloud Shell..."
-              description="Upload file to Azure Cloud Shell"
-              icon="AllIcons.Actions.Upload" />
+<!--      <action id="AzureToolkit.UploadToAzureCloudShellAction"-->
+<!--              class="org.jetbrains.plugins.azure.cloudshell.actions.UploadToAzureCloudShellAction"-->
+<!--              text="Upload file to Azure Cloud Shell..."-->
+<!--              description="Upload file to Azure Cloud Shell"-->
+<!--              icon="AllIcons.Actions.Upload" />-->
 
-      <group id="AzureToolkit.AzureCloudShell.WebPreview"
-             class="com.intellij.openapi.actionSystem.DefaultActionGroup"
-             text="Web preview"
-             description="Web preview"
-             popup="true">
+<!--      <group id="AzureToolkit.AzureCloudShell.WebPreview"-->
+<!--             class="com.intellij.openapi.actionSystem.DefaultActionGroup"-->
+<!--             text="Web preview"-->
+<!--             description="Web preview"-->
+<!--             popup="true">-->
 
-        <action id="AzureToolkit.AzureCloudShell.WebPreview.OpenPortAction"
-                class="org.jetbrains.plugins.azure.cloudshell.actions.OpenCloudShellPortAction"
-                text="Open port..."
-                description="Open web preview port..."
-                icon="AllIcons.Actions.Preview" />
+<!--        <action id="AzureToolkit.AzureCloudShell.WebPreview.OpenPortAction"-->
+<!--                class="org.jetbrains.plugins.azure.cloudshell.actions.OpenCloudShellPortAction"-->
+<!--                text="Open port..."-->
+<!--                description="Open web preview port..."-->
+<!--                icon="AllIcons.Actions.Preview" />-->
 
-        <group id="AzureToolkit.AzureCloudShell.WebPreview.ClosePortAction"
-                class="org.jetbrains.plugins.azure.cloudshell.actions.CloseCloudShellPortActionGroup"
-                text="Close port"
-                description="Close web preview port..."
-                popup="true" />
-      </group>
+<!--        <group id="AzureToolkit.AzureCloudShell.WebPreview.ClosePortAction"-->
+<!--                class="org.jetbrains.plugins.azure.cloudshell.actions.CloseCloudShellPortActionGroup"-->
+<!--                text="Close port"-->
+<!--                description="Close web preview port..."-->
+<!--                popup="true" />-->
+<!--      </group>-->
 
-      <separator />
-    </group>
+<!--      <separator />-->
+<!--    </group>-->
 
     <!-- Azure Storage / Azurite -->
-    <group id="AzureToolkit.AzuriteGroup"
-           class="com.intellij.openapi.actionSystem.DefaultActionGroup"
-           text="Azurite Storage Emulator"
-           description="Contains Azurite actions">
+<!--    <group id="AzureToolkit.AzuriteGroup"-->
+<!--           class="com.intellij.openapi.actionSystem.DefaultActionGroup"-->
+<!--           text="Azurite Storage Emulator"-->
+<!--           description="Contains Azurite actions">-->
 
-      <add-to-group group-id="AzureToolkit.AzureActionGroup"
-                    anchor="before"
-                    relative-to-action="AzureToolkit.AzureSignIn" />
+<!--      <add-to-group group-id="AzureToolkit.AzureActionGroup"-->
+<!--                    anchor="before"-->
+<!--                    relative-to-action="AzureToolkit.AzureSignIn" />-->
 
-      <action id="AzureToolkit.Azurite.StartAzurite"
-              class="org.jetbrains.plugins.azure.storage.azurite.actions.StartAzuriteAction"
-              text="Start Azurite"
-              description="Start Azurite Storage Emulator"
-              icon="AllIcons.Actions.Execute">
-      </action>
+<!--      <action id="AzureToolkit.Azurite.StartAzurite"-->
+<!--              class="org.jetbrains.plugins.azure.storage.azurite.actions.StartAzuriteAction"-->
+<!--              text="Start Azurite"-->
+<!--              description="Start Azurite Storage Emulator"-->
+<!--              icon="AllIcons.Actions.Execute">-->
+<!--      </action>-->
 
-      <action id="AzureToolkit.Azurite.StopAzurite"
-              class="org.jetbrains.plugins.azure.storage.azurite.actions.StopAzuriteAction"
-              text="Stop Azurite"
-              description="Stop Azurite Storage Emulator"
-              icon="AllIcons.Actions.Suspend">
-      </action>
+<!--      <action id="AzureToolkit.Azurite.StopAzurite"-->
+<!--              class="org.jetbrains.plugins.azure.storage.azurite.actions.StopAzuriteAction"-->
+<!--              text="Stop Azurite"-->
+<!--              description="Stop Azurite Storage Emulator"-->
+<!--              icon="AllIcons.Actions.Suspend">-->
+<!--      </action>-->
 
-      <separator />
-    </group>
+<!--      <separator />-->
+<!--    </group>-->
 
     <!-- Azure AD -->
-    <group id="AzureToolkit.AzureAdGroup"
-           class="com.intellij.openapi.actionSystem.DefaultActionGroup"
-           text="Azure Active Directory"
-           description="Contains Azure Active Directory actions">
+<!--    <group id="AzureToolkit.AzureAdGroup"-->
+<!--           class="com.intellij.openapi.actionSystem.DefaultActionGroup"-->
+<!--           text="Azure Active Directory"-->
+<!--           description="Contains Azure Active Directory actions">-->
 
-      <add-to-group group-id="ProjectViewPopupMenu" anchor="last" />
-      <add-to-group group-id="AzureToolkit.AzureActionGroup"
-                    anchor="before"
-                    relative-to-action="AzureToolkit.AzureSignIn" />
+<!--      <add-to-group group-id="ProjectViewPopupMenu" anchor="last" />-->
+<!--      <add-to-group group-id="AzureToolkit.AzureActionGroup"-->
+<!--                    anchor="before"-->
+<!--                    relative-to-action="AzureToolkit.AzureSignIn" />-->
 
-      <action id="AzureToolkit.AzureAd.RegisterApplication"
-              class="org.jetbrains.plugins.azure.identity.ad.actions.RegisterApplicationInAzureAdAction"
-              text="Register Azure AD application"
-              description="Register application in Azure Active Directory"
-              icon="CommonIcons.AzureActiveDirectory">
-      </action>
+<!--      <action id="AzureToolkit.AzureAd.RegisterApplication"-->
+<!--              class="org.jetbrains.plugins.azure.identity.ad.actions.RegisterApplicationInAzureAdAction"-->
+<!--              text="Register Azure AD application"-->
+<!--              description="Register application in Azure Active Directory"-->
+<!--              icon="CommonIcons.AzureActiveDirectory">-->
+<!--      </action>-->
 
-      <separator />
-    </group>
-  </actions>
+<!--      <separator />-->
+<!--    </group>-->
+<!--  </actions>-->
 </idea-plugin>

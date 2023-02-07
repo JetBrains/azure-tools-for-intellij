@@ -1,17 +1,17 @@
 plugins {
-    kotlin("jvm") version "1.6.10"
-    id("com.jetbrains.rdgen") version "2022.1.2"
-    id("org.jetbrains.intellij") version "1.7.0"
+    kotlin("jvm") version "1.8.0"
+    id("com.jetbrains.rdgen") version "2023.1.2"
+    id("org.jetbrains.intellij") version "1.12.0"
     id("me.filippov.gradle.jvm.wrapper") version "0.11.0"
-    id("io.freefair.aspectj.post-compile-weaving") version "6.0.0-m2"
+    id("io.freefair.aspectj.post-compile-weaving") version "6.5.1"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
 }
 
 group = "com.jetbrains"
 version = "1.0-SNAPSHOT"
 
-val azureToolkitVersion = "0.24.0-SNAPSHOT"
-val azureToolkitUtilsVersion = "3.68.0-SNAPSHOT"
+val azureToolkitVersion = "0.31.0-SNAPSHOT"
+val azureToolkitUtilsVersion = "3.75.0-SNAPSHOT"
 
 allprojects {
     repositories {
@@ -27,7 +27,7 @@ allprojects {
         plugin("io.spring.dependency-management")
     }
     intellij {
-        version.set("2022.2-SNAPSHOT")
+        version.set("2022.3.2")
         type.set("RD")
         instrumentCode.set(false)
         downloadSources.set(false)
@@ -39,6 +39,13 @@ allprojects {
             mavenBom("com.microsoft.azuretools:utils:$azureToolkitUtilsVersion")
         }
     }
+    configurations {
+        implementation { exclude(module = "slf4j-api") }
+        implementation { exclude(module = "log4j") }
+        implementation { exclude(module = "stax-api") }
+        implementation { exclude(module = "groovy-xml") }
+        implementation { exclude(module = "groovy-templates") }
+    }
     dependencies {
         compileOnly("org.projectlombok:lombok")
         annotationProcessor("org.projectlombok:lombok")
@@ -49,13 +56,36 @@ allprojects {
 
     tasks {
         compileJava {
-            sourceCompatibility = "11"
-            targetCompatibility = "11"
+            sourceCompatibility = "17"
+            targetCompatibility = "17"
         }
 
         compileKotlin {
-            kotlinOptions.jvmTarget = "11"
+            kotlinOptions.jvmTarget = "17"
         }
+    }
+}
+
+// disable runIde tasks in subprojects to prevent starting-up multiple ide.
+gradle.taskGraph.whenReady {
+    val hasRootRunTask = this.hasTask(":runIde")
+
+    if (hasRootRunTask) {
+        val regex = ":.+:runIde".toRegex()
+        this.allTasks.forEach { task ->
+            val subRunTask = regex.containsMatchIn(task.path)
+            if (subRunTask) {
+                task.enabled = false
+            }
+        }
+    }
+}
+
+sourceSets {
+    main {
+        kotlin.srcDir("src/main/kotlin")
+        resources.srcDir("src/main/resources")
+        resources.srcDir("../azure-toolkit-for-intellij/src/main/resources/icons")
     }
 }
 
@@ -63,15 +93,28 @@ val resharperPluginPath = projectDir.resolve("ReSharper.Azure")
 val rdLibDirectory: () -> File = { file("${tasks.setupDependencies.get().idea.get().classes}/lib/rd") }
 extra["rdLibDirectory"] = rdLibDirectory
 
-
 dependencies {
-    implementation(project(":azure-intellij-plugin-common"))
     implementation(project(":azure-intellij-plugin-lib"))
+    implementation(project(":azure-intellij-plugin-service-explorer"))
+
+    implementation("com.microsoft.azuretools:azure-explorer-common:3.75.0-SNAPSHOT") {
+        exclude(
+            "javax.xml.bind",
+            "jaxb-api"
+        )
+    }
+
+//
+//
+//    implementation(project(":azure-intellij-plugin-guidance"))
+//    implementation(project(":azure-intellij-resource-connector-lib"))
+//    implementation("com.microsoft.azuretools:hdinsight-node-common:3.74.0-SNAPSHOT") { exclude("javax.xml.bind", "jaxb-api") }
+
 }
 
 tasks {
     patchPluginXml {
-        sinceBuild.set("222")
+        sinceBuild.set("223")
         untilBuild.set("")
     }
 
@@ -117,5 +160,9 @@ tasks {
 
     compileKotlin {
         dependsOn(rdgen)
+    }
+
+    processResources {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
 }
