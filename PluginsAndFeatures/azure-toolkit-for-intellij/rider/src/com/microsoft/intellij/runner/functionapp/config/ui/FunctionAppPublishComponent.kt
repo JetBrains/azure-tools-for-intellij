@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2022 JetBrains s.r.o.
+ * Copyright (c) 2019-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -26,8 +26,6 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rider.model.PublishableProjectModel
-import com.jetbrains.rider.model.projectModelTasks
-import com.jetbrains.rider.projectView.solution
 import com.microsoft.applicationinsights.web.dependencies.apachecommons.lang3.RandomStringUtils
 import com.microsoft.azure.management.appservice.*
 import com.microsoft.azure.management.resources.Location
@@ -50,6 +48,7 @@ import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsMsBuild
 import org.jetbrains.plugins.azure.functions.run.localsettings.FunctionLocalSettingsUtil
 import org.jetbrains.plugins.azure.functions.run.localsettings.FunctionsWorkerRuntime
+import org.jetbrains.plugins.azure.util.FrameworkUtil
 import java.io.File
 import javax.swing.JPanel
 
@@ -63,9 +62,6 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
         private const val DEFAULT_APP_NAME = "functionapp-"
         private const val DEFAULT_PLAN_NAME = "appsp-"
         private const val DEFAULT_RESOURCE_GROUP_NAME = "rg-"
-
-        private val netCoreAppVersionRegex = Regex("\\.NETCoreApp,Version=v([0-9](?:\\.[0-9])*)", RegexOption.IGNORE_CASE)
-        private val netAppVersionRegex = Regex("net([0-9](?:\\.[0-9])*)", RegexOption.IGNORE_CASE)
     }
 
     private val pnlFunctionAppSelector = ExistingOrNewSelector(message("run_config.publish.form.function_app.existing_new_selector"))
@@ -190,7 +186,7 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
             val workerRuntime = functionLocalSettings?.values?.workerRuntime ?: FunctionsWorkerRuntime.DotNetDefault
 
             val coreToolsVersion = FunctionsCoreToolsMsBuild.requestAzureFunctionsVersion(project, publishableProject.projectFilePath) ?: "V4"
-            val netCoreVersion = getProjectNetCoreFrameworkVersion(publishableProject)
+            val netCoreVersion = FrameworkUtil.getProjectNetCoreFrameworkVersion(project, publishableProject)
             model.functionRuntimeStack = FunctionRuntimeStack(
                     workerRuntime.value,
                     "~" + coreToolsVersion.trimStart('v', 'V'),
@@ -281,7 +277,7 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
         val functionAppFrameworkVersion = functionApp.linuxFxVersion().split('|').getOrNull(1)
 
         // .NETCoreApp,Version=v2.0 -> 2.0
-        val projectNetCoreVersion = getProjectNetCoreFrameworkVersion(publishableProject)
+        val projectNetCoreVersion = FrameworkUtil.getProjectNetCoreFrameworkVersion(project, publishableProject)
         pnlExistingFunctionApp.setRuntimeMismatchWarning(
                 functionAppFrameworkVersion != projectNetCoreVersion,
                 message("run_config.publish.form.function_app.runtime_mismatch_warning", functionAppFrameworkVersion.toString(), projectNetCoreVersion)
@@ -289,19 +285,6 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
     }
 
     //endregion Project
-
-    private fun getProjectNetCoreFrameworkVersion(publishableProject: PublishableProjectModel): String {
-        val defaultVersion = "6.0"
-        val currentFramework = getCurrentFrameworkId(publishableProject) ?: return defaultVersion
-        return netAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value // netX.Y
-                ?: netCoreAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value // .NETCoreApp,version=vX.Y
-                ?: defaultVersion
-    }
-
-    private fun getCurrentFrameworkId(publishableProject: PublishableProjectModel): String? {
-        val targetFramework = project.solution.projectModelTasks.targetFrameworks[publishableProject.projectModelId]
-        return targetFramework?.currentTargetFrameworkId?.valueOrNull?.framework?.id
-    }
 
     //region Button Group
 
@@ -322,3 +305,4 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
 
     //endregion Button Group
 }
+

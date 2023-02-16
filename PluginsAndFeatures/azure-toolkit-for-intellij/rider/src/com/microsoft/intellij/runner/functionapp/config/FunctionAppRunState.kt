@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2022 JetBrains s.r.o.
+ * Copyright (c) 2019-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -28,6 +28,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
 import com.microsoft.azure.management.appservice.FunctionApp
+import com.microsoft.azure.management.appservice.FunctionRuntimeStack
 import com.microsoft.azure.management.appservice.OperatingSystem
 import com.microsoft.azure.management.appservice.WebAppBase
 import com.microsoft.azure.management.sql.SqlDatabase
@@ -47,9 +48,14 @@ import com.microsoft.intellij.runner.functionapp.config.runstate.FunctionAppDepl
 import com.microsoft.intellij.runner.functionapp.config.runstate.FunctionAppDeployStateUtil.deployToAzureFunctionApp
 import com.microsoft.intellij.runner.functionapp.config.runstate.FunctionAppDeployStateUtil.functionAppStart
 import com.microsoft.intellij.runner.functionapp.config.runstate.FunctionAppDeployStateUtil.getOrCreateFunctionAppFromConfiguration
+import org.jetbrains.plugins.azure.util.FrameworkUtil
 import com.microsoft.intellij.runner.functionapp.model.FunctionAppPublishModel
 import com.microsoft.intellij.runner.functionapp.model.FunctionAppSettingModel
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
+import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsMsBuild
+import org.jetbrains.plugins.azure.functions.run.localsettings.FunctionLocalSettingsUtil
+import org.jetbrains.plugins.azure.functions.run.localsettings.FunctionsWorkerRuntime
+import java.io.File
 
 data class FunctionAppDeployResult(val app: WebAppBase, val sqlDatabase: SqlDatabase?)
 
@@ -124,6 +130,21 @@ class FunctionAppRunState(project: Project, private val myModel: FunctionAppSett
 
     private fun tryConfigureAzureFunctionRuntimeStack(app: WebAppBase, subscriptionId: String, processHandler: RunProcessHandler) {
         if (app !is FunctionApp) return
+
+        // Set runtime stack based on project config
+        val publishableProject = myModel.functionAppModel.publishableProject
+        if (publishableProject != null && publishableProject.isDotNetCore) {
+            val functionLocalSettings = FunctionLocalSettingsUtil.readFunctionLocalSettings(project, File(publishableProject.projectFilePath).parent)
+            val workerRuntime = functionLocalSettings?.values?.workerRuntime ?: FunctionsWorkerRuntime.DotNetDefault
+
+            val coreToolsVersion = FunctionsCoreToolsMsBuild.requestAzureFunctionsVersion(project, publishableProject.projectFilePath) ?: "V4"
+            val netCoreVersion = FrameworkUtil.getProjectNetCoreFrameworkVersion(project, publishableProject)
+            myModel.functionAppModel.functionRuntimeStack = FunctionRuntimeStack(
+                    workerRuntime.value,
+                    "~" + coreToolsVersion.trimStart('v', 'V'),
+                    "${workerRuntime.value}|$netCoreVersion",
+                    "${workerRuntime.value}|$netCoreVersion")
+        }
 
         val functionRuntimeStack = myModel.functionAppModel.functionRuntimeStack
         processHandler.setText(message("process_event.publish.updating_runtime", functionRuntimeStack.runtime(), functionRuntimeStack.version()))
