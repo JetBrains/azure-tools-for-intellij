@@ -1,4 +1,4 @@
-// Copyright (c) 2020-203 JetBrains s.r.o.
+// Copyright (c) 2020-2023 JetBrains s.r.o.
 //
 // All rights reserved.
 //
