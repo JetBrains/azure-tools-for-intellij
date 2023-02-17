@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 JetBrains s.r.o.
+ * Copyright (c) 2020-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -23,10 +23,9 @@
 package org.jetbrains.icons
 
 import com.intellij.httpClient.RestClientIcons
+import com.intellij.openapi.util.CachedImageIcon
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.IconPathPatcher
-import com.intellij.ui.RetrievableIcon
-import com.intellij.util.ReflectionUtil
 import icons.CommonIcons
 import javax.swing.Icon
 
@@ -44,17 +43,14 @@ internal class RiderIconsPatcher : IconPathPatcher() {
             IconLoader.installPathPatcher(RiderIconsPatcher())
         }
 
-        private fun path(icon: Icon): String? {
-            val iconToProcess =
-                    if (icon is RetrievableIcon) icon.retrieveIcon()
-                    else icon
+        private data class IconAndClassLoader(val icon: Icon?, val classLoader: ClassLoader?)
 
-            if (iconToProcess is IconLoader.CachedImageIcon) {
-                return ReflectionUtil.getField(iconToProcess.javaClass, iconToProcess, String::class.java, "originalPath")
-                        ?: throw RuntimeException("originalPath field wasn't found in ${iconToProcess.javaClass.simpleName}")
-            }
+        private fun common(icon: Icon): IconAndClassLoader {
+            return IconAndClassLoader(icon, CommonIcons::class.java.classLoader)
+        }
 
-            return null
+        private fun restClient(icon: Icon): IconAndClassLoader {
+            return IconAndClassLoader(icon, RestClientIcons::class.java.classLoader)
         }
 
         private fun normalize(path: String) : String {
@@ -65,15 +61,19 @@ internal class RiderIconsPatcher : IconPathPatcher() {
         }
     }
 
-    override fun patchPath(path: String, classLoader: ClassLoader?): String? = myIconsOverrideMap[normalize(path)]
+    override fun patchPath(path: String, classLoader: ClassLoader?): String? {
+        val iconAndClassLoader = myIconsOverrideMap[normalize(path)] ?: return null
+        return (iconAndClassLoader.icon as? CachedImageIcon)?.originalPath
+    }
 
-    override fun getContextClassLoader(path: String, originalClassLoader: ClassLoader?): ClassLoader? =
-        if (myIconsOverrideMap.containsKey(normalize(path))) javaClass.classLoader
-        else originalClassLoader
+    override fun getContextClassLoader(path: String, originalClassLoader: ClassLoader?): ClassLoader? {
+        val iconAndClassLoader = myIconsOverrideMap[normalize(path)] ?: return null
+        return iconAndClassLoader.classLoader ?: originalClassLoader
+    }
 
     private val myIconsOverrideMap = mapOf(
-            "/resharper/FunctionAppRunMarkers/RunFunctionApp.svg" to path(CommonIcons.AzureFunctions.FunctionAppRunConfiguration),
-            "/resharper/FunctionAppRunMarkers/Trigger.svg" to path(RestClientIcons.Http_requests_filetype),
-            "/resharper/FunctionAppTemplates/AzureFunctionsTrigger.svg" to path(CommonIcons.AzureFunctions.FunctionApp)
+            "/resharper/FunctionAppRunMarkers/RunFunctionApp.svg" to common(CommonIcons.AzureFunctions.FunctionAppRunConfiguration),
+            "/resharper/FunctionAppRunMarkers/Trigger.svg" to restClient(RestClientIcons.Http_requests_filetype),
+            "/resharper/FunctionAppTemplates/AzureFunctionsTrigger.svg" to common(CommonIcons.AzureFunctions.FunctionApp)
     )
 }
