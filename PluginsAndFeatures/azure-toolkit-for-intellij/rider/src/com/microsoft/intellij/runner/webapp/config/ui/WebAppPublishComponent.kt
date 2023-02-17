@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2022 JetBrains s.r.o.
+ * Copyright (c) 2018-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -27,14 +27,13 @@ import com.intellij.openapi.util.SystemInfo
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rider.model.PublishableProjectModel
-import com.jetbrains.rider.model.projectModelTasks
-import com.jetbrains.rider.projectView.solution
 import com.microsoft.azure.management.appservice.*
 import com.microsoft.azure.management.resources.Location
 import com.microsoft.azure.management.resources.ResourceGroup
 import com.microsoft.azure.management.resources.Subscription
 import com.microsoft.azuretools.core.mvp.model.AzureMvpModel
 import com.microsoft.azuretools.core.mvp.model.ResourceEx
+import org.jetbrains.plugins.azure.util.FrameworkUtil
 import com.microsoft.intellij.runner.webapp.model.WebAppPublishModel
 import com.microsoft.intellij.ui.component.AzureComponent
 import com.microsoft.intellij.ui.component.ExistingOrNewSelector
@@ -57,10 +56,6 @@ class WebAppPublishComponent(private val lifetime: Lifetime,
         private const val DEFAULT_APP_NAME = "webapp-"
         private const val DEFAULT_PLAN_NAME = "appsp-"
         private const val DEFAULT_RESOURCE_GROUP_NAME = "rg-"
-
-        private val netCoreAppVersionRegex = Regex("\\.NETCoreApp,Version=v([0-9](?:\\.[0-9])*)", RegexOption.IGNORE_CASE)
-        private val netAppVersionRegex = Regex("net([0-9](?:\\.[0-9])*)", RegexOption.IGNORE_CASE)
-        private val netFxAppVersionRegex = Regex("\\.NETFramework,Version=v([0-9](?:\\.[0-9])*)", RegexOption.IGNORE_CASE)
     }
 
     private val pnlWebAppSelector = ExistingOrNewSelector(message("run_config.publish.form.web_app.existing_new_selector"))
@@ -155,7 +150,7 @@ class WebAppPublishComponent(private val lifetime: Lifetime,
             val publishableProject = model.publishableProject
             if (publishableProject != null && !publishableProject.isDotNetCore) {
                 model.netFrameworkVersion =
-                        if (getProjectNetFrameworkVersion(publishableProject).startsWith("4"))
+                        if (FrameworkUtil.getProjectNetFrameworkVersion(project, publishableProject).startsWith("4"))
                             NetFrameworkVersion.fromString("4.7")
                         else NetFrameworkVersion.fromString("3.5")
             }
@@ -164,7 +159,7 @@ class WebAppPublishComponent(private val lifetime: Lifetime,
             // Set Net Core runtime based on project config
             val publishableProject = pnlProject.lastSelectedProject
             if (publishableProject != null && publishableProject.isDotNetCore) {
-                val netCoreVersion = getProjectNetCoreFrameworkVersion(publishableProject)
+                val netCoreVersion = FrameworkUtil.getProjectNetCoreFrameworkVersion(project, publishableProject, "3.1")
                 model.netCoreRuntime = RuntimeStack("DOTNETCORE", netCoreVersion)
             }
         }
@@ -277,7 +272,7 @@ class WebAppPublishComponent(private val lifetime: Lifetime,
         val webAppFrameworkVersion = webApp.linuxFxVersion().split('|').getOrNull(1)
 
         // .NETCoreApp,Version=v2.0 -> 2.0
-        val projectNetCoreVersion = getProjectNetCoreFrameworkVersion(publishableProject)
+        val projectNetCoreVersion = FrameworkUtil.getProjectNetCoreFrameworkVersion(project, publishableProject, "3.1")
         pnlExistingWebApp.setRuntimeMismatchWarning(
                 webAppFrameworkVersion != projectNetCoreVersion,
                 message("run_config.publish.form.web_app.runtime_mismatch_warning", webAppFrameworkVersion.toString(), projectNetCoreVersion)
@@ -319,32 +314,6 @@ class WebAppPublishComponent(private val lifetime: Lifetime,
     }
 
     //endregion Button Group
-
-    /**
-     * Get a Target .Net Core Framework value for a publishable .net core project
-     *
-     * @param publishableProject a publishable project instance
-     * @return [String] a version for a Target Framework in format:
-     *                  for a target framework ".NETCoreApp,Version=v2.0", the method returns "2.0"
-     */
-    private fun getProjectNetCoreFrameworkVersion(publishableProject: PublishableProjectModel): String {
-        val defaultVersion = "3.1"
-        val currentFramework = getCurrentFrameworkId(publishableProject) ?: return defaultVersion
-        return netAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value // netX.Y
-                ?: netCoreAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value // .NETCoreApp,version=vX.Y
-                ?: defaultVersion
-    }
-
-    private fun getProjectNetFrameworkVersion(publishableProject: PublishableProjectModel): String {
-        val defaultVersion = "4.7"
-        val currentFramework = getCurrentFrameworkId(publishableProject) ?: return defaultVersion
-        return netFxAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value ?: defaultVersion
-    }
-
-    private fun getCurrentFrameworkId(publishableProject: PublishableProjectModel): String? {
-        val targetFramework = project.solution.projectModelTasks.targetFrameworks[publishableProject.projectModelId]
-        return targetFramework?.currentTargetFrameworkId?.valueOrNull?.framework?.id
-    }
 
     private fun canBePublishedToAzure(publishableProject: PublishableProjectModel) =
             publishableProject.isWeb && (publishableProject.isDotNetCore || SystemInfo.isWindows)
