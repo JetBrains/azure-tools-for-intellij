@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 JetBrains s.r.o.
+// Copyright (c) 2020-203 JetBrains s.r.o.
 //
 // All rights reserved.
 //
@@ -33,14 +33,11 @@ using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
 using JetBrains.UI.ThemedIcons;
 using JetBrains.Util;
-using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Azure.Daemon.RunMarkers
 {
-    public abstract class FunctionAppRunMarkerGutterMark : IconGutterMarkType
+    public abstract class FunctionAppRunMarkerGutterMark : RunMarkerGutterMark
     {
-        private static readonly ILogger ourLogger = Logger.GetLogger<FunctionAppRunMarkerGutterMark>();
-
         public override IAnchor Priority => BulbMenuAnchors.PermanentBackgroundItems;
 
         protected FunctionAppRunMarkerGutterMark([NotNull] IconId iconId) : base(iconId)
