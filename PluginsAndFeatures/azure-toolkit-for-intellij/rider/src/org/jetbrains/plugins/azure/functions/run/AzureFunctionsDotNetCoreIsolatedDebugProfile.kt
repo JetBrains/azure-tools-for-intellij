@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 JetBrains s.r.o.
+ * Copyright (c) 2021-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -264,7 +264,7 @@ class AzureFunctionsDotNetCoreIsolatedDebugProfile(
 
     override val attached: Boolean = false
 
-    override fun checkBeforeExecution() {
+    override suspend fun checkBeforeExecution() {
         dotNetExecutable.validate()
     }
 

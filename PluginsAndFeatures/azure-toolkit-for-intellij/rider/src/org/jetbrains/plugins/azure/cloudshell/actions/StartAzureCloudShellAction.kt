@@ -24,8 +24,6 @@ package org.jetbrains.plugins.azure.cloudshell.actions
 
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.ui.IdeUiService
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationListener
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -57,9 +55,8 @@ import org.jetbrains.plugins.azure.cloudshell.rest.CloudConsoleProvisionTerminal
 import org.jetbrains.plugins.azure.cloudshell.rest.CloudConsoleService
 import org.jetbrains.plugins.azure.cloudshell.terminal.AzureCloudTerminalFactory
 import org.jetbrains.plugins.terminal.TerminalToolWindowFactory
-import org.jetbrains.plugins.terminal.TerminalView
+import org.jetbrains.plugins.terminal.TerminalToolWindowManager
 import java.net.URI
-import javax.swing.event.HyperlinkEvent
 
 @Suppress("UnstableApiUsage")
 class StartAzureCloudShellAction : AnAction() {
@@ -260,7 +257,7 @@ class StartAzureCloudShellAction : AnAction() {
                         // HACK: Because local terminal always opens, we want to make sure it is available before opening cloud terminal
                         ApplicationManager.getApplication().invokeLater {
                             Thread.sleep(500)
-                            TerminalView.getInstance(project).createNewSession(runner)
+                            TerminalToolWindowManager.getInstance(project).createNewSession(runner)
                         }
                     }
                 }
