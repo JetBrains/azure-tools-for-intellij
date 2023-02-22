@@ -25,8 +25,6 @@
 package org.jetbrains.plugins.azure.identity.ad.actions
 
 import com.intellij.ide.BrowserUtil
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationListener
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -41,7 +39,7 @@ import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.workspaceModel.ide.WorkspaceModel
-import com.intellij.workspaceModel.ide.impl.toVirtualFile
+import com.intellij.workspaceModel.ide.virtualFile
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import com.jetbrains.rider.projectView.workspace.containingProjectEntity
 import com.jetbrains.rider.projectView.workspace.getProjectModelEntities
@@ -314,7 +312,7 @@ class RegisterApplicationInAzureAdAction
     }
 
     private fun tryGetAppSettingsJsonVirtualFile(entity: ProjectModelEntity): VirtualFile? {
-        val itemVirtualFile = entity.url?.toVirtualFile()
+        val itemVirtualFile = entity.url?.virtualFile
 
         if (isAppSettingsJsonFileName(itemVirtualFile?.name)) return itemVirtualFile
 
