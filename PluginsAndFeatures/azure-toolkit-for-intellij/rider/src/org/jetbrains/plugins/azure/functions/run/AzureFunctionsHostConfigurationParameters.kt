@@ -29,6 +29,7 @@ import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.execution.configurations.RunProfile
 import com.intellij.execution.configurations.RuntimeConfigurationError
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.ide.browsers.BrowserStarter
 import com.intellij.ide.browsers.StartBrowserSettings
 import com.intellij.openapi.diagnostic.Logger
@@ -151,7 +152,7 @@ open class AzureFunctionsHostConfigurationParameters(
                 executeAsIs = true)
     }
 
-    private val startBrowserAction: (RunProfile, ProcessHandler) -> Unit = { runProfile, processHandler ->
+    private val startBrowserAction: (ExecutionEnvironment, RunProfile, ProcessHandler) -> Unit = { _, runProfile, processHandler ->
         if (startBrowserParameters.startAfterLaunch && runProfile is RunConfiguration) {
             val startBrowserSettings = StartBrowserSettings().apply {
                 isSelected = startBrowserParameters.startAfterLaunch
