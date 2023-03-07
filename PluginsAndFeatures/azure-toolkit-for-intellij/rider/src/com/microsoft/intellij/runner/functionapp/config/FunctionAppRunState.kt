@@ -27,6 +27,7 @@ import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
+import com.intellij.util.application
 import com.microsoft.azure.management.appservice.FunctionApp
 import com.microsoft.azure.management.appservice.FunctionRuntimeStack
 import com.microsoft.azure.management.appservice.OperatingSystem
@@ -134,16 +135,18 @@ class FunctionAppRunState(project: Project, private val myModel: FunctionAppSett
         // Set runtime stack based on project config
         val publishableProject = myModel.functionAppModel.publishableProject
         if (publishableProject != null && publishableProject.isDotNetCore) {
-            val functionLocalSettings = FunctionLocalSettingsUtil.readFunctionLocalSettings(project, File(publishableProject.projectFilePath).parent)
-            val workerRuntime = functionLocalSettings?.values?.workerRuntime ?: FunctionsWorkerRuntime.DotNetDefault
+            application.runReadAction {
+                val functionLocalSettings = FunctionLocalSettingsUtil.readFunctionLocalSettings(project, File(publishableProject.projectFilePath).parent)
+                val workerRuntime = functionLocalSettings?.values?.workerRuntime ?: FunctionsWorkerRuntime.DotNetDefault
 
-            val coreToolsVersion = FunctionsCoreToolsMsBuild.requestAzureFunctionsVersion(project, publishableProject.projectFilePath) ?: "V4"
-            val netCoreVersion = FrameworkUtil.getProjectNetCoreFrameworkVersion(project, publishableProject)
-            myModel.functionAppModel.functionRuntimeStack = FunctionRuntimeStack(
-                    workerRuntime.value,
-                    "~" + coreToolsVersion.trimStart('v', 'V'),
-                    "${workerRuntime.value}|$netCoreVersion",
-                    "${workerRuntime.value}|$netCoreVersion")
+                val coreToolsVersion = FunctionsCoreToolsMsBuild.requestAzureFunctionsVersion(project, publishableProject.projectFilePath) ?: "V4"
+                val netCoreVersion = FrameworkUtil.getProjectNetCoreFrameworkVersion(project, publishableProject)
+                myModel.functionAppModel.functionRuntimeStack = FunctionRuntimeStack(
+                        workerRuntime.value,
+                        "~" + coreToolsVersion.trimStart('v', 'V'),
+                        "${workerRuntime.value}|$netCoreVersion",
+                        "${workerRuntime.value}|$netCoreVersion")
+            }
         }
 
         val functionRuntimeStack = myModel.functionAppModel.functionRuntimeStack
