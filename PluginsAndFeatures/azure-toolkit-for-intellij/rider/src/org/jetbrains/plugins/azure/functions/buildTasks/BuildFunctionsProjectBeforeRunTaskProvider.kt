@@ -29,7 +29,6 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.util.Key
-import com.jetbrains.rd.platform.util.getComponent
 import com.jetbrains.rider.build.BuildHost
 import com.jetbrains.rider.build.BuildParameters
 import com.jetbrains.rider.build.tasks.BuildTaskThrottler
@@ -69,13 +68,13 @@ class BuildFunctionsProjectBeforeRunTaskProvider : BeforeRunTaskProvider<BuildFu
     }
 
     override fun canExecuteTask(configuration: RunConfiguration, task: BuildFunctionsProjectBeforeRunTask): Boolean {
-        return configuration.project.getComponent<BuildHost>().ready.value
+        return BuildHost.getInstance(configuration.project).ready.value
     }
 
     override fun executeTask(context: DataContext, configuration: RunConfiguration, env: ExecutionEnvironment,
                              task: BuildFunctionsProjectBeforeRunTask): Boolean {
         val project = configuration.project
-        val buildHost = project.getComponent<BuildHost>()
+        val buildHost = BuildHost.getInstance(project)
         val selectedProjectsForBuild = when (configuration) {
             is AzureFunctionsHostConfiguration -> listOf(configuration.parameters.projectFilePath)
             else -> emptyList()
