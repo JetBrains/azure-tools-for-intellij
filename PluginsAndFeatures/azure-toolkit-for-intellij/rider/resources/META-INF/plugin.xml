@@ -25,7 +25,7 @@
       <html>
         <p>[3.50.0-2023.1]</p>
         <ul>
-          <li>Compatibility with Rider 2023.1 EAP8</li>
+          <li>Compatibility with Rider 2023.1 EAP9</li>
           <li>Azure Functions: Option to auto-start Azurite with run configurations (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/605">#605</a>)</li>
           <li>Azure Functions: show a warning when Azurite is not running (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/605">#650</a>)</li>
           <li>Azure Functions: Support Windows arm64 Azure Core Tools (<a href="https://youtrack.jetbrains.com/issue/RIDER-85548">#RIDER-85548</a>)</li>
@@ -149,7 +149,7 @@
         </ul>
         <h4>Fixed bugs:</h4>
         <ul>
-          <li>Memory leak running Rider 202 EAP8 with plugin <a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/339">#339</a></li>
+          <li>Memory leak running Rider 2020 EAP8 with plugin <a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/339">#339</a></li>
           <li>Linked host.json file not recognized in configuration <a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/355">#355</a></li>
           <li>Cloud Shell does not work when using Azure CLI for authentication <a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/340">#340</a></li>
           <li>Application Property view show relevant information about running Web App or Function App</li>
@@ -350,6 +350,15 @@
     <notificationGroup id="Azure" displayType="BALLOON" isLogByDefault="true"/>
     <notificationGroup id="Azure Functions" displayType="BALLOON" isLogByDefault="true"/>
     <notificationGroup id="Azure Web App Publish Message" displayType="BALLOON" isLogByDefault="true" toolWindowId="Run"/>
+
+    <dependencySupport kind="dotnet" coordinate="Microsoft.NET.Sdk.Functions" displayName="Azure Toolkit"/>
+    <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.Common" displayName="Azure Toolkit"/>
+    <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.Functions.Worker" displayName="Azure Toolkit"/>
+    <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.Storage.Common" displayName="Azure Toolkit"/>
+    <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.Storage.Blob" displayName="Azure Toolkit"/>
+    <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.WebJobs" displayName="Azure Toolkit"/>
+    <dependencySupport kind="dotnet" coordinate="Microsoft.Identity.Client" displayName="Azure Toolkit"/>
+    <dependencySupport kind="dotnet" coordinate="Microsoft.Identity.Web" displayName="Azure Toolkit"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.microsoft.intellij">
