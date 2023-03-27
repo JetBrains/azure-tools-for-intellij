@@ -350,6 +350,15 @@
     <notificationGroup id="Azure" displayType="BALLOON" isLogByDefault="true"/>
     <notificationGroup id="Azure Functions" displayType="BALLOON" isLogByDefault="true"/>
     <notificationGroup id="Azure Web App Publish Message" displayType="BALLOON" isLogByDefault="true" toolWindowId="Run"/>
+
+    <dependencySupport kind="dotnet" coordinate="Microsoft.NET.Sdk.Functions" displayName="Azure Toolkit"/>
+    <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.Common" displayName="Azure Toolkit"/>
+    <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.Functions.Worker" displayName="Azure Toolkit"/>
+    <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.Storage.Common" displayName="Azure Toolkit"/>
+    <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.Storage.Blob" displayName="Azure Toolkit"/>
+    <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.WebJobs" displayName="Azure Toolkit"/>
+    <dependencySupport kind="dotnet" coordinate="Microsoft.Identity.Client" displayName="Azure Toolkit"/>
+    <dependencySupport kind="dotnet" coordinate="Microsoft.Identity.Web" displayName="Azure Toolkit"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.microsoft.intellij">
