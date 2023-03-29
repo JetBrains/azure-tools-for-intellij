@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2022 JetBrains s.r.o.
+ * Copyright (c) 2020-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -37,6 +37,7 @@ import org.jetbrains.plugins.azure.functions.buildTasks.BuildFunctionsProjectBef
 import org.jetbrains.plugins.azure.functions.daemon.AzureRunnableProjectKinds
 import org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfiguration
 import org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfigurationType
+import org.jetbrains.plugins.azure.storage.azurite.AzuriteBeforeRunTaskProvider
 import org.testng.annotations.Test
 import kotlin.test.fail
 
@@ -70,7 +71,7 @@ abstract class FunctionHostConfigurationTestBase(
     //region Before Run Tasks
 
     @Test(description = "Verifies Function Host run configuration has Build Function App before run task by default.")
-    fun testFunctionHost_BeforeRunTasks_Defaults() {
+    fun testFunctionHost_BeforeRunTasks_Defaults_BuildFunctionsProject() {
         val configuration = createRunConfiguration(
                 name = "Run Function App: ${project.name}",
                 configurationType = AzureFunctionsHostConfigurationType::class.java
@@ -78,13 +79,28 @@ abstract class FunctionHostConfigurationTestBase(
 
         configuration.name.shouldBe("Run Function App: $projectName")
 
-        configuration.beforeRunTasks.size.shouldBe(1)
-        configuration.beforeRunTasks[0].providerId.shouldBe(BuildFunctionsProjectBeforeRunTaskProvider.providerId)
+        configuration.beforeRunTasks.shouldContains { beforeRunTask ->
+            beforeRunTask.providerId == BuildFunctionsProjectBeforeRunTaskProvider.providerId
+        }
+    }
+
+    @Test(description = "Verifies Function Host run configuration has Start Azurite before run task by default.")
+    fun testFunctionHost_BeforeRunTasks_Defaults_AzuriteBeforeRunTask() {
+        val configuration = createRunConfiguration(
+                name = "Run Function App: ${project.name}",
+                configurationType = AzureFunctionsHostConfigurationType::class.java
+        ) as AzureFunctionsHostConfiguration
+
+        configuration.name.shouldBe("Run Function App: $projectName")
+
+        configuration.beforeRunTasks.shouldContains { beforeRunTask ->
+            beforeRunTask.providerId == AzuriteBeforeRunTaskProvider.providerId
+        }
     }
 
     // TODO: Need to make sure function core tools is available on a server before enable.
-    @Test(enabled = false, description = "Check before run task that should build a function app project.")
-    fun testFunctionHost_BeforeRunTasks_BuildFunctionProject() {
+    @Test(enabled = false, description = "Check before run task that should build a function app project and start Azurite.")
+    fun testFunctionHost_BeforeRunTasks_BuildFunctionProject_StartAzurite() {
         addProject(arrayOf(projectName), "ConsoleApp1", ProjectTemplateIds.core(coreVersion).consoleApplication)
 
         val configuration = createRunConfiguration(
@@ -102,8 +118,13 @@ abstract class FunctionHostConfigurationTestBase(
         configuration.parameters.exePath = projectToRun.projectOutputs.first().exePath
         configuration.parameters.projectTfm = projectToRun.projectOutputs.first().tfm?.presentableName ?: ""
 
-        configuration.beforeRunTasks.size.shouldBe(1)
-        configuration.beforeRunTasks[0].providerId.shouldBe(BuildFunctionsProjectBeforeRunTaskProvider.providerId)
+        configuration.beforeRunTasks.shouldContains { beforeRunTask ->
+            beforeRunTask.providerId == BuildFunctionsProjectBeforeRunTaskProvider.providerId
+        }
+
+        configuration.beforeRunTasks.shouldContains { beforeRunTask ->
+            beforeRunTask.providerId == AzuriteBeforeRunTaskProvider.providerId
+        }
 
         checkCanExecuteRunConfiguration(configuration)
 

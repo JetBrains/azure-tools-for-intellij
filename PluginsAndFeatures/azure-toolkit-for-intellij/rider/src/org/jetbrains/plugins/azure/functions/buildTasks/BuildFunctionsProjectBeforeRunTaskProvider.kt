@@ -50,9 +50,7 @@ class BuildFunctionsProjectBeforeRunTaskProvider : BeforeRunTaskProvider<BuildFu
 
     override fun getDescription(task: BuildFunctionsProjectBeforeRunTask): String = message("run_config.run_function_app.form.function_app.before_run_tasks.build_function_project_description")
 
-    override fun isConfigurable(): Boolean {
-        return false
-    }
+    override fun isConfigurable() = false
 
     override fun getIcon(): Icon = AllIcons.Actions.Compile
 
