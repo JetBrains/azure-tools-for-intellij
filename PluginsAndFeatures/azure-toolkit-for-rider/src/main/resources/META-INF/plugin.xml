@@ -248,6 +248,12 @@
   <depends>JavaScript</depends>
 
   <extensions defaultExtensionNs="com.intellij">
+    <toolWindow
+            anchor="left"
+            factoryClass="com.microsoft.intellij.ui.ServerExplorerToolWindowFactory"
+            id="Azure Explorer"
+            canCloseContents="false"
+            icon="/Common/Azure.svg"/>
 
 <!--    <applicationService serviceInterface="org.jetbrains.plugins.azure.storage.azurite.AzuriteService"-->
 <!--                        serviceImplementation="org.jetbrains.plugins.azure.storage.azurite.AzuriteService"/>-->
