@@ -34,7 +34,6 @@ import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsInfoPro
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsMsBuild
 import org.jetbrains.plugins.azure.functions.run.localsettings.FunctionLocalSettingsUtil
 import org.jetbrains.plugins.azure.functions.run.localsettings.FunctionsWorkerRuntime
-import org.jetbrains.plugins.azure.storage.azurite.Azurite
 import java.io.File
 
 class AzureFunctionsHostExecutorFactory(
@@ -46,9 +45,6 @@ class AzureFunctionsHostExecutorFactory(
     }
 
     override fun create(executorId: String, environment: ExecutionEnvironment): RunProfileState {
-
-        // Auto-start Azurite
-        Azurite.autoStartAzurite(parameters.project)
 
         // Determine project kind
         val projectKind = parameters.projectKind

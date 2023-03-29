@@ -26,7 +26,7 @@
         <p>[3.50.0-2023.1]</p>
         <ul>
           <li>Compatibility with Rider 2023.1 EAP9</li>
-          <li>Azure Functions: Option to auto-start Azurite with run configurations (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/605">#605</a>)</li>
+          <li>Azure Functions: Option to auto-start Azurite with run configurations (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/674">#674</a>)</li>
           <li>Azure Functions: show a warning when Azurite is not running (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/605">#650</a>)</li>
           <li>Azure Functions: Support Windows arm64 Azure Core Tools (<a href="https://youtrack.jetbrains.com/issue/RIDER-85548">#RIDER-85548</a>)</li>
         </ul>
@@ -40,7 +40,7 @@
         <ul>
           <li>Compatibility with Rider 2022.3</li>
           <li>Azure Functions: Add F# item templates for isolated worker (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/635">#635</a>)</li>
-          <li>Azure Functions: Option to auto-start Azurite with run configurations (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/605">#605</a>)</li>
+          <li>Azure Functions: Option to auto-start Azurite with run configurations (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/674">#674</a>)</li>
           <li>Azure Functions: show a warning when Azurite is not running (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/605">#650</a>)</li>
         </ul>
         <h4>Fixed bugs:</h4>
@@ -344,6 +344,7 @@
                             implementationClass="org.jetbrains.plugins.azure.functions.completion.csharp.TimerTriggerCompletionContributor" />
 
     <serviceViewContributor implementation="org.jetbrains.plugins.azure.storage.azurite.AzuriteServiceViewContributor" />
+    <stepsBeforeRunProvider implementation="org.jetbrains.plugins.azure.storage.azurite.AzuriteBeforeRunTaskProvider"/>
 
     <editorNotificationProvider implementation="org.jetbrains.plugins.azure.identity.ad.notifications.DefaultAzureAdApplicationRegistrationNotificationProvider"/>
 

@@ -236,20 +236,6 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
             }
         }
 
-        group(message("settings.app_services.function_app.azurite.group")) {
-            row {
-                text(message("settings.app_services.function_app.azurite.group.description"))
-            }
-
-            row {
-                var value = properties.getBoolean(AzureRiderSettings.PROPERTY_FUNCTIONS_AZURITE_AUTOSTART, true)
-
-                checkBox(message("settings.app_services.function_app.azurite.automaticstart"))
-                        .bindSelected(MutableProperty({ value }, { value = it }))
-                        .onApply { properties.setValue(AzureRiderSettings.PROPERTY_FUNCTIONS_AZURITE_AUTOSTART, value) }
-            }
-        }
-
         row {
             placeholder()
         }

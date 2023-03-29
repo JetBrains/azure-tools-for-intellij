@@ -23,17 +23,10 @@
 package org.jetbrains.plugins.azure.storage.azurite
 
 import com.intellij.ide.actions.ShowSettingsUtilImpl
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.javascript.nodejs.util.NodePackageDescriptor
-import com.intellij.openapi.actionSystem.ActionPlaces
-import com.intellij.openapi.actionSystem.ex.ActionUtil
-import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.project.Project
-import com.intellij.util.application
 import com.microsoft.intellij.AzureConfigurable
-import com.microsoft.intellij.configuration.AzureRiderSettings
 import org.jetbrains.plugins.azure.RiderAzureBundle
-import org.jetbrains.plugins.azure.storage.azurite.actions.StartAzuriteAction
 
 object Azurite {
     const val PackageName = "azurite"
@@ -45,17 +38,5 @@ object Azurite {
     fun showSettings(project: Project?) {
         // TODO: FIX_LOCALIZATION: Using displayName parameter here for Settings ID need to be fixed to use ID to avoid localization issues.
         ShowSettingsUtilImpl.showSettingsDialog(project, AzureConfigurable.AZURE_CONFIGURABLE_PREFIX + RiderAzureBundle.message("settings.azurite.name"), "")
-    }
-
-    fun autoStartAzurite(project: Project) {
-        val properties = PropertiesComponent.getInstance()
-        if (properties.getBoolean(AzureRiderSettings.PROPERTY_FUNCTIONS_AZURITE_AUTOSTART, true)) {
-            ActionUtil.invokeAction(
-                    StartAzuriteAction(),
-                    SimpleDataContext.getProjectContext(project),
-                    ActionPlaces.INTENTION_MENU,
-                    null,
-                    null)
-        }
     }
 }
