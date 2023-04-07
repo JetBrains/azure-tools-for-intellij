@@ -38,6 +38,7 @@ import com.microsoft.intellij.runner.webapp.model.WebAppPublishModel
 import com.microsoft.intellij.ui.component.AzureComponent
 import com.microsoft.intellij.ui.component.ExistingOrNewSelector
 import com.microsoft.intellij.ui.component.PublishableProjectComponent
+import com.microsoft.intellij.ui.component.PublishableProjectConfigurationAndPlatformComponent
 import com.microsoft.intellij.ui.component.appservice.AppAfterPublishSettingPanel
 import com.microsoft.intellij.ui.component.appservice.WebAppExistingComponent
 import com.microsoft.intellij.ui.extension.getSelectedValue
@@ -62,6 +63,7 @@ class WebAppPublishComponent(private val lifetime: Lifetime,
     val pnlExistingWebApp = WebAppExistingComponent(lifetime = lifetime.createNested())
     val pnlCreateWebApp = WebAppCreateNewComponent(lifetime.createNested())
     private val pnlProject = PublishableProjectComponent(project)
+    private val pnlConfigurationAndPlatform = PublishableProjectConfigurationAndPlatformComponent(project)
     private val pnlWebAppPublishSettings = AppAfterPublishSettingPanel()
 
     init {
@@ -72,6 +74,7 @@ class WebAppPublishComponent(private val lifetime: Lifetime,
         add(pnlExistingWebApp, "growx")
         add(pnlCreateWebApp, "growx")
         add(pnlProject, "growx")
+        add(pnlConfigurationAndPlatform, "growx")
         add(pnlWebAppPublishSettings, "growx")
 
         initButtonGroupsState()
@@ -82,6 +85,8 @@ class WebAppPublishComponent(private val lifetime: Lifetime,
     fun resetFromConfig(config: WebAppPublishModel, dateString: String) {
         if (config.publishableProject != null)
             pnlProject.cbProject.selectedItem = config.publishableProject
+
+        pnlConfigurationAndPlatform.setSelectedConfigurationAndPlatform(config.configuration, config.platform)
 
         pnlCreateWebApp.pnlAppName.txtAppName.text =
                 if (config.appName.isEmpty()) "$DEFAULT_APP_NAME$dateString"
@@ -132,6 +137,8 @@ class WebAppPublishComponent(private val lifetime: Lifetime,
     fun applyConfig(model: WebAppPublishModel) {
         model.subscription = pnlCreateWebApp.pnlSubscription.cbSubscription.getSelectedValue()
         model.publishableProject = pnlProject.lastSelectedProject
+        model.configuration = pnlConfigurationAndPlatform.getSelectedConfiguration()
+        model.platform = pnlConfigurationAndPlatform.getSelectedPlatform()
 
         model.isCreatingNewApp = pnlWebAppSelector.isCreateNew
 

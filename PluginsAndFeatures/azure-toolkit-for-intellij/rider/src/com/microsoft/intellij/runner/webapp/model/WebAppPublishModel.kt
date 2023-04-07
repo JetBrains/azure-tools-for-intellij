@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2022 JetBrains s.r.o.
+ * Copyright (c) 2018-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -47,6 +47,8 @@ class WebAppPublishModel {
         val defaultRuntime = RuntimeStack("DOTNETCORE", "2.1")
 
         private const val AZURE_WEB_APP_PROJECT                    = "AZURE_WEB_APP_PROJECT"
+        private const val AZURE_WEB_APP_CONFIGURATION              = "AZURE_WEB_APP_CONFIGURATION"
+        private const val AZURE_WEB_APP_PLATFORM                   = "AZURE_WEB_APP_PLATFORM"
         private const val AZURE_WEB_APP_SUBSCRIPTION_ID            = "AZURE_WEB_APP_SUBSCRIPTION_ID"
         private const val AZURE_WEB_APP_IS_CREATE_APP              = "AZURE_WEB_APP_IS_CREATE_APP"
         private const val AZURE_WEB_APP_ID                         = "AZURE_WEB_APP_ID"
@@ -68,6 +70,8 @@ class WebAppPublishModel {
 
     @Attribute(value = "name", converter = WebBrowserReferenceConverter::class)
     var publishableProject: PublishableProjectModel? = null
+    var configuration = ""
+    var platform = ""
 
     var subscription: Subscription? = null
 
@@ -122,6 +126,9 @@ class WebAppPublishModel {
             }
         }
 
+        configuration = JDOMExternalizerUtil.readField(element, AZURE_WEB_APP_CONFIGURATION) ?: ""
+        platform = JDOMExternalizerUtil.readField(element, AZURE_WEB_APP_PLATFORM) ?: ""
+
         val subscriptionId = JDOMExternalizerUtil.readField(element, AZURE_WEB_APP_SUBSCRIPTION_ID) ?: ""
         subscription = AzureMvpModel.getInstance().selectedSubscriptions.find { it.subscriptionId() == subscriptionId }
 
@@ -161,6 +168,8 @@ class WebAppPublishModel {
 
     fun writeExternal(element: Element) {
         JDOMExternalizerUtil.writeField(element, AZURE_WEB_APP_PROJECT, publishableProject?.projectFilePath ?: "")
+        JDOMExternalizerUtil.writeField(element, AZURE_WEB_APP_CONFIGURATION, configuration)
+        JDOMExternalizerUtil.writeField(element, AZURE_WEB_APP_PLATFORM, platform)
 
         JDOMExternalizerUtil.writeField(element, AZURE_WEB_APP_SUBSCRIPTION_ID, subscription?.subscriptionId() ?: "")
 

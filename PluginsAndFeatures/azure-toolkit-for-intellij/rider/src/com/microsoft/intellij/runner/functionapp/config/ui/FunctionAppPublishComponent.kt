@@ -39,6 +39,7 @@ import com.microsoft.intellij.runner.functionapp.model.FunctionAppPublishModel
 import com.microsoft.intellij.ui.component.AzureComponent
 import com.microsoft.intellij.ui.component.ExistingOrNewSelector
 import com.microsoft.intellij.ui.component.PublishableProjectComponent
+import com.microsoft.intellij.ui.component.PublishableProjectConfigurationAndPlatformComponent
 import com.microsoft.intellij.ui.component.appservice.AppAfterPublishSettingPanel
 import com.microsoft.intellij.ui.component.appservice.FunctionAppExistingComponent
 import com.microsoft.intellij.ui.extension.getSelectedValue
@@ -68,6 +69,7 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
     val pnlExistingFunctionApp = FunctionAppExistingComponent(lifetime.createNested())
     val pnlCreateFunctionApp = FunctionAppCreateNewComponent(lifetime.createNested())
     private val pnlProject = PublishableProjectComponent(project)
+    private val pnlConfigurationAndPlatform = PublishableProjectConfigurationAndPlatformComponent(project)
     private val pnlFunctionAppPublishSettings = AppAfterPublishSettingPanel()
 
     init {
@@ -77,6 +79,7 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
         add(pnlExistingFunctionApp, "growx")
         add(pnlCreateFunctionApp, "growx")
         add(pnlProject, "growx")
+        add(pnlConfigurationAndPlatform, "growx")
         add(pnlFunctionAppPublishSettings, "growx")
 
         initButtonGroupsState()
@@ -87,6 +90,8 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
     fun resetFromConfig(config: FunctionAppPublishModel, dateString: String) {
         if (config.publishableProject != null)
             pnlProject.cbProject.selectedItem = config.publishableProject
+
+        pnlConfigurationAndPlatform.setSelectedConfigurationAndPlatform(config.configuration, config.platform)
 
         pnlCreateFunctionApp.pnlAppName.txtAppName.text =
                 if (config.appName.isEmpty()) "$DEFAULT_APP_NAME$dateString"
@@ -147,6 +152,8 @@ class FunctionAppPublishComponent(private val lifetime: Lifetime,
     fun applyConfig(model: FunctionAppPublishModel) {
         model.subscription = pnlCreateFunctionApp.pnlSubscription.cbSubscription.getSelectedValue()
         model.publishableProject = pnlProject.lastSelectedProject
+        model.configuration = pnlConfigurationAndPlatform.getSelectedConfiguration()
+        model.platform = pnlConfigurationAndPlatform.getSelectedPlatform()
 
         model.isCreatingNewApp = pnlFunctionAppSelector.isCreateNew
         model.appName = pnlCreateFunctionApp.pnlAppName.appName
