@@ -113,6 +113,8 @@ configure(mainProjects) {
         implementation group: 'com.neovisionaries', name: 'nv-websocket-client', version: '2.9'
         implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.23'
 
+        implementation group: 'org.apache.maven', name: 'apache-maven', version: '3.9.0'
+
         // https://mvnrepository.com/artifact/org.projectlombok/lombok
         compileOnly "org.projectlombok:lombok:${lombok_version}"
         annotationProcessor "org.projectlombok:lombok:${lombok_version}"
