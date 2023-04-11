@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2022 JetBrains s.r.o.
+ * Copyright (c) 2018-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -88,7 +88,13 @@ class RiderWebAppRunState(project: Project,
                 ?: throw RuntimeException(message("process_event.publish.subscription.not_defined"))
 
         val appTarget = getOrCreateWebAppFromConfiguration(myModel.webAppModel, processHandler)
-        deployToAzureWebApp(project, publishableProject, appTarget, processHandler)
+        deployToAzureWebApp(
+                project = project,
+                publishableProject = publishableProject,
+                configuration = myModel.webAppModel.configuration,
+                platform = myModel.webAppModel.platform,
+                appTarget = appTarget,
+                processHandler = processHandler)
 
         if (myModel.webAppModel.isCreatingNewApp && myModel.webAppModel.operatingSystem == OperatingSystem.LINUX &&
                 publishableProject.isDotNetCore) {

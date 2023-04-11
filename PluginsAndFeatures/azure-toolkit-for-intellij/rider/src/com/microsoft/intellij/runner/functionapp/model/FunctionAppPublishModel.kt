@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2022 JetBrains s.r.o.
+ * Copyright (c) 2019-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -53,6 +53,8 @@ class FunctionAppPublishModel {
                 "dotnet","~4", "dotnet|6.0", "dotnet|6.0")
 
         private const val AZURE_FUNCTION_APP_PROJECT                    = "AZURE_FUNCTION_APP_PROJECT"
+        private const val AZURE_FUNCTION_APP_CONFIGURATION              = "AZURE_FUNCTION_APP_CONFIGURATION"
+        private const val AZURE_FUNCTION_APP_PLATFORM                   = "AZURE_FUNCTION_APP_PLATFORM"
         private const val AZURE_FUNCTION_APP_SUBSCRIPTION_ID            = "AZURE_FUNCTION_APP_SUBSCRIPTION_ID"
         private const val AZURE_FUNCTION_APP_IS_CREATE_APP              = "AZURE_FUNCTION_APP_IS_CREATE_APP"
         private const val AZURE_FUNCTION_APP_ID                         = "AZURE_FUNCTION_APP_ID"
@@ -78,6 +80,8 @@ class FunctionAppPublishModel {
     }
 
     var publishableProject: PublishableProjectModel? = null
+    var configuration = ""
+    var platform = ""
 
     var subscription: Subscription? = null
 
@@ -139,6 +143,9 @@ class FunctionAppPublishModel {
             }
         }
 
+        configuration = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_CONFIGURATION) ?: ""
+        platform = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_PLATFORM) ?: ""
+
         val subscriptionId = JDOMExternalizerUtil.readField(element, AZURE_FUNCTION_APP_SUBSCRIPTION_ID) ?: ""
         subscription = AzureMvpModel.getInstance().selectedSubscriptions.find { it.subscriptionId() == subscriptionId }
 
@@ -189,6 +196,8 @@ class FunctionAppPublishModel {
 
     fun writeExternal(element: Element) {
         JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_PROJECT, publishableProject?.projectFilePath ?: "")
+        JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_CONFIGURATION, configuration)
+        JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_PLATFORM, platform)
 
         JDOMExternalizerUtil.writeField(element, AZURE_FUNCTION_APP_SUBSCRIPTION_ID, subscription?.subscriptionId() ?: "")
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2021 JetBrains s.r.o.
+ * Copyright (c) 2018-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -119,10 +119,12 @@ object WebAppDeployStateUtil {
 
     fun deployToAzureWebApp(project: Project,
                             publishableProject: PublishableProjectModel,
+                            configuration: String,
+                            platform: String,
                             appTarget: WebAppBase,
                             processHandler: RunProcessHandler) {
 
-        packAndDeploy(project, publishableProject, appTarget, processHandler)
+        packAndDeploy(project, publishableProject, configuration, platform, appTarget, processHandler)
         processHandler.setText(message("process_event.publish.deploy_succeeded"))
     }
 
@@ -181,11 +183,16 @@ object WebAppDeployStateUtil {
 
     private fun packAndDeploy(project: Project,
                               publishableProject: PublishableProjectModel,
+                              configuration: String,
+                              platform: String,
                               appTarget: WebAppBase,
                               processHandler: RunProcessHandler) {
         try {
             processHandler.setText(message("process_event.publish.project.artifacts.collecting", publishableProject.projectName))
-            val outDir = collectProjectArtifacts(project, publishableProject)
+            if (configuration.isNotEmpty() && platform.isNotEmpty()) {
+                processHandler.setText(message("process_event.publish.project.artifacts.collecting_configuration_platform", configuration, platform))
+            }
+            val outDir = collectProjectArtifacts(project, publishableProject, configuration, platform)
             // Note: we need to do it only for Linux Azure instances (we might add this check to speed up)
             projectAssemblyRelativePath = getAssemblyRelativePath(publishableProject, outDir)
 

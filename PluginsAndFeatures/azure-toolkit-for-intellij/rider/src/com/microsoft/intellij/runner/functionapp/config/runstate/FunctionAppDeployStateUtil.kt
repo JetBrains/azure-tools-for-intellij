@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2022 JetBrains s.r.o.
+ * Copyright (c) 2019-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -161,20 +161,27 @@ object FunctionAppDeployStateUtil {
 
     fun deployToAzureFunctionApp(project: Project,
                                  publishableProject: PublishableProjectModel,
+                                 configuration: String,
+                                 platform: String,
                                  app: WebAppBase,
                                  processHandler: RunProcessHandler) {
 
-        packAndDeploy(project, publishableProject, app, processHandler)
+        packAndDeploy(project, publishableProject, configuration, platform, app, processHandler)
         processHandler.setText(message("process_event.publish.deploy_succeeded"))
     }
 
     private fun packAndDeploy(project: Project,
                               publishableProject: PublishableProjectModel,
+                              configuration: String,
+                              platform: String,
                               app: WebAppBase,
                               processHandler: RunProcessHandler) {
         try {
             processHandler.setText(message("process_event.publish.project.artifacts.collecting", publishableProject.projectName))
-            val outDir = collectProjectArtifacts(project, publishableProject)
+            if (configuration.isNotEmpty() && platform.isNotEmpty()) {
+                processHandler.setText(message("process_event.publish.project.artifacts.collecting_configuration_platform", configuration, platform))
+            }
+            val outDir = collectProjectArtifacts(project, publishableProject, configuration, platform)
             // Note: we need to do it only for Linux Azure instances (we might add this check to speed up)
             projectAssemblyRelativePath = getAssemblyRelativePath(publishableProject, outDir)
 
@@ -197,8 +204,7 @@ object FunctionAppDeployStateUtil {
         }
     }
 
-    private fun updateWithConnectionString(app: WebAppBase, name: String, value: String, processHandler:
-    RunProcessHandler) {
+    private fun updateWithConnectionString(app: WebAppBase, name: String, value: String, processHandler: RunProcessHandler) {
         val processMessage = message("process_event.publish.connection_string.creating", name)
 
         processHandler.setText(processMessage)

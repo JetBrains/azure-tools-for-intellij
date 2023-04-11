@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019-2022 JetBrains s.r.o.
+ * Copyright (c) 2019-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -123,19 +123,25 @@ object AppDeployStateUtil {
      *
      * @param project IDEA [Project] instance
      * @param publishableProject contains information about project to be published (isDotNetCore, path to project file)
+     * @param configuration optional configuration to pass to MSBuild
+     * @param platform optional platform to pass to MSBuild
      *
      * @return [File] to project content to be published
      */
-    fun collectProjectArtifacts(project: Project, publishableProject: PublishableProjectModel): File {
+    fun collectProjectArtifacts(project: Project, publishableProject: PublishableProjectModel, configuration: String?, platform: String?): File {
         // Get out parameters
         val publishService = MsBuildPublishingService.getInstance(project)
-        val (targetProperties, outPath) = publishService.getPublishToTempDirParameterAndPath()
+        val (tempDirMsBuildProperty, outPath) = publishService.getPublishToTempDirParameterAndPath()
+
+        val extraProperties = mutableListOf<CustomTargetExtraProperty>()
+        if (!configuration.isNullOrEmpty()) extraProperties.add(CustomTargetExtraProperty("Configuration", configuration))
+        if (!platform.isNullOrEmpty()) extraProperties.add(CustomTargetExtraProperty("Platform", platform))
 
         val buildStatus =
             if (publishableProject.isDotNetCore) {
-                invokeMsBuild(project, publishableProject, listOf(targetProperties), false, true, true)
+                invokeMsBuild(project, publishableProject, listOf(tempDirMsBuildProperty) + extraProperties, false, true, true)
             } else {
-                webPublishToFileSystem(project, publishableProject.projectFilePath, outPath, false, true)
+                webPublishToFileSystem(project, publishableProject.projectFilePath, outPath, extraProperties, false, true)
             }
 
         val buildResult = buildStatus.buildResultKind
@@ -259,12 +265,13 @@ object AppDeployStateUtil {
     private fun webPublishToFileSystem(project: Project,
                                        pathToProject: String,
                                        outPath: Path,
+                                       extraProperties: List<CustomTargetExtraProperty>,
                                        diagnosticsMode: Boolean = false,
                                        silentMode: Boolean = false): BuildStatus {
         val buildParameters = BuildParameters(
                 CustomTargetWithExtraProperties(
                         "WebPublish",
-                        listOf(
+                        extraProperties + listOf(
                                 CustomTargetExtraProperty("WebPublishMethod", "FileSystem"),
                                 CustomTargetExtraProperty("PublishUrl", outPath.toString()))
                 ), listOf(pathToProject), diagnosticsMode, silentMode

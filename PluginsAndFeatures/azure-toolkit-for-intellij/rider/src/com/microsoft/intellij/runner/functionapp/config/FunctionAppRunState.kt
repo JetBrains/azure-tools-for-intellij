@@ -86,7 +86,13 @@ class FunctionAppRunState(project: Project, private val myModel: FunctionAppSett
 
         val app = getOrCreateFunctionAppFromConfiguration(myModel.functionAppModel, processHandler)
         tryConfigureAzureFunctionRuntimeStack(app, subscriptionId, processHandler)
-        deployToAzureFunctionApp(project, publishableProject, app, processHandler)
+        deployToAzureFunctionApp(
+                project = project,
+                publishableProject = publishableProject,
+                configuration = myModel.functionAppModel.configuration,
+                platform = myModel.functionAppModel.platform,
+                app = app,
+                processHandler = processHandler)
 
         isFunctionAppCreated = true
 
@@ -135,7 +141,7 @@ class FunctionAppRunState(project: Project, private val myModel: FunctionAppSett
         // Set runtime stack based on project config
         val publishableProject = myModel.functionAppModel.publishableProject
         if (publishableProject != null && publishableProject.isDotNetCore) {
-            application.runReadAction {
+            application.invokeAndWait {
                 val functionLocalSettings = FunctionLocalSettingsUtil.readFunctionLocalSettings(project, File(publishableProject.projectFilePath).parent)
                 val workerRuntime = functionLocalSettings?.values?.workerRuntime ?: FunctionsWorkerRuntime.DotNetDefault
 
