@@ -33,6 +33,7 @@
         </ul>
         <h4>Fixed bugs:</h4>
         <ul>
+          <li>Azure Functions: Make error -Specify a Node.js interpreter correctly- more clear when attempting to start Azurite (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/680">#680</a>)</li>
           <li>Azure Functions: Publish using wrong dotnet version (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/661">#661</a>)</li>
           <li>Rider 2023.1 EAP 1 makes corelibs.log grow infinitely (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/657">#657</a>)</li>
           <li>No icons shown for item templates in Rider 2023.1 (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/663">#663</a>)</li>

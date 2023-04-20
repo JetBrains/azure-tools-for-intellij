@@ -36,6 +36,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.getOrLogException
 import com.intellij.openapi.progress.PerformInBackgroundOption
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -94,7 +95,15 @@ class StartAzuriteAction
             return
         }
 
-        val nodeJsLocalInterpreter = NodeJsLocalInterpreter.castAndValidate(nodeJsInterpreter)
+        val nodeJsLocalInterpreter = runCatching {
+            NodeJsLocalInterpreter.castAndValidate(nodeJsInterpreter)
+        }.getOrLogException(logger)
+
+        if (nodeJsLocalInterpreter == null) {
+            logger.warn("Can not start Azurite - invalid configuration (local Node interpreter could not be validated)")
+            showInvalidConfigurationNotification(project)
+            return
+        }
 
         val packagePath = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_PACKAGE)
         if (packagePath.isNullOrEmpty()) {
