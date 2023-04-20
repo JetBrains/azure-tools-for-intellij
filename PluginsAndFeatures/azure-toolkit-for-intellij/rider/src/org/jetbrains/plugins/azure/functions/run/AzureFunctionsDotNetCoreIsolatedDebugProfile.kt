@@ -28,6 +28,7 @@ import com.intellij.execution.Executor
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.impl.ProcessListUtil
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.ui.ConsoleView
@@ -38,7 +39,6 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vfs.impl.local.FileWatcher
 import com.intellij.util.execution.ParametersListUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.threading.SpinWait
@@ -49,6 +49,7 @@ import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.model.debuggerWorker.DotNetCoreAttachStartInfo
 import com.jetbrains.rider.run.*
+import com.jetbrains.rider.run.dotNetCore.DotNetCoreAttachProfileState
 import com.jetbrains.rider.runtime.DotNetExecutable
 import com.jetbrains.rider.runtime.DotNetRuntime
 import com.jetbrains.rider.runtime.apply
@@ -116,8 +117,14 @@ class AzureFunctionsDotNetCoreIsolatedDebugProfile(
                     RiderAzureBundle.message("run_config.run_function_app.debug.notification.isolated_worker_pid_unspecified"))
         }
 
-        // Create debugger worker info
-        return createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu)
+        val targetProcess = ProcessListUtil.getProcessList().firstOrNull { it.pid == processId }
+        if (targetProcess == null) {
+            logger.warn("Unable to find target process with pid $processId")
+            // Create debugger worker info
+            return createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu)
+        }
+
+        return DotNetCoreAttachProfileState(targetProcess, executionEnvironment).createWorkerRunInfo(lifetime, helper, port)
     }
 
     private fun launchAzureFunctionsHost() {
