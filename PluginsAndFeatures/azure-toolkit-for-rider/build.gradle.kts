@@ -10,8 +10,13 @@ plugins {
 group = "com.jetbrains"
 version = "1.0-SNAPSHOT"
 
-val azureToolkitVersion = "0.31.0-SNAPSHOT"
-val azureToolkitUtilsVersion = "3.75.0-SNAPSHOT"
+val azureToolkitVersion = "0.33.0-SNAPSHOT"
+val azureToolkitUtilsVersion = "3.77.0-SNAPSHOT"
+
+extra.apply {
+    set("azureToolkitVersion", azureToolkitVersion)
+    set("azureToolkitUtilsVersion", azureToolkitUtilsVersion)
+}
 
 allprojects {
     repositories {
@@ -29,7 +34,6 @@ allprojects {
     intellij {
         version.set("2022.3.2")
         type.set("RD")
-        instrumentCode.set(false)
         downloadSources.set(false)
     }
     dependencyManagement {
@@ -45,6 +49,7 @@ allprojects {
         implementation { exclude(module = "stax-api") }
         implementation { exclude(module = "groovy-xml") }
         implementation { exclude(module = "groovy-templates") }
+        implementation { exclude(module = "jna") }
     }
     dependencies {
         compileOnly("org.projectlombok:lombok")
@@ -62,6 +67,10 @@ allprojects {
 
         compileKotlin {
             kotlinOptions.jvmTarget = "17"
+        }
+
+        buildSearchableOptions {
+            enabled = false
         }
     }
 }
@@ -84,8 +93,7 @@ gradle.taskGraph.whenReady {
 sourceSets {
     main {
         kotlin.srcDir("src/main/kotlin")
-        resources.srcDir("src/main/resources")
-        resources.srcDir("../azure-toolkit-for-intellij/src/main/resources/icons")
+        resources.setSrcDirs(listOf("src/main/resources", "../azure-toolkit-for-intellij/src/main/resources/icons"))
     }
 }
 
@@ -95,21 +103,24 @@ extra["rdLibDirectory"] = rdLibDirectory
 
 dependencies {
     implementation(project(":azure-intellij-plugin-lib"))
+    implementation(project(":azure-intellij-plugin-guidance"))
+    implementation(project(":azure-intellij-resource-connector-lib"))
     implementation(project(":azure-intellij-plugin-service-explorer"))
+    implementation(project(":azure-intellij-plugin-arm"))
+    implementation(project(":azure-intellij-plugin-containerservice"))
 
-    implementation("com.microsoft.azuretools:azure-explorer-common:3.75.0-SNAPSHOT") {
+    implementation("com.microsoft.azuretools:azure-explorer-common:3.77.0-SNAPSHOT") {
         exclude(
             "javax.xml.bind",
             "jaxb-api"
         )
     }
-
-//
-//
-//    implementation(project(":azure-intellij-plugin-guidance"))
-//    implementation(project(":azure-intellij-resource-connector-lib"))
-//    implementation("com.microsoft.azuretools:hdinsight-node-common:3.74.0-SNAPSHOT") { exclude("javax.xml.bind", "jaxb-api") }
-
+    implementation("com.microsoft.azuretools:hdinsight-node-common:3.77.0-SNAPSHOT") {
+        exclude(
+            "javax.xml.bind",
+            "jaxb-api"
+        )
+    }
 }
 
 tasks {

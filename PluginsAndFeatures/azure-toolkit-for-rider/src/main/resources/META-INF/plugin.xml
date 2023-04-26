@@ -237,6 +237,10 @@
       </html>]]>
   </change-notes>
 
+  <xi:include href="/META-INF/azure-intellij-plugin-lib.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/azure-intellij-plugin-service-explorer.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/azure-intellij-plugin-arm.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/azure-intellij-plugin-containerservice.xml" xpointer="xpointer(/idea-plugin/*)"/>
 <!--  <xi:include href="/META-INF/platformPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>-->
 
   <resource-bundle>messages.RiderAzureMessages</resource-bundle>
@@ -254,6 +258,11 @@
             id="Azure Explorer"
             canCloseContents="false"
             icon="/Common/Azure.svg"/>
+
+    <applicationConfigurable parentId="tools"
+                             id="com.microsoft.intellij.RiderAzureConfigurable"
+                             provider="com.microsoft.intellij.AzureConfigurableProvider"/>
+
 
 <!--    <applicationService serviceInterface="org.jetbrains.plugins.azure.storage.azurite.AzuriteService"-->
 <!--                        serviceImplementation="org.jetbrains.plugins.azure.storage.azurite.AzuriteService"/>-->
@@ -341,7 +350,19 @@
 <!--    </component>-->
 <!--  </project-components>-->
 
-<!--  <actions>-->
+  <actions>
+    <action id="AzureToolkit.AzureSignIn" class="com.microsoft.azure.toolkit.intellij.common.auth.AzureSignInAction" text="Azure Sign In..." />
+    <action id="AzureToolkit.SelectSubscriptions" class="com.microsoft.azure.toolkit.intellij.common.subscription.SelectSubscriptionsAction" text="Select Subscriptions..."
+            description="ShowSubscriptionsAction" icon="AllIcons.General.Filter" />
+
+    <group id="AzurePopupGroup" text="Azure" description="Azure" icon="/icons/Common/Azure.svg" popup="true" class="com.microsoft.intellij.actions.AzurePopupGroup">
+      <reference ref="AzureToolkit.ConnectToAzureResource"/>
+    </group>
+
+    <group id="AzureToolbarGroup" text="Azure" description="Azure">
+<!--      <reference ref="Actions.AzureExplorerOpenAction"/>-->
+      <reference ref="AzureToolkit.OpenResourceConnectionExplorerAction"/>
+    </group>
 <!--    <action id="Actions.AzureCodeSamples"-->
 <!--            class="com.microsoft.intellij.actions.AzureDotNetCodeSamples"-->
 <!--            text="Azure Code Samples"-->
@@ -450,5 +471,5 @@
 
 <!--      <separator />-->
 <!--    </group>-->
-<!--  </actions>-->
+  </actions>
 </idea-plugin>
