@@ -262,7 +262,7 @@
             factoryClass="com.microsoft.intellij.ui.ServerExplorerToolWindowFactory"
             id="Azure Explorer"
             canCloseContents="false"
-            icon="/Common/Azure.svg"/>
+            icon="/icons/Common/Azure.svg"/>
 
     <applicationConfigurable parentId="tools"
                              id="com.microsoft.intellij.RiderAzureConfigurable"
@@ -357,13 +357,13 @@
 
   <actions>
     <action class="com.microsoft.intellij.actions.AzureExplorerOpenAction" id="Actions.AzureExplorerOpenAction"
-            text="Show Azure Explorer" description="Show Azure Explorer" icon="/Common/Azure.svg"/>
+            text="Show Azure Explorer" description="Show Azure Explorer" icon="/icons/Common/Azure.svg"/>
 
     <action id="AzureToolkit.AzureSignIn" class="com.microsoft.azure.toolkit.intellij.common.auth.AzureSignInAction" text="Azure Sign In..." />
     <action id="AzureToolkit.SelectSubscriptions" class="com.microsoft.azure.toolkit.intellij.common.subscription.SelectSubscriptionsAction" text="Select Subscriptions..."
             description="ShowSubscriptionsAction" icon="AllIcons.General.Filter" />
 
-    <group id="AzurePopupGroup" text="Azure" description="Azure" icon="/Common/Azure.svg" popup="true" class="com.microsoft.intellij.actions.AzurePopupGroup">
+    <group id="AzurePopupGroup" text="Azure" description="Azure" icon="/icons/Common/Azure.svg" popup="true" class="com.microsoft.intellij.actions.AzurePopupGroup">
       <reference ref="AzureToolkit.ConnectToAzureResource"/>
     </group>
 
@@ -376,7 +376,7 @@
            class="com.intellij.openapi.actionSystem.DefaultActionGroup"
            text="Azure"
            description="Contains Azure tools plugin actions"
-           icon="/Common/Azure.svg"
+           icon="/icons/Common/Azure.svg"
            popup="true">
       <add-to-group group-id="ToolsMenu" anchor="first"/>
       <reference ref="AzureToolkit.SelectSubscriptions"/>
