@@ -93,7 +93,7 @@ gradle.taskGraph.whenReady {
 sourceSets {
     main {
         kotlin.srcDir("src/main/kotlin")
-        resources.setSrcDirs(listOf("src/main/resources", "../azure-toolkit-for-intellij/src/main/resources/icons"))
+        resources.srcDir("src/main/resources")
     }
 }
 
@@ -108,18 +108,17 @@ dependencies {
     implementation(project(":azure-intellij-plugin-service-explorer"))
     implementation(project(":azure-intellij-plugin-arm"))
     implementation(project(":azure-intellij-plugin-containerservice"))
+    aspect("com.microsoft.azure:azure-toolkit-common-lib") {
+        exclude("com.squareup.okhttp3", "okhttp")
+        exclude("com.squareup.okhttp3", "okhttp-urlconnection")
+        exclude("com.squareup.okhttp3", "logging-interceptor")
+    }
 
     implementation("com.microsoft.azuretools:azure-explorer-common:3.77.0-SNAPSHOT") {
-        exclude(
-            "javax.xml.bind",
-            "jaxb-api"
-        )
+        exclude("javax.xml.bind", "jaxb-api")
     }
     implementation("com.microsoft.azuretools:hdinsight-node-common:3.77.0-SNAPSHOT") {
-        exclude(
-            "javax.xml.bind",
-            "jaxb-api"
-        )
+        exclude("javax.xml.bind", "jaxb-api")
     }
 }
 

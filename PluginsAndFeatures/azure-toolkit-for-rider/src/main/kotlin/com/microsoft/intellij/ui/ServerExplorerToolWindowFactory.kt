@@ -26,6 +26,7 @@ import com.microsoft.azure.toolkit.intellij.explorer.AzureExplorer
 import com.microsoft.azure.toolkit.lib.common.action.Action
 import com.microsoft.azure.toolkit.lib.common.event.AzureEvent
 import com.microsoft.azure.toolkit.lib.common.event.AzureEventBus
+import com.microsoft.azure.toolkit.lib.common.model.AbstractAzResource
 import com.microsoft.azure.toolkit.lib.common.task.AzureTask
 import com.microsoft.azure.toolkit.lib.common.task.AzureTaskManager
 import com.microsoft.azuretools.authmanage.IdeAzureAccount
@@ -40,7 +41,6 @@ import com.microsoft.tooling.msservices.serviceexplorer.azure.AzureModule
 import org.apache.commons.lang3.StringUtils
 import java.awt.Graphics
 import java.awt.Rectangle
-import java.awt.Shape
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.beans.PropertyChangeEvent
@@ -81,8 +81,18 @@ class ServerExplorerToolWindowFactory : ToolWindowFactory, PropertyChangeListene
         AzureEventBus.on("azure.explorer.highlight_resource", AzureEventBus.EventListener { e: AzureEvent ->
             TreeUtils.highlightResource(tree, e.source)
         })
-        //todo: resource.creation_started.resource
-        //todo: azure.explorer.focus_resource
+        AzureEventBus.on("resource.creation_started.resource", AzureEventBus.EventListener { e: AzureEvent ->
+            val source = e.source
+            if (source is AbstractAzResource<*,*,*>) {
+                TreeUtils.focusResource(tree, source)
+            }
+        })
+        AzureEventBus.on("azure.explorer.focus_resource", AzureEventBus.EventListener { e: AzureEvent ->
+            val source = e.source
+            if (source is AbstractAzResource<*,*,*>) {
+                TreeUtils.focusResource(tree, source)
+            }
+        })
         tree.cellRenderer = NodeTreeCellRenderer()
         tree.selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
         TreeSpeedSearch(tree)
@@ -105,7 +115,7 @@ class ServerExplorerToolWindowFactory : ToolWindowFactory, PropertyChangeListene
         DataManager.registerDataProvider(tree) {
             if (StringUtils.equals(it, Action.SOURCE)) {
                 val selectedNode = tree.lastSelectedPathComponent as? DefaultMutableTreeNode
-                selectedNode?.userObject
+                return@registerDataProvider selectedNode?.userObject
             }
             return@registerDataProvider null
         }
@@ -362,7 +372,7 @@ class ServerExplorerToolWindowFactory : ToolWindowFactory, PropertyChangeListene
         val signInAction = ActionManager.getInstance().getAction("AzureToolkit.AzureSignIn")
         val selectSubscriptionsAction = ActionManager.getInstance().getAction("AzureToolkit.SelectSubscriptions")
 
-        toolWindow.setTitleActions(listOf(/*getStartAction,*/ refreshAction, selectSubscriptionsAction, signInAction))
+        toolWindow.setTitleActions(listOf(refreshAction, selectSubscriptionsAction, signInAction))
     }
 
     private class RefreshAllAction(private val azureModule: AzureModule) :

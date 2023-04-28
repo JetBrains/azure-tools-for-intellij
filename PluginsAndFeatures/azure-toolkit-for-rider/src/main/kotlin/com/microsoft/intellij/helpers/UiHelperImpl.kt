@@ -1,5 +1,6 @@
 package com.microsoft.intellij.helpers
 
+import com.intellij.util.ui.UIUtil
 import com.microsoft.tooling.msservices.helpers.UIHelper
 import com.microsoft.tooling.msservices.serviceexplorer.Node
 import com.microsoft.tooling.msservices.serviceexplorer.azure.container.ContainerRegistryNode
@@ -63,7 +64,5 @@ class UiHelperImpl: UIHelper {
         TODO("Not yet implemented")
     }
 
-    override fun isDarkTheme(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun isDarkTheme() = UIUtil.isUnderDarcula()
 }

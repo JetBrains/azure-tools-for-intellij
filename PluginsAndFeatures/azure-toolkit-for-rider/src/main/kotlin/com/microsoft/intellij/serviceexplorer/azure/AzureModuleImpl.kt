@@ -8,6 +8,7 @@ class AzureModuleImpl(project: Project) : AzureModule(project) {
     override fun loadActions() {
         super.loadActions()
         addAction(SignInOutAction(this))
+        addAction(ManageSubscriptionsAction(this))
     }
 
     override fun refreshFromAzure() {

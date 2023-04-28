@@ -15,7 +15,7 @@ class SignInOutAction(azureModule: AzureModule) : NodeAction(azureModule, "Sign 
     init {
         addListener(object : NodeActionListener() {
             override fun actionPerformed(e: NodeActionEvent) {
-                AzureSignInAction.authActionPerformed(azureModule.project as Project?)
+                AzureSignInAction.authActionPerformed(azureModule.project as? Project)
             }
 
             override fun afterActionPerformed(e: NodeActionEvent) {
