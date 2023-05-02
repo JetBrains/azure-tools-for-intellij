@@ -38,6 +38,7 @@
           <li>Rider 2023.1 EAP 1 makes corelibs.log grow infinitely (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/657">#657</a>)</li>
           <li>No icons shown for item templates in Rider 2023.1 (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/663">#663</a>)</li>
           <li>Unable to debug Azure Function in an isolated worker launched under Rosetta (<a href="https://youtrack.jetbrains.com/issue/RIDER-92326">#RIDER-92326</a>)</li>
+          <li>Azure Functions: Fix exception when Rider cannot find the Azurite executable (<a href="https://youtrack.jetbrains.com/issue/RIDER-92826">#RIDER-92826</a>)</li>
         </ul>
         <p>[3.50.0-2022.3]</p>
         <ul>

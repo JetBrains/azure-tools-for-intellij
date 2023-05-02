@@ -6,7 +6,7 @@
     <html>
         <h4>Added:</h4>
         <ul>
-          <li>Compatibility with Rider 2023.1 EAP9</li>
+          <li>Compatibility with Rider 2023.1</li>
           <li>Azure Functions: Option to auto-start Azurite with run configurations (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/674">#674</a>)</li>
           <li>Azure Functions: show a warning when Azurite is not running (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/605">#650</a>)</li>
           <li>Azure Functions: Support Windows arm64 Azure Core Tools (<a href="https://youtrack.jetbrains.com/issue/RIDER-85548">#RIDER-85548</a>)</li>
@@ -19,6 +19,7 @@
           <li>Rider 2023.1 EAP 1 makes corelibs.log grow infinitely (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/657">#657</a>)</li>
           <li>No icons shown for item templates in Rider 2023.1 (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/663">#663</a>)</li>
           <li>Unable to debug Azure Function in an isolated worker launched under Rosetta (<a href="https://youtrack.jetbrains.com/issue/RIDER-92326">#RIDER-92326</a>)</li>
+          <li>Azure Functions: Fix exception when Rider cannot find the Azurite executable (<a href="https://youtrack.jetbrains.com/issue/RIDER-92826">#RIDER-92826</a>)</li>
         </ul>
     </html>
     ]]>
