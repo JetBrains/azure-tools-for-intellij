@@ -113,7 +113,13 @@ class StartAzuriteAction
         }
 
         val azuritePackage = Azurite.PackageDescriptor.createPackage(packagePath)
-        val azuriteJsFile = azuritePackage.findBinFile("azurite", null)!!
+        val azuriteJsFile = azuritePackage.findBinFile("azurite", null)
+        if (azuriteJsFile == null) {
+            logger.warn("Can not start Azurite - unable to find Azurite module executable")
+            showUnableToFindExecutableNotification(project)
+            return
+        }
+
         val azuriteWorkspaceLocation = AzureRiderSettings.getAzuriteWorkspacePath(properties, project).absolutePath
 
         logger.debug("Node JS interpreter: ${nodeJsLocalInterpreter.interpreterSystemDependentPath}")
@@ -202,6 +208,13 @@ class StartAzuriteAction
             action = object : AnAction(message("action.azurite.start.configure.action.configure")) {
                 override fun actionPerformed(e: AnActionEvent) = Azurite.showSettings(e.project)
             })
+
+    private fun showUnableToFindExecutableNotification(project: Project) = AzureNotifications.notify(
+            project = project,
+            title = message("action.azurite.start.unable.to.find.executable.title"),
+            content = message("action.azurite.start.unable.to.find.executable.content"),
+            type = NotificationType.WARNING
+    )
 
     private fun supportsTableStorage(nodeJsInterpreterPath: String, azuriteJsFilePath: String): Boolean {
 
