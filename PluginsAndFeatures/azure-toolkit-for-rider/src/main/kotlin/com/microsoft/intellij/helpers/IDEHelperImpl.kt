@@ -1,9 +1,12 @@
 package com.microsoft.intellij.helpers
 
 import com.google.common.util.concurrent.ListenableFuture
+import com.intellij.openapi.application.ApplicationManager
+import com.microsoft.azure.toolkit.lib.common.task.AzureTask
+import com.microsoft.azure.toolkit.lib.common.task.AzureTaskManager
 import com.microsoft.tooling.msservices.helpers.IDEHelper
 
-class IDEHelperImpl : IDEHelper{
+class IDEHelperImpl : IDEHelper {
     override fun getProjectSettingsPath(): String {
         TODO("Not yet implemented")
     }
@@ -12,16 +15,16 @@ class IDEHelperImpl : IDEHelper{
         TODO("Not yet implemented")
     }
 
-    override fun invokeLater(p0: Runnable?) {
-        TODO("Not yet implemented")
+    override fun invokeLater(runnable: Runnable) {
+        AzureTaskManager.getInstance().runLater(runnable, AzureTask.Modality.ANY)
     }
 
-    override fun invokeAndWait(p0: Runnable?) {
-        TODO("Not yet implemented")
+    override fun invokeAndWait(runnable: Runnable) {
+        AzureTaskManager.getInstance().runAndWait(runnable, AzureTask.Modality.ANY)
     }
 
-    override fun executeOnPooledThread(p0: Runnable?) {
-        TODO("Not yet implemented")
+    override fun executeOnPooledThread(runnable: Runnable) {
+        ApplicationManager.getApplication().executeOnPooledThread(runnable)
     }
 
     override fun getArtifacts(p0: IDEHelper.ProjectDescriptor?): MutableList<IDEHelper.ArtifactDescriptor> {

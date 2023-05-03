@@ -8,8 +8,10 @@ import com.microsoft.azure.toolkit.ide.common.store.AzureStoreManager
 import com.microsoft.azure.toolkit.ide.common.store.DefaultMachineStore
 import com.microsoft.azure.toolkit.intellij.common.action.IntellijAzureActionManager
 import com.microsoft.azure.toolkit.intellij.common.auth.IntelliJSecureStore
+import com.microsoft.azure.toolkit.intellij.common.messager.IntellijAzureMessager
 import com.microsoft.azure.toolkit.intellij.common.settings.IntellijStore
 import com.microsoft.azure.toolkit.intellij.common.task.IntellijAzureTaskManager
+import com.microsoft.azure.toolkit.lib.common.messager.AzureMessager
 import com.microsoft.azure.toolkit.lib.common.task.AzureRxTaskManager
 import com.microsoft.azure.toolkit.lib.common.task.AzureTaskManager
 import com.microsoft.azuretools.authmanage.CommonSettings
@@ -40,6 +42,7 @@ class AzureActionsListener: AppLifecycleListener, PluginComponent {
             IntelliJSecureStore.getInstance()
         )
         AzureInitializer.initialize()
+        AzureMessager.setDefaultMessager(IntellijAzureMessager())
         IntellijAzureActionManager.register()
         Node.setNode2Actions(mutableMapOf())
 
