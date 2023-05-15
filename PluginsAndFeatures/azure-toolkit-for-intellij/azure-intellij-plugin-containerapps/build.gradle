@@ -7,7 +7,7 @@ dependencies {
     implementation project(path: ':azure-intellij-plugin-lib-java', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-applicationinsights', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-monitor', configuration: 'instrumentedJar')
-    implementation project(path: ':azure-intellij-plugin-containerregistry', configuration: 'instrumentedJar')
+    implementation project(path: ':azure-intellij-plugin-containerregistry-java', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-resource-connector-lib', configuration: 'instrumentedJar')
     implementation 'com.github.docker-java:docker-java:3.3.0'
     implementation 'com.microsoft.azure:azure-toolkit-containerapps-lib'
