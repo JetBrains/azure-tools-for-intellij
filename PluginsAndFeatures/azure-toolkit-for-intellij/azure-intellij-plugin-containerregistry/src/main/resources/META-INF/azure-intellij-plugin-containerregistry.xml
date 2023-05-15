@@ -4,30 +4,7 @@
                         interface="com.microsoft.azure.toolkit.intellij.containerregistry.runner.DockerfileActionsProvider"/>
     </extensionPoints>
     <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
-        <dockerfileActionsProvider implementation="com.microsoft.azure.toolkit.intellij.containerregistry.runner.ContainerRegistryDockerfileActionsProvider"/>
         <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.containerregistry.ContainerRegistryNodeProvider"/>
         <actions implementation="com.microsoft.azure.toolkit.ide.containerregistry.ContainerRegistryActionsContributor"/>
-        <actions implementation="com.microsoft.azure.toolkit.intellij.containerregistry.IntelliJContainerRegistryActionsContributor"/>
     </extensions>
-
-    <extensions defaultExtensionNs="com.intellij">
-        <configurationType implementation="com.microsoft.azure.toolkit.intellij.containerregistry.AzureDockerSupportConfigurationType"/>
-        <stepsBeforeRunProvider implementation="com.microsoft.azure.toolkit.intellij.containerregistry.buildimage.DockerBuildTaskProvider" id="DockerBuildBeforeRunTaskProviderId"/>
-        <codeInsight.lineMarkerProvider language=""
-                                        implementationClass="com.microsoft.azure.toolkit.intellij.containerregistry.runner.DockerRunLineMarkerProvider"/>
-    </extensions>
-    <actions>
-        <action id="Actions.AddDockerSupport" class="com.microsoft.azure.toolkit.intellij.containerregistry.action.AddDockerSupportAction"
-                text="Add Docker Support" description="Add docker support"
-                icon="/icons/DockerSupport/DockerSupport.svg">
-        </action>
-        <action id="Actions.RunOnDockerHost" class="com.microsoft.azure.toolkit.intellij.containerregistry.dockerhost.RunOnDockerHostAction"
-                text="Docker Run" description="Docker Run"
-                icon="/icons/DockerSupport/Run.svg">
-        </action>
-        <action id="Actions.PushImage" class="com.microsoft.azure.toolkit.intellij.containerregistry.pushimage.PushImageAction"
-                text="Push Image" description="Push Image"
-                icon="/icons/DockerSupport/PushImage.svg">
-        </action>
-    </actions>
 </idea-plugin>

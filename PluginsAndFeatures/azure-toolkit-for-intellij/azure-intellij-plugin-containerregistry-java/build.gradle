@@ -1,0 +1,8 @@
+intellij {
+    plugins = ['java', 'maven', 'maven-model', 'gradle', 'gradle-java']
+}
+
+dependencies {
+    implementation project(path: ':azure-intellij-plugin-containerregistry', configuration: 'instrumentedJar')
+    implementation project(path: ':azure-intellij-plugin-lib-java', configuration: 'instrumentedJar')
+}

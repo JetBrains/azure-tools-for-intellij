@@ -168,6 +168,7 @@ dependencies {
     implementation project(path: ':azure-intellij-plugin-appservice-java', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-arm', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-containerregistry', configuration: 'instrumentedJar')
+    implementation project(path: ':azure-intellij-plugin-containerregistry-java', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-containerservice', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-applicationinsights', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-guidance', configuration: 'instrumentedJar')

@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/azure-intellij-plugin-bicep" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-containerapps" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-containerregistry" />
+            <option value="$PROJECT_DIR$/azure-intellij-plugin-containerregistry-java" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-containerservice" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-cosmos" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-database" />
