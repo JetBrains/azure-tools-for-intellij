@@ -114,6 +114,9 @@ dependencies {
     implementation(project(path = ":azure-intellij-plugin-service-explorer", configuration = "instrumentedJar"))
     implementation(project(path = ":azure-intellij-plugin-arm", configuration = "instrumentedJar"))
     implementation(project(path = ":azure-intellij-plugin-containerservice", configuration = "instrumentedJar"))
+    implementation(project(path = ":azure-intellij-plugin-monitor", configuration = "instrumentedJar"))
+    implementation(project(path = ":azure-intellij-plugin-applicationinsights", configuration = "instrumentedJar"))
+
     aspect("com.microsoft.azure:azure-toolkit-common-lib") {
         exclude("com.squareup.okhttp3", "okhttp")
         exclude("com.squareup.okhttp3", "okhttp-urlconnection")
