@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "1.8.0"
     id("com.jetbrains.rdgen") version "2023.1.2"
-    id("org.jetbrains.intellij") version "1.12.0"
+    id("org.jetbrains.intellij") version "1.13.3"
     id("me.filippov.gradle.jvm.wrapper") version "0.11.0"
     id("io.freefair.aspectj.post-compile-weaving") version "6.5.1"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
@@ -16,6 +16,34 @@ val azureToolkitUtilsVersion = "3.77.0-SNAPSHOT"
 extra.apply {
     set("azureToolkitVersion", azureToolkitVersion)
     set("azureToolkitUtilsVersion", azureToolkitUtilsVersion)
+}
+
+subprojects {
+    apply {
+        plugin("org.jetbrains.kotlin.jvm")
+        plugin("io.freefair.aspectj.post-compile-weaving")
+        plugin("io.spring.dependency-management")
+        plugin("org.jetbrains.intellij")
+    }
+
+    tasks {
+        buildPlugin { enabled = false }
+        runIde { enabled = false }
+        prepareSandbox { enabled = false }
+        prepareTestingSandbox { enabled = false }
+        buildSearchableOptions { enabled = false }
+        patchPluginXml { enabled = false }
+        publishPlugin { enabled = false }
+        verifyPlugin { enabled = false }
+    }
+
+    dependencies {
+        compileOnly("org.projectlombok:lombok")
+        annotationProcessor("org.projectlombok:lombok")
+        implementation("com.microsoft.azure:azure-toolkit-common-lib")
+        aspect("com.microsoft.azure:azure-toolkit-common-lib")
+        compileOnly("org.jetbrains:annotations")
+    }
 }
 
 allprojects {
@@ -51,13 +79,6 @@ allprojects {
         implementation { exclude(module = "groovy-templates") }
         implementation { exclude(module = "jna") }
     }
-    dependencies {
-        compileOnly("org.projectlombok:lombok")
-        annotationProcessor("org.projectlombok:lombok")
-        implementation("com.microsoft.azure:azure-toolkit-common-lib")
-        aspect("com.microsoft.azure:azure-toolkit-common-lib")
-        compileOnly("org.jetbrains:annotations")
-    }
 
     tasks {
         compileJava {
@@ -75,21 +96,6 @@ allprojects {
     }
 }
 
-// disable runIde tasks in subprojects to prevent starting-up multiple ide.
-gradle.taskGraph.whenReady {
-    val hasRootRunTask = this.hasTask(":runIde")
-
-    if (hasRootRunTask) {
-        val regex = ":.+:runIde".toRegex()
-        this.allTasks.forEach { task ->
-            val subRunTask = regex.containsMatchIn(task.path)
-            if (subRunTask) {
-                task.enabled = false
-            }
-        }
-    }
-}
-
 sourceSets {
     main {
         kotlin.srcDir("src/main/kotlin")
@@ -102,12 +108,12 @@ val rdLibDirectory: () -> File = { file("${tasks.setupDependencies.get().idea.ge
 extra["rdLibDirectory"] = rdLibDirectory
 
 dependencies {
-    implementation(project(":azure-intellij-plugin-lib"))
-    implementation(project(":azure-intellij-plugin-guidance"))
-    implementation(project(":azure-intellij-resource-connector-lib"))
-    implementation(project(":azure-intellij-plugin-service-explorer"))
-    implementation(project(":azure-intellij-plugin-arm"))
-    implementation(project(":azure-intellij-plugin-containerservice"))
+    implementation(project(path = ":azure-intellij-plugin-lib", configuration = "instrumentedJar"))
+    implementation(project(path = ":azure-intellij-plugin-guidance", configuration = "instrumentedJar"))
+    implementation(project(path = ":azure-intellij-resource-connector-lib", configuration = "instrumentedJar"))
+    implementation(project(path = ":azure-intellij-plugin-service-explorer", configuration = "instrumentedJar"))
+    implementation(project(path = ":azure-intellij-plugin-arm", configuration = "instrumentedJar"))
+    implementation(project(path = ":azure-intellij-plugin-containerservice", configuration = "instrumentedJar"))
     aspect("com.microsoft.azure:azure-toolkit-common-lib") {
         exclude("com.squareup.okhttp3", "okhttp")
         exclude("com.squareup.okhttp3", "okhttp-urlconnection")
