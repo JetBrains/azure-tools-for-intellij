@@ -20,12 +20,14 @@
  * SOFTWARE.
  */
 
+@file:Suppress("UnstableApiUsage")
+
 package org.jetbrains.icons
 
 import com.intellij.httpClient.RestClientIcons
-import com.intellij.openapi.util.CachedImageIcon
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.IconPathPatcher
+import com.intellij.ui.icons.CachedImageIcon
 import icons.CommonIcons
 import javax.swing.Icon
 

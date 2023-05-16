@@ -75,8 +75,8 @@ configure(mainProjects) {
         implementation group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
         implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
         implementation 'net.minidev:json-smart:2.3'
-        implementation 'com.microsoft.azure:azure-client-runtime:1.7.5', { force = true }
-        implementation 'com.microsoft.azure:azure-client-authentication:1.7.5', { force = true }
+        implementation('com.microsoft.azure:azure-client-runtime') { version { strictly '1.7.5' } }
+        implementation('com.microsoft.azure:azure-client-authentication') { version { strictly '1.7.5' } }
         aspect 'com.microsoft.azure:azure-toolkit-common-lib:0.3.0'
         implementation 'com.microsoft.azuretools:azuretools-core:3.50.0', {
             exclude group: "com.microsoft.azure", module: "azure-client-authentication"
@@ -173,7 +173,7 @@ configure(mainProjects) {
 defaultTasks 'buildPlugin'
 
 wrapper {
-    gradleVersion = '7.6'
+    gradleVersion = '8.1.1'
     distributionType = Wrapper.DistributionType.ALL
     distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }

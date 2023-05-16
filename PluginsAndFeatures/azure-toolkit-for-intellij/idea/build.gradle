@@ -72,7 +72,7 @@ dependencies {
 
     implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.3'
     implementation group: 'jaxen', name: 'jaxen', version: '1.2.0'
-    implementation 'com.microsoft.azure:azure-toolkit-springcloud-lib:0.3.0', { force = true }
+    implementation('com.microsoft.azure:azure-toolkit-springcloud-lib') { version { strictly '0.3.0' } }
 
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compileOnly "org.projectlombok:lombok:${lombok_version}"
@@ -104,7 +104,7 @@ test {
 }
 
 task cucumberPackJar(type: Jar) {
-    appendix = 'pathing'
+    archiveAppendix = 'pathing'
 
     doFirst {
         manifest {
