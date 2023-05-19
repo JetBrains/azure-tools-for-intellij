@@ -134,7 +134,7 @@ test.dependsOn cucumber
 
 defaultTasks 'buildPlugin'
 
-installIdea.dependsOn buildPlugin
+//installIdea.dependsOn buildPlugin
 // Disable check style as it is failed with existing rules that require copyright, etc.
 //installIdea.dependsOn checkstyleMain
 
