@@ -69,5 +69,5 @@ class AzureFunctionsDotNetCoreRuntime(val coreToolsInfo: FunctionsCoreToolsInfo,
             runningAssemblyInfo: RunningAssemblyInfo,
             executionEnvironment: ExecutionEnvironment,
             consoleInitializer: (ConsoleViewImpl) -> Unit
-    ) = AzureFunctionsDotNetCoreAttachSuspendedProfileState(this, runningAssemblyInfo, executionEnvironment, consoleInitializer)
+    ) = AzureFunctionsDotNetCoreAttachSuspendedProfileState(this, runningAssemblyInfo, executionEnvironment, runningAssemblyInfo.platform, consoleInitializer)
 }
