@@ -101,7 +101,7 @@ task integrationTest(type: Test) {
     environment("NO_FS_ROOTS_ACCESS_CHECK", true)
     useTestNG()
 
-    //testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
 
     jvmArgs '--illegal-access=warn', '-Didea.force.use.core.classloader=true'

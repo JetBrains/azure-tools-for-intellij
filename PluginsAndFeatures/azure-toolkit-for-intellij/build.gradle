@@ -173,7 +173,7 @@ configure(mainProjects) {
 defaultTasks 'buildPlugin'
 
 wrapper {
-    gradleVersion = '7.6'
+    gradleVersion = '8.1.1'
     distributionType = Wrapper.DistributionType.ALL
     distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }

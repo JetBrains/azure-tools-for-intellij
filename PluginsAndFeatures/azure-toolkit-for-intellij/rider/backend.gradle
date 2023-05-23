@@ -4,6 +4,7 @@ def backendGroup = 'backend'
 
 ext {
     nugetConfigPath = new File(projectDir, 'NuGet.Config')
+    nugetConfigPathTestData = new File(projectDir, 'testData/NuGet.Config')
     riderSdkVersionPropsPath = new File(resharperPluginPath, 'RiderSdkPackageVersion.props')
 
     if (!ext.has('BuildConfiguration'))
@@ -39,6 +40,7 @@ task prepareNuGetConfig {
 </configuration>
 """
         writeTextIfChanged(nugetConfigPath, configText)
+        writeTextIfChanged(nugetConfigPathTestData, configText)
     }
 }
 
