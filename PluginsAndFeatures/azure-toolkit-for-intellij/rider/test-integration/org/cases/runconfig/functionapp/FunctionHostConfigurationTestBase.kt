@@ -31,7 +31,7 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.asserts.shouldBe
 import com.jetbrains.rider.test.asserts.shouldContains
 import com.jetbrains.rider.test.base.BaseTestWithSolution
-import com.jetbrains.rider.test.enums.CoreVersion
+import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.scriptingApi.*
 import org.jetbrains.plugins.azure.functions.buildTasks.BuildFunctionsProjectBeforeRunTaskProvider
 import org.jetbrains.plugins.azure.functions.daemon.AzureRunnableProjectKinds
@@ -45,7 +45,7 @@ abstract class FunctionHostConfigurationTestBase(
         private val solutionDirectoryName: String,
         val projectName: String,
         val projectTfm: String,
-        val coreVersion: CoreVersion
+        val sdkVersion: SdkVersion
 ) : BaseTestWithSolution() {
 
     override fun getSolutionDirectoryName(): String = solutionDirectoryName
@@ -101,7 +101,7 @@ abstract class FunctionHostConfigurationTestBase(
     // TODO: Need to make sure function core tools is available on a server before enable.
     @Test(enabled = false, description = "Check before run task that should build a function app project and start Azurite.")
     fun testFunctionHost_BeforeRunTasks_BuildFunctionProject_StartAzurite() {
-        addProject(arrayOf(projectName), "ConsoleApp1", ProjectTemplateIds.core(coreVersion).consoleApplication)
+        addProject(arrayOf(projectName), "ConsoleApp1", ProjectTemplateIds.sdk(sdkVersion).consoleApplication)
 
         val configuration = createRunConfiguration(
                 name = "Run Function App: ${project.name}",

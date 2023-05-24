@@ -4,6 +4,7 @@
         <TargetFramework>net472</TargetFramework>
         <RootNamespace>JetBrains.ReSharper.Azure.Daemon</RootNamespace>
         <AssemblyName>JetBrains.ReSharper.Azure.Daemon</AssemblyName>
+        <LangVersion>8</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>

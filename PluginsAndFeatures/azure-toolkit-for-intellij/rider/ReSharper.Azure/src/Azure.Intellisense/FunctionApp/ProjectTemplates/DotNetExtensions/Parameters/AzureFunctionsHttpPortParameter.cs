@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Azure.Intellisense.FunctionApp.ProjectTemplates.Do
         public AzureFunctionsHttpPortParameter() : base(
             name: "FunctionsHttpPort",
             presentableName: "HTTP port", 
-            tooltip: "Port number to use for the HTTP endpoint in launchSettings.json.")
+            tooltip: "Port number to use for the HTTP endpoint.")
         {
         }
 

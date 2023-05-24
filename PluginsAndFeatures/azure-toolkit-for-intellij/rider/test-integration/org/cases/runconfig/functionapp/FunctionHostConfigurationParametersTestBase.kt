@@ -309,7 +309,7 @@ abstract class FunctionHostConfigurationParametersTestBase(
                     startBrowserParameters = startBrowserParameters
             )
 
-    fun createHost() = RiderDotNetActiveRuntimeHost(project)
+    fun createHost() = RiderDotNetActiveRuntimeHost.getInstance(project)
 
     fun createRunnableProject(
             name: String = "TestName",

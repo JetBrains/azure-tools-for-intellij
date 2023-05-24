@@ -25,7 +25,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.MSBuild;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.Rd.Tasks;
-using JetBrains.RdBackend.Common.Features;
+using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Azure.Model;
 using JetBrains.Util;
@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp
             _solution = solution;
             
             _model = solution.GetProtocolSolution().GetFunctionAppDaemonModel();
-            _model.GetAzureFunctionsVersion.Set(GetAzureFunctionsVersionHandler);
+            _model.GetAzureFunctionsVersion.SetRdTask(GetAzureFunctionsVersionHandler);
         }
         
         public void RunFunctionApp([NotNull] string projectFilePath) => _model.RunFunctionApp(
@@ -84,7 +84,7 @@ namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp
 
                 var azureFunctionsVersion = project?.GetRequestedProjectProperties(MSBuildProjectUtil.AzureFunctionsVersionProperty).FirstOrDefault();
 
-                return RdTask<string>.Successful(azureFunctionsVersion);
+                return RdTask.Successful(azureFunctionsVersion);
             }
         }
     }

@@ -124,7 +124,11 @@ class AzureFunctionsDotNetCoreIsolatedDebugProfile(
             return createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu)
         }
 
-        return DotNetCoreAttachProfileState(targetProcess, executionEnvironment).createWorkerRunInfo(lifetime, helper, port)
+        val processArchitecture = DebuggerHelperHost.getInstance(executionEnvironment.project)
+                .getProcessArchitecture(lifetime, processId)
+
+        return DotNetCoreAttachProfileState(targetProcess, executionEnvironment, processArchitecture)
+                .createWorkerRunInfo(lifetime, helper, port)
     }
 
     private fun launchAzureFunctionsHost() {

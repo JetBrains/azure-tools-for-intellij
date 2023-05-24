@@ -25,6 +25,7 @@ package org.jetbrains.plugins.azure.functions.run
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.model.debuggerHelper.PlatformArchitecture
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.model.debuggerWorker.DotNetCoreAttachSuspendedStartInfo
 import com.jetbrains.rider.run.dotNetCore.DotNetCoreAttachProfileState
@@ -34,8 +35,9 @@ class AzureFunctionsDotNetCoreAttachSuspendedProfileState(
         private val runtime: AzureFunctionsDotNetCoreRuntime,
         private val runningAssemblyInfo: RunningAssemblyInfo,
         environment: ExecutionEnvironment,
+        targetPlatform: PlatformArchitecture,
         private val consoleInitializer: (ConsoleViewImpl) -> Unit
-) : DotNetCoreAttachProfileState(runningAssemblyInfo.processInfo, environment) {
+) : DotNetCoreAttachProfileState(runningAssemblyInfo.processInfo, environment, targetPlatform) {
 
     override fun initializeConsole(consoleView: ConsoleViewImpl) = consoleInitializer(consoleView)
 

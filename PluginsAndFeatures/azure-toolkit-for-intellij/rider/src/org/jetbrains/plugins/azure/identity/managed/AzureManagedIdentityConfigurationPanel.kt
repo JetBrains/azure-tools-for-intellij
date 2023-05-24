@@ -30,9 +30,9 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.components.JBList
-import com.intellij.ui.layout.Row
-import com.intellij.ui.layout.applyToComponent
-import com.intellij.ui.layout.panel
+import com.intellij.ui.dsl.builder.Row
+import com.intellij.ui.dsl.builder.RowsRange
+import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.application
 import com.intellij.util.ui.UIUtil
 import com.microsoft.azuretools.authmanage.AuthMethod
@@ -54,7 +54,7 @@ class AzureManagedIdentityConfigurationPanel(parentDisposable: Disposable, priva
     private fun createPanel(): DialogPanel {
         lateinit var dialogPanel: DialogPanel
         dialogPanel = panel {
-            noteRow(RiderAzureBundle.message("settings.managedidentity.description"))
+            row(message("settings.managedidentity.description")) {}
             row {
                 link(RiderAzureBundle.message("settings.managedidentity.info.title")) {
                     BrowserUtil.open(RiderAzureBundle.message("settings.managedidentity.info.url"))
@@ -62,8 +62,7 @@ class AzureManagedIdentityConfigurationPanel(parentDisposable: Disposable, priva
             }
 
             // When not signed in, show sign in button
-            lateinit var signInRow: Row
-            signInRow = row {
+            val signInRow: Row = row {
                 button(RiderAzureBundle.message("settings.managedidentity.sign_in")) {
                     AzureSignInAction.doSignIn(AuthMethodManager.getInstance(), project)
                             .subscribe {
@@ -72,13 +71,10 @@ class AzureManagedIdentityConfigurationPanel(parentDisposable: Disposable, priva
                                 }
                             }
                 }
-            }.onGlobalReset {
-                signInRow.visible = !isSignedIn()
             }
 
             // When signed in, show sign out button
-            lateinit var signOutRow: Row
-            signOutRow = row {
+            val signOutRow: Row = row {
                 button(RiderAzureBundle.message("settings.managedidentity.sign_out")) {
                     try {
                         AuthMethodManager.getInstance().signOut()
@@ -87,24 +83,18 @@ class AzureManagedIdentityConfigurationPanel(parentDisposable: Disposable, priva
                         logger.error("Error while signing out", e)
                     }
                 }
-            }.onGlobalReset {
-                signOutRow.visible = isSignedIn()
             }
 
             // Shown when not signed in with Azure Cli
-            lateinit var rowNotSignedInWithAzureCli: Row
-            rowNotSignedInWithAzureCli = row {
+            val rowNotSignedInWithAzureCli: Row = row {
                 label(RiderAzureBundle.message("settings.managedidentity.not_signed_in_with_cli")).applyToComponent {
                     icon = AllIcons.General.Warning
                 }
-            }.onGlobalReset { rowNotSignedInWithAzureCli.visible = !isSignedInWithAzureCli() }
+            }
 
             // Shown when signed in with Azure Cli
-            lateinit var rowSignedInWithAzureCli: Row
             lateinit var subscriptionsList: JBList<SubscriptionDetail>
-            rowSignedInWithAzureCli = row {
-                subRowIndent = 0
-
+            val rowSignedInWithAzureCli: RowsRange = groupRowsRange {
                 row {
                     label(RiderAzureBundle.message("settings.managedidentity.signed_in_with_cli")).applyToComponent {
                         icon = AllIcons.General.InspectionsOK
@@ -124,10 +114,20 @@ class AzureManagedIdentityConfigurationPanel(parentDisposable: Disposable, priva
                         cellRenderer = SubscriptionDetailRenderer()
                         setEmptyText(RiderAzureBundle.message("settings.managedidentity.signed_in_with_cli.accessible_subscriptions"))
                     }
-                    scrollPane(subscriptionsList)
+                    scrollCell(subscriptionsList)
                 }
-            }.onGlobalReset {
-                rowSignedInWithAzureCli.subRowsVisible = isSignedInWithAzureCli()
+            }
+
+            row {
+                placeholder()
+            }
+
+            onReset {
+                signInRow.visible(!isSignedIn())
+                signOutRow.visible(isSignedIn())
+                rowNotSignedInWithAzureCli.visible(!isSignedInWithAzureCli())
+                rowSignedInWithAzureCli.visible(isSignedInWithAzureCli())
+
                 ApplicationManager.getApplication().executeOnPooledThread {
                     val subscriptionDetails = try {
                         AuthMethodManager.getInstance()
@@ -148,11 +148,8 @@ class AzureManagedIdentityConfigurationPanel(parentDisposable: Disposable, priva
                     })
                 }
             }
-
-            row {
-                placeholder().constraints(growY, pushY)
-            }
         }
+
         dialogPanel.layout = MigLayout("novisualpadding, ins 0, fillx, wrap 1, hidemode 3")
         return dialogPanel
     }

@@ -23,15 +23,15 @@
 package org.cases.runconfig.functionapp.v3.isolatedWorker
 
 import com.jetbrains.rider.test.annotations.TestEnvironment
-import com.jetbrains.rider.test.enums.CoreVersion
+import com.jetbrains.rider.test.env.enums.SdkVersion
 import org.cases.runconfig.functionapp.FunctionHostConfigurationTestBase
 import org.testng.annotations.Test
 
 @Test
-@TestEnvironment(coreVersion = CoreVersion.DOT_NET_5)
+@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_5)
 class FunctionHostConfigurationTest : FunctionHostConfigurationTestBase(
         solutionDirectoryName = "v3/FunctionAppIsolated",
         projectName = "FunctionAppIsolated",
         projectTfm = "net5.0",
-        coreVersion = CoreVersion.DOT_NET_5
+        sdkVersion = SdkVersion.DOT_NET_5
 )
