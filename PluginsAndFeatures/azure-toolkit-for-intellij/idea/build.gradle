@@ -68,7 +68,7 @@ configurations {
 }
 
 dependencies {
-    implementation rootProject
+    implementation project(path: ":", configuration: "instrumentedJar")
 
     implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.3'
     implementation group: 'jaxen', name: 'jaxen', version: '1.2.0'
