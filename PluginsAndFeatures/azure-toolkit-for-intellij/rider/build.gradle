@@ -112,7 +112,15 @@ task integrationTest(type: Test) {
     }
 
     doFirst {
+        // Inspect environment variables
         println "LOCAL_ENV_RUN = $rider_test_local_env_run"
+
+        // NuGet.config needed in testData
+        def nugetConfigPath = new File(projectDir, 'NuGet.Config')
+        def nugetConfigPathTestData = new File(projectDir, 'testData/NuGet.config')
+        
+        println "Copying " + nugetConfigPath.path + " to " + nugetConfigPathTestData.path
+        nugetConfigPathTestData.withOutputStream { it.write(nugetConfigPath.readBytes()) }
     }
 }
 
