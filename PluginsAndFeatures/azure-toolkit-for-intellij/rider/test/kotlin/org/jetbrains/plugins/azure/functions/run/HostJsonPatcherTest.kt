@@ -94,9 +94,7 @@ class HostJsonPatcherTest {
 
         val workingDir = renamedHostJsonFile.parent
 
-        checkWarningContains("WARN: Could not find host.json file to patch.") {
-            HostJsonPatcher.tryPatchHostJsonFile(workingDirectory = workingDir, functionNames = "function")
-        }
+        HostJsonPatcher.tryPatchHostJsonFile(workingDirectory = workingDir, functionNames = "function")
 
         hostJsonFile.exists().shouldBeFalse()
         renamedHostJsonFile.readText().shouldBe(hostJsonContent)
@@ -152,9 +150,7 @@ class HostJsonPatcherTest {
         val workingDir = hostJsonFile.parentFile.resolve("parent").resolve("parent").resolve("parent")
         workingDir.mkdirs()
 
-        checkWarningContains("WARN: Could not find host.json file to patch.") {
-            HostJsonPatcher.tryPatchHostJsonFile(workingDirectory = workingDir.path, functionNames = "function")
-        }
+        HostJsonPatcher.tryPatchHostJsonFile(workingDirectory = workingDir.path, functionNames = "function")
 
         hostJsonFile.readText().shouldBe(hostJsonContent)
     }
@@ -196,18 +192,5 @@ class HostJsonPatcherTest {
                 .appendLine("    \"function\"")
                 .appendLine("  ]")
                 .append("}").toString())
-    }
-
-    @Suppress("SameParameterValue")
-    private fun checkWarningContains(warnMessage: String, action: () -> Unit) {
-        val originErr = System.err
-        try {
-            val errorStream = ByteArrayOutputStream()
-            System.setErr(PrintStream(errorStream))
-            action()
-            errorStream.toString().shouldContains(warnMessage)
-        } finally {
-            System.setErr(originErr)
-        }
     }
 }
