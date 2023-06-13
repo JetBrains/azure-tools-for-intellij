@@ -4,6 +4,7 @@ import com.intellij.ide.AppLifecycleListener
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.IdeActions
+import com.intellij.util.EnvironmentUtil
 import com.microsoft.azure.toolkit.ide.common.store.AzureStoreManager
 import com.microsoft.azure.toolkit.ide.common.store.DefaultMachineStore
 import com.microsoft.azure.toolkit.intellij.common.action.IntellijAzureActionManager
@@ -14,6 +15,7 @@ import com.microsoft.azure.toolkit.intellij.common.task.IntellijAzureTaskManager
 import com.microsoft.azure.toolkit.lib.common.messager.AzureMessager
 import com.microsoft.azure.toolkit.lib.common.task.AzureRxTaskManager
 import com.microsoft.azure.toolkit.lib.common.task.AzureTaskManager
+import com.microsoft.azure.toolkit.lib.common.utils.CommandUtils
 import com.microsoft.azuretools.authmanage.CommonSettings
 import com.microsoft.azuretools.azurecommons.util.FileUtil
 import com.microsoft.intellij.helpers.IDEHelperImpl
@@ -45,6 +47,7 @@ class AzureActionsListener: AppLifecycleListener, PluginComponent {
         AzureMessager.setDefaultMessager(IntellijAzureMessager())
         IntellijAzureActionManager.register()
         Node.setNode2Actions(mutableMapOf())
+        CommandUtils.setEnv(EnvironmentUtil.getEnvironmentMap())
 
         initAuthManage()
         val am = ActionManager.getInstance()

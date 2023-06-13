@@ -1,3 +1,6 @@
+fun properties(key: String) = providers.gradleProperty(key)
+fun environment(key: String) = providers.environmentVariable(key)
+
 plugins {
     kotlin("jvm") version "1.8.0"
     id("com.jetbrains.rdgen") version "2023.1.2"
@@ -7,18 +10,18 @@ plugins {
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
 }
 
-group = "com.jetbrains"
-version = "1.0-SNAPSHOT"
+group = properties("pluginGroup").get()
+version = properties("pluginVersion").get()
 
-val azureToolkitVersion = "0.33.0-SNAPSHOT"
-val azureToolkitUtilsVersion = "3.77.0-SNAPSHOT"
+val azureToolkitVersion = properties("azureToolkitVersion").get()
+val azureToolkitUtilsVersion = properties("azureToolkitUtilsVersion").get()
 
 extra.apply {
     set("azureToolkitVersion", azureToolkitVersion)
     set("azureToolkitUtilsVersion", azureToolkitUtilsVersion)
 }
 
-subprojects {
+allprojects {
     apply {
         plugin("org.jetbrains.kotlin.jvm")
         plugin("io.freefair.aspectj.post-compile-weaving")
@@ -26,44 +29,20 @@ subprojects {
         plugin("org.jetbrains.intellij")
     }
 
-    tasks {
-        buildPlugin { enabled = false }
-        runIde { enabled = false }
-        prepareSandbox { enabled = false }
-        prepareTestingSandbox { enabled = false }
-        buildSearchableOptions { enabled = false }
-        patchPluginXml { enabled = false }
-        publishPlugin { enabled = false }
-        verifyPlugin { enabled = false }
-    }
-
-    dependencies {
-        compileOnly("org.projectlombok:lombok")
-        annotationProcessor("org.projectlombok:lombok")
-        implementation("com.microsoft.azure:azure-toolkit-common-lib")
-        aspect("com.microsoft.azure:azure-toolkit-common-lib")
-        compileOnly("org.jetbrains:annotations")
-    }
-}
-
-allprojects {
     repositories {
         mavenCentral()
         mavenLocal()
         maven("https://cache-redirector.jetbrains.com/repo1.maven.org/maven2")
         maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
     }
-    apply {
-        plugin("org.jetbrains.kotlin.jvm")
-        plugin("org.jetbrains.intellij")
-        plugin("io.freefair.aspectj.post-compile-weaving")
-        plugin("io.spring.dependency-management")
-    }
+
     intellij {
-        version.set("2022.3.2")
-        type.set("RD")
+        version.set(properties("platformVersion").get())
+        type.set(properties("platformType").get())
         downloadSources.set(false)
+        plugins.set(properties("platformPlugins").map { it.split(',').map(String::trim).filter(String::isNotEmpty) })
     }
+
     dependencyManagement {
         imports {
             mavenBom("com.microsoft.azure:azure-toolkit-libs:$azureToolkitVersion")
@@ -71,6 +50,19 @@ allprojects {
             mavenBom("com.microsoft.azuretools:utils:$azureToolkitUtilsVersion")
         }
     }
+
+    dependencies {
+        compileOnly("org.projectlombok:lombok")
+        annotationProcessor("org.projectlombok:lombok")
+        implementation("com.microsoft.azure:azure-toolkit-common-lib")
+        aspect("com.microsoft.azure:azure-toolkit-common-lib") {
+            exclude("com.squareup.okhttp3", "okhttp")
+            exclude("com.squareup.okhttp3", "okhttp-urlconnection")
+            exclude("com.squareup.okhttp3", "logging-interceptor")
+        }
+        compileOnly("org.jetbrains:annotations")
+    }
+
     configurations {
         implementation { exclude(module = "slf4j-api") }
         implementation { exclude(module = "log4j") }
@@ -89,10 +81,19 @@ allprojects {
         compileKotlin {
             kotlinOptions.jvmTarget = "17"
         }
+    }
+}
 
-        buildSearchableOptions {
-            enabled = false
-        }
+subprojects {
+    tasks {
+        buildPlugin { enabled = false }
+        runIde { enabled = false }
+        prepareSandbox { enabled = false }
+        prepareTestingSandbox { enabled = false }
+        buildSearchableOptions { enabled = false }
+        patchPluginXml { enabled = false }
+        publishPlugin { enabled = false }
+        verifyPlugin { enabled = false }
     }
 }
 
@@ -124,18 +125,27 @@ dependencies {
         exclude("com.squareup.okhttp3", "logging-interceptor")
     }
 
-    implementation("com.microsoft.azuretools:azure-explorer-common:3.77.0-SNAPSHOT") {
+    implementation("com.microsoft.azuretools:azure-explorer-common") {
         exclude("javax.xml.bind", "jaxb-api")
     }
-    implementation("com.microsoft.azuretools:hdinsight-node-common:3.77.0-SNAPSHOT") {
+    implementation("com.microsoft.azuretools:hdinsight-node-common") {
         exclude("javax.xml.bind", "jaxb-api")
     }
 }
 
 tasks {
+    wrapper {
+        gradleVersion = properties("gradleVersion").get()
+    }
+
+    buildSearchableOptions {
+        enabled = false
+    }
+
     patchPluginXml {
-        sinceBuild.set("223")
-        untilBuild.set("")
+        version.set(properties("pluginVersion").get())
+        sinceBuild.set(properties("pluginSinceBuild").get())
+        untilBuild.set(properties("pluginUntilBuild").get())
     }
 
     runIde {

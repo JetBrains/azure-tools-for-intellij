@@ -5,6 +5,7 @@ import com.intellij.ide.DataManager
 import com.intellij.ide.ui.UISettings
 import com.intellij.ide.util.treeView.NodeRenderer
 import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAware
@@ -387,5 +388,7 @@ class ServerExplorerToolWindowFactory : ToolWindowFactory, PropertyChangeListene
             val isSignIn = IdeAzureAccount.getInstance().isLoggedIn
             e.presentation.isEnabled = isSignIn
         }
+
+        override fun getActionUpdateThread() = ActionUpdateThread.BGT
     }
 }
