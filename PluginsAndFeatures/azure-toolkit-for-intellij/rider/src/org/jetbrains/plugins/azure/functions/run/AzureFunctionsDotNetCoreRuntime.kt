@@ -46,7 +46,7 @@ class AzureFunctionsDotNetCoreRuntime(val coreToolsInfo: FunctionsCoreToolsInfo,
     override fun createDebugState(dotNetExecutable: DotNetExecutable, executionEnvironment: ExecutionEnvironment) : IDotNetDebugProfileState {
         return when (workerRuntime) {
             FunctionsWorkerRuntime.DotNetDefault -> DotNetCoreDebugProfile(DotNetCoreRuntime(coreToolsInfo.coreToolsExecutable), dotNetExecutable, executionEnvironment, coreToolsInfo.coreToolsExecutable)
-            FunctionsWorkerRuntime.DotNetIsolated -> AzureFunctionsDotNetCoreIsolatedDebugProfile(dotNetExecutable, this, executionEnvironment)
+            FunctionsWorkerRuntime.DotNetIsolated -> AzureFunctionsIsolatedDebugProfile(dotNetExecutable, this, executionEnvironment)
         }
     }
 
