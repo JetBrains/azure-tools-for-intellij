@@ -30,6 +30,7 @@ import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.Key
 import icons.CommonIcons
 import org.jetbrains.plugins.azure.RiderAzureBundle
@@ -71,12 +72,14 @@ class AzuriteBeforeRunTaskProvider : BeforeRunTaskProvider<AzuriteBeforeRunTask>
 
         val project = configuration.project
 
-        ActionUtil.invokeAction(
-                StartAzuriteAction(),
-                SimpleDataContext.getProjectContext(project),
-                ActionPlaces.INTENTION_MENU,
-                null,
-                null)
+        ApplicationManager.getApplication().invokeLater {
+            ActionUtil.invokeAction(
+                    StartAzuriteAction(),
+                    SimpleDataContext.getProjectContext(project),
+                    ActionPlaces.INTENTION_MENU,
+                    null,
+                    null)
+        }
 
         return true
     }
