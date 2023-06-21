@@ -26,6 +26,7 @@
         <p>[3.50.0-2023.2]</p>
         <ul>
           <li>Compatibility with Rider 2023.2</li>
+          <li>Azure Functions: Support debugging .NET 4.8 isolated worker projects (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/691">#691</a>)</li>
         </ul>
         <p>[3.50.0-2023.1]</p>
         <ul>

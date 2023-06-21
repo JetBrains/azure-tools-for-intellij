@@ -37,6 +37,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
+import com.intellij.openapi.rd.util.withBackgroundContext
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.execution.ParametersListUtil
@@ -46,10 +47,15 @@ import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerWorkerPlatform
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
+import com.jetbrains.rider.debugger.RiderDebuggerBundle
+import com.jetbrains.rider.model.DesktopClrRuntime
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
+import com.jetbrains.rider.model.debuggerWorker.DotNetClrAttachStartInfo
 import com.jetbrains.rider.model.debuggerWorker.DotNetCoreAttachStartInfo
 import com.jetbrains.rider.run.*
 import com.jetbrains.rider.run.dotNetCore.DotNetCoreAttachProfileState
+import com.jetbrains.rider.run.dotNetCore.getWorkerPlatform
+import com.jetbrains.rider.run.msNet.MsNetAttachProfileState
 import com.jetbrains.rider.runtime.DotNetExecutable
 import com.jetbrains.rider.runtime.DotNetRuntime
 import com.jetbrains.rider.runtime.apply
@@ -59,14 +65,14 @@ import org.jetbrains.plugins.azure.RiderAzureBundle
 import java.io.File
 import java.time.Duration
 
-class AzureFunctionsDotNetCoreIsolatedDebugProfile(
+class AzureFunctionsIsolatedDebugProfile(
         private val dotNetExecutable: DotNetExecutable,
         private val dotNetRuntime: DotNetRuntime,
         executionEnvironment: ExecutionEnvironment)
     : DebugProfileStateBase(executionEnvironment) {
 
     companion object {
-        private val logger = Logger.getInstance(AzureFunctionsDotNetCoreIsolatedDebugProfile::class.java)
+        private val logger = Logger.getInstance(AzureFunctionsIsolatedDebugProfile::class.java)
         private val waitDuration = Duration.ofMinutes(1)
         private const val DOTNET_ISOLATED_DEBUG_ARGUMENT = "--dotnet-isolated-debug"
         private const val DOTNET_ENABLE_JSON_OUTPUT_ARGUMENT = "--enable-json-output"
@@ -75,6 +81,7 @@ class AzureFunctionsDotNetCoreIsolatedDebugProfile(
     }
 
     private var processId = 0
+    private var isNetFrameworkProcess = false
     private lateinit var targetProcessHandler: ProcessHandler
     private lateinit var console: ConsoleView
 
@@ -117,18 +124,37 @@ class AzureFunctionsDotNetCoreIsolatedDebugProfile(
                     RiderAzureBundle.message("run_config.run_function_app.debug.notification.isolated_worker_pid_unspecified"))
         }
 
-        val targetProcess = ProcessListUtil.getProcessList().firstOrNull { it.pid == processId }
+        // Get process info
+        val targetProcess = withBackgroundContext {
+            ProcessListUtil.getProcessList().firstOrNull { it.pid == processId }
+        }
+
         if (targetProcess == null) {
             logger.warn("Unable to find target process with pid $processId")
             // Create debugger worker info
             return createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu)
         }
 
+        // Determine process architecture, and whether it is .NET / .NET Core
+        val processExecutablePath = ParametersListUtil.parse(targetProcess.commandLine).firstOrNull()
         val processArchitecture = DebuggerHelperHost.getInstance(executionEnvironment.project)
                 .getProcessArchitecture(lifetime, processId)
+        val processTargetFramework = processExecutablePath?.let {
+            DebuggerHelperHost.getInstance(executionEnvironment.project)
+                    .getAssemblyTargetFramework(processExecutablePath!!, lifetime)
+        }
 
-        return DotNetCoreAttachProfileState(targetProcess, executionEnvironment, processArchitecture)
-                .createWorkerRunInfo(lifetime, helper, port)
+        isNetFrameworkProcess = processExecutablePath?.endsWith("dotnet.exe") == false && (processTargetFramework?.isNetFramework ?: false)
+        return if (!isNetFrameworkProcess) {
+            // .NET Core
+            DotNetCoreAttachProfileState(targetProcess, executionEnvironment, processArchitecture)
+                    .createWorkerRunInfo(lifetime, helper, port)
+        } else {
+            // .NET Framework
+            val clrRuntime = DesktopClrRuntime("")
+            MsNetAttachProfileState(targetProcess, processArchitecture.getWorkerPlatform(), clrRuntime, executionEnvironment, RiderDebuggerBundle.message("MsNetAttachDebugger.display.name", clrRuntime.version))
+                    .createWorkerRunInfo(lifetime, helper, port)
+        }
     }
 
     private fun launchAzureFunctionsHost() {
@@ -280,5 +306,11 @@ class AzureFunctionsDotNetCoreIsolatedDebugProfile(
     }
 
     override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase
-        = DotNetCoreAttachStartInfo(processId)
+        = if (!isNetFrameworkProcess) {
+            // .NET Core
+            DotNetCoreAttachStartInfo(processId)
+        } else {
+            // .NET Framework
+            DotNetClrAttachStartInfo("", processId)
+        }
 }
