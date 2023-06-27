@@ -30,7 +30,7 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.LayeredIcon
 import com.intellij.ui.SimpleListCellRenderer
-import com.intellij.workspaceModel.ide.WorkspaceModel
+import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.jetbrains.rider.model.PublishableProjectModel
 import com.jetbrains.rider.projectView.calculateIcon
 import com.jetbrains.rider.projectView.workspace.getProjectModelEntities
