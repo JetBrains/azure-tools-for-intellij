@@ -214,7 +214,7 @@ class CreateWebAppDialog(lifetimeDef: LifetimeDefinition,
     private fun initMainPanel() {
         panel.add(pnlCreate, "growx")
 
-        UiNotifyConnector.Once(panel, object : Activatable {
+        UiNotifyConnector.Once.installOn(panel, object : Activatable {
             override fun showNotify() {
                 presenter.onLoadSubscription(lifetimeDef)
                 presenter.onLoadPricingTier(lifetimeDef)

@@ -141,7 +141,7 @@ class AzureFunctionsIsolatedDebugProfile(
                 .getProcessArchitecture(lifetime, processId)
         val processTargetFramework = processExecutablePath?.let {
             DebuggerHelperHost.getInstance(executionEnvironment.project)
-                    .getAssemblyTargetFramework(processExecutablePath!!, lifetime)
+                    .getAssemblyTargetFramework(it, lifetime)
         }
 
         isNetFrameworkProcess = processExecutablePath?.endsWith("dotnet.exe") == false && (processTargetFramework?.isNetFramework ?: false)

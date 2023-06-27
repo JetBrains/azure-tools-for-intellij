@@ -105,7 +105,7 @@ class WebAppPublishPanel(private val lifetime: Lifetime,
             add(tpRoot, "growx")
         }
 
-        UiNotifyConnector.Once(mainPanel, this)
+        UiNotifyConnector.Once.installOn(mainPanel, this)
 
         presenter.onAttachView(this)
 

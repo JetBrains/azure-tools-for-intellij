@@ -32,7 +32,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotificationProvider
 import com.intellij.ui.EditorNotifications
-import com.intellij.workspaceModel.ide.WorkspaceModel
+import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.jetbrains.rd.util.firstOrNull
 import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rider.nuget.RiderNuGetFacade
