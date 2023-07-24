@@ -19,6 +19,7 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.hover.TreeHoverListener
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.application
+import com.microsoft.azure.toolkit.ide.common.action.ResourceCommonActionsContributor
 import com.microsoft.azure.toolkit.intellij.common.IntelliJAzureIcons
 import com.microsoft.azure.toolkit.intellij.common.component.Tree.LoadMoreNode
 import com.microsoft.azure.toolkit.intellij.common.component.Tree.TreeNode
@@ -67,6 +68,7 @@ class ServerExplorerToolWindowFactory : ToolWindowFactory, PropertyChangeListene
         val hiddenRoot = SortableTreeNode()
         val treeModel = DefaultTreeModel(hiddenRoot)
         val tree = Tree(treeModel)
+        tree.putClientProperty(Action.PLACE, ResourceCommonActionsContributor.AZURE_EXPLORER)
 
         val favoriteRootNode = TreeNode(AzureExplorer.buildFavoriteRoot(), tree)
         val acvRootNode = TreeNode(AzureExplorer.buildAppCentricViewRoot(), tree)

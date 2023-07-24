@@ -193,6 +193,6 @@ tasks {
     }
 
     processResources {
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        duplicatesStrategy = DuplicatesStrategy.WARN
     }
 }
