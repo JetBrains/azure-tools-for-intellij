@@ -68,7 +68,7 @@ public class ApplicationInsightsResourceDefinition extends AzureServiceResource.
         private static final String APPLICATION_INSIGHTS_URL =
                 "https://github.com/microsoft/ApplicationInsights-Java/releases/download/3.4.10/applicationinsights-agent-3.4.10.jar";
         private static final File applicationInsightsLibrary =
-                new File(PluginManagerCore.getPlugin(PluginId.findId(CommonConst.PLUGIN_ID)).getPluginPath().toString(), "applicationinsights-agent.jar");
+                new File(PluginManagerCore.getPlugin(PluginId.findId("com.intellij.resharper.azure")).getPluginPath().toString(), "applicationinsights-agent.jar");
 
         @Preload
         public static synchronized File getApplicationInsightsLibrary() {
