@@ -1,4 +1,4 @@
-rootProject.name = "Azure Toolkit for Rider"
+rootProject.name = "azure-toolkit-for-rider"
 
 pluginManagement {
     repositories {

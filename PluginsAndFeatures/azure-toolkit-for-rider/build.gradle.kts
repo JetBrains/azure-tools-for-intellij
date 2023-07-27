@@ -194,4 +194,8 @@ tasks {
     processResources {
         duplicatesStrategy = DuplicatesStrategy.WARN
     }
+
+    buildSearchableOptions {
+        enabled = false
+    }
 }
