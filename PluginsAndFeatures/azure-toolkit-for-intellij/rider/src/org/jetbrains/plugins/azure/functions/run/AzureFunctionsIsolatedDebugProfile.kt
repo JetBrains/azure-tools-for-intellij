@@ -41,6 +41,7 @@ import com.intellij.openapi.rd.util.withBackgroundContext
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.execution.ParametersListUtil
+import com.intellij.util.system.CpuArch
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.threading.SpinWait
 import com.jetbrains.rdclient.util.idea.pumpMessages
@@ -49,6 +50,7 @@ import com.jetbrains.rider.debugger.DebuggerWorkerPlatform
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.RiderDebuggerBundle
 import com.jetbrains.rider.model.DesktopClrRuntime
+import com.jetbrains.rider.model.debuggerHelper.PlatformArchitecture
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.model.debuggerWorker.DotNetClrAttachStartInfo
 import com.jetbrains.rider.model.debuggerWorker.DotNetCoreAttachStartInfo
@@ -137,8 +139,7 @@ class AzureFunctionsIsolatedDebugProfile(
 
         // Determine process architecture, and whether it is .NET / .NET Core
         val processExecutablePath = ParametersListUtil.parse(targetProcess.commandLine).firstOrNull()
-        val processArchitecture = DebuggerHelperHost.getInstance(executionEnvironment.project)
-                .getProcessArchitecture(lifetime, processId)
+        val processArchitecture = getPlatformArchitecture()
         val processTargetFramework = processExecutablePath?.let {
             DebuggerHelperHost.getInstance(executionEnvironment.project)
                     .getAssemblyTargetFramework(it, lifetime)
@@ -155,6 +156,13 @@ class AzureFunctionsIsolatedDebugProfile(
             MsNetAttachProfileState(targetProcess, processArchitecture.getWorkerPlatform(), clrRuntime, executionEnvironment, RiderDebuggerBundle.message("MsNetAttachDebugger.display.name", clrRuntime.version))
                     .createWorkerRunInfo(lifetime, helper, port)
         }
+    }
+
+    private fun getPlatformArchitecture() = when (CpuArch.CURRENT) {
+        CpuArch.X86 -> PlatformArchitecture.X86
+        CpuArch.X86_64 -> PlatformArchitecture.Arm64
+        CpuArch.ARM64 -> PlatformArchitecture.Arm64
+        else -> PlatformArchitecture.Unknown
     }
 
     private fun launchAzureFunctionsHost() {
@@ -305,12 +313,11 @@ class AzureFunctionsIsolatedDebugProfile(
         dotNetExecutable.validate()
     }
 
-    override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase
-        = if (!isNetFrameworkProcess) {
-            // .NET Core
-            DotNetCoreAttachStartInfo(processId)
-        } else {
-            // .NET Framework
-            DotNetClrAttachStartInfo("", processId)
-        }
+    override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase = if (!isNetFrameworkProcess) {
+        // .NET Core
+        DotNetCoreAttachStartInfo(processId)
+    } else {
+        // .NET Framework
+        DotNetClrAttachStartInfo("", processId)
+    }
 }
