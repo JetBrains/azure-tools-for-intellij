@@ -44,11 +44,11 @@ class PublishableProjectConfigurationAndPlatformComponent(private val project: P
         add(cbConfigurationAndPlatform, "growx")
     }
 
-    fun getSelectedConfiguration() = getSelectedConfigurationAndPlatform().configuration
-    fun getSelectedPlatform() = getSelectedConfigurationAndPlatform().platform
+    fun getSelectedConfiguration() = getSelectedConfigurationAndPlatform()?.configuration ?: ""
+    fun getSelectedPlatform() = getSelectedConfigurationAndPlatform()?.platform ?: ""
 
-    private fun getSelectedConfigurationAndPlatform() : PublishRuntimeSettingsCoreHelper.ConfigurationAndPlatform =
-            cbConfigurationAndPlatform.component.selectedItem as PublishRuntimeSettingsCoreHelper.ConfigurationAndPlatform
+    private fun getSelectedConfigurationAndPlatform() : PublishRuntimeSettingsCoreHelper.ConfigurationAndPlatform? =
+            cbConfigurationAndPlatform.component.selectedItem as? PublishRuntimeSettingsCoreHelper.ConfigurationAndPlatform
 
     fun setSelectedConfigurationAndPlatform(configuration: String, platform: String) {
         cbConfigurationAndPlatform.component.model

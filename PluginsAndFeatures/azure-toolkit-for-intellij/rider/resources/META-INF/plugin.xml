@@ -29,6 +29,10 @@
           <li>Azure Functions: Support debugging .NET 4.8 isolated worker projects (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/691">#691</a>)</li>
           <li>Update Azure logo for Rider's Azure Toolkit icons (<a href="https://youtrack.jetbrains.com/issue/RIDER-78226">RIDER-78226</a>)</li>
         </ul>
+        <h4>Fixed bugs:</h4>
+        <ul>
+          <li>Azure Web App/Function App Deployments not working without solution file (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/681">#681</a>)</li>
+        </ul>
         <p>[3.50.0-2023.1]</p>
         <ul>
           <li>Compatibility with Rider 2023.1</li>
