@@ -95,9 +95,12 @@ public class WebAppSlimSettingPanel extends AzureSettingPanel<WebAppConfiguratio
             @Override
             public void focusGained(FocusEvent focusEvent) {
                 btnSlotHover.setBorderPainted(true);
-                final MouseEvent phantom = new MouseEvent(btnSlotHover, MouseEvent.MOUSE_ENTERED,
-                                                          System.currentTimeMillis(), 0, 10, 10, 0, false);
-                DefaultLoader.getIdeHelper().invokeLater(() -> IdeTooltipManager.getInstance().eventDispatched(phantom));
+
+                // NOTE: Commented out to make compilation in Rider toolkit work.
+                // This needs fixing in case we want to revive the IDEA plugin here.
+                //final MouseEvent phantom = new MouseEvent(btnSlotHover, MouseEvent.MOUSE_ENTERED,
+                //                                          System.currentTimeMillis(), 0, 10, 10, 0, false);
+                //DefaultLoader.getIdeHelper().invokeLater(() -> IdeTooltipManager.getInstance().eventDispatched(phantom));
             }
 
             @Override

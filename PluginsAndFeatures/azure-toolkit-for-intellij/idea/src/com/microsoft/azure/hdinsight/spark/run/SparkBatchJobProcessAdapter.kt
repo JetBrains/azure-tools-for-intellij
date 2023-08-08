@@ -20,6 +20,8 @@
  * SOFTWARE.
  */
 
+@file:Suppress("MissingRecentApi")
+
 package com.microsoft.azure.hdinsight.spark.run
 
 import com.google.common.net.HostAndPort
@@ -47,6 +49,11 @@ class SparkBatchJobProcessAdapter(val sparkJobProcess: SparkBatchJobRemoteProces
 
     override fun getLocalTunnel(i: Int): HostAndPort? {
         return sparkJobProcess.getLocalTunnel(i)
+    }
+
+    override fun setWindowSize(p0: Int, p1: Int) {
+        // NOTE: Added override to make compilation in Rider toolkit work.
+        // This needs fixing in case we want to revive the IDEA plugin here.
     }
 
     override fun getOutputStream(): OutputStream {
