@@ -26,6 +26,7 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 
 namespace JetBrains.ReSharper.Azure.Intellisense.FunctionApp.LiveTemplates.Scope
 {
+    // ReSharper disable once InconsistentNaming
     public class InAzureFunctionsFSharpProject : InAzureFunctionsProject
     {
         private static readonly Guid ourDefaultGuid = new Guid("6EAE234E-60AA-410E-B021-D219A2478F98");

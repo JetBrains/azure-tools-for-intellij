@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Azure.Intellisense.FunctionApp.LiveTemplates.Scope
     [ScopeCategoryUIProvider(Priority = -40, ScopeFilter = ScopeFilter.Project)]
     public class AzureCSharpProjectScopeCategoryUIProvider : ScopeCategoryUIProvider
     {
-        public AzureCSharpProjectScopeCategoryUIProvider(): base(CommonThemedIcons.DotNet.Id)
+        public AzureCSharpProjectScopeCategoryUIProvider() : base(CommonThemedIcons.DotNet.Id)
         {
             MainPoint = new InAzureFunctionsCSharpProject();
         }

@@ -20,6 +20,8 @@
  * SOFTWARE.
  */
 
+@file:Suppress("MissingRecentApi")
+
 package com.microsoft.azure.hdinsight.spark.console
 
 import com.google.common.net.HostAndPort
@@ -38,6 +40,11 @@ class SparkLivySessionProcess(
     override fun isDisconnected(): Boolean = session.isStop
 
     override fun getLocalTunnel(remotePort: Int): HostAndPort? = null
+    
+    override fun setWindowSize(p0: Int, p1: Int) {
+        // NOTE: Added override to make compilation in Rider toolkit work.
+        // This needs fixing in case we want to revive the IDEA plugin here.
+    }
 
     override fun killProcessTree(): Boolean = true
 

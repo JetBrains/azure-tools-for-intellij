@@ -296,14 +296,17 @@
 
     <projectConfigurable groupId="tools"
                          id="com.microsoft.intellij.configuration.AzureRiderConfigurable"
+                         displayName="Azure"
                          instance="com.microsoft.intellij.configuration.AzureRiderConfigurable"
                          dynamic="true"/>
 
     <projectConfigurable parentId="FileTemplatesSettingsId"
+                         displayName="Azure (C#)"
                          instance="org.jetbrains.plugins.azure.functions.settings.templates.RiderAzureCSharpFileTemplatesOptionPage"
                          groupWeight="-150" />
 
     <projectConfigurable parentId="FileTemplatesSettingsId"
+                         displayName="Azure (F#)"
                          instance="org.jetbrains.plugins.azure.functions.settings.templates.RiderAzureFSharpFileTemplatesOptionPage"
                          groupWeight="-150" />
 
