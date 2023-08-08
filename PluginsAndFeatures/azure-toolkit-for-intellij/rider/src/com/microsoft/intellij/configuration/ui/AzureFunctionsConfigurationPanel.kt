@@ -20,6 +20,8 @@
  * SOFTWARE.
  */
 
+@file:Suppress("MissingRecentApi")
+
 package com.microsoft.intellij.configuration.ui
 
 import com.intellij.ide.util.PropertiesComponent
@@ -63,6 +65,7 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
 
     private val isCoreToolsFeedEnabled = Registry.`is`("azure.function_app.core_tools.feed.enabled")
 
+    private var coreToolsEditorChanged = false
     private val coreToolsEditorColumns = arrayOf<ColumnInfo<*, *>>(
             object : ColumnInfo<AzureRiderSettings.AzureCoreToolsPathEntry, String>(message("settings.app_services.function_app.core_tools.configuration.column.functionsVersion")) {
                 override fun valueOf(item: AzureRiderSettings.AzureCoreToolsPathEntry) = item.functionsVersion
@@ -154,6 +157,10 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
                                 return editor
                             }
                         }
+
+                        comboBox.addItemListener {
+                            coreToolsEditorChanged = true
+                        }
                     }
 
                     override fun getCellEditorValue(): String {
@@ -188,7 +195,11 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
                     coreToolsEditorColumns,
                     coreToolsConfiguration,
                     0
-            )
+            ).apply {
+                onIsModified {
+                    coreToolsEditorChanged
+                }
+            }
 
             coreToolsEditor = TableView(coreToolsEditorModel).apply {
                 setShowGrid(false)
@@ -197,7 +208,7 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
 
                 emptyText.text = message("settings.app_services.function_app.core_tools.configuration.empty_list")
 
-                TableSpeedSearch(this)
+                TableSpeedSearch.installOn(this)
 
                 selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
 
@@ -211,7 +222,8 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
 
             row {
                 scrollCell(coreToolsEditor).onApply {
-                        AzureRiderSettings.setAzureCoreToolsPathEntries(properties, coreToolsEditorModel.items)
+                    AzureRiderSettings.setAzureCoreToolsPathEntries(properties, coreToolsEditorModel.items)
+                    coreToolsEditorChanged = false
                 }.align(AlignX.FILL)
             }
 
@@ -251,6 +263,13 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
     override val panel = createPanel().apply {
         registerValidators(parentDisposable)
         reset()
+    }
+
+    override fun reset() {
+        val coreToolsConfiguration = AzureRiderSettings.getAzureCoreToolsPathEntries(properties)
+        coreToolsEditorModel.items = coreToolsConfiguration
+        coreToolsEditorChanged = false
+        super.reset()
     }
 
     override fun isProjectLevel() = false
