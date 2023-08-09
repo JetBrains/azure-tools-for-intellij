@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2020 JetBrains s.r.o.
+ * Copyright (c) 2018-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -38,4 +38,202 @@ object AzureDefaults {
     val location: Region = Region.US_EAST
 
     val pricingTier: PricingTier = PricingTier.STANDARD_S1
+
+    object SupportedRegions {
+        // Regions where app services are supported
+        // https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=app-service
+        val AppServices = hashSetOf(
+                // South Africa
+                "southafricanorth",
+                "southafricawest",
+
+                // Asia
+                "eastasia",
+                "southeastasia",
+
+                // Australia
+                "australiacentral",
+                "australiacentral2",
+                "australiaeast",
+                "australiasoutheast",
+
+                // Brazil
+                "brazilsouth",
+                "brazilsoutheast",
+
+                // Canada
+                "canadacentral",
+                "canadaeast",
+
+                // China
+                "chinaeast",
+                "chinaeast2",
+                "chinaeast3",
+                "chinanorth",
+                "chinanorth2",
+                "chinanorth3",
+
+                // Europe
+                "northeurope",
+                "westeurope",
+
+                // France
+                "francecentral",
+                "francesouth",
+
+                // Germany
+                //"germanynorth",
+                "germanywestcentral",
+
+                // India
+                "centralindia",
+                "southindia",
+                "westindia",
+                "jioindiacentral",
+                "jioindiawest",
+
+                // Japan
+                "japaneast",
+                "japanwest",
+
+                // Korea
+                "koreacentral",
+                "koreasouth",
+
+                // Norway
+                "norwayeast",
+                "norwaywest",
+
+                // Poland
+                //"polandcentral",
+
+                // Qatar
+                "qatarcentral",
+
+                // Sweden
+                "swedencentral",
+                "swedensouth",
+
+                // Switzerland
+                "switzerlandnorth",
+                "switzerlandwest",
+
+                // UAE
+                "uaecentral",
+                "uaenorth",
+
+                // UK
+                "uksouth",
+                "ukwest",
+
+                // USA
+                "centralus",
+                "eastus",
+                "eastus2",
+                "northcentralus",
+                "southcentralus",
+                "westcentralus",
+                "westus",
+                "westus2",
+                "westus3"
+        )
+
+        // Regions where SQL Databasde is supported
+        // https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=azure-sql-database
+        val SqlDatabase = hashSetOf(
+                // South Africa
+                "southafricanorth",
+                "southafricawest",
+
+                // Asia
+                "eastasia",
+                "southeastasia",
+
+                // Australia
+                "australiacentral",
+                "australiacentral2",
+                "australiaeast",
+                "australiasoutheast",
+
+                // Brazil
+                "brazilsouth",
+                "brazilsoutheast",
+
+                // Canada
+                "canadacentral",
+                "canadaeast",
+
+                // China
+                "chinaeast",
+                "chinaeast2",
+                "chinaeast3",
+                "chinanorth",
+                "chinanorth2",
+                "chinanorth3",
+
+                // Europe
+                "northeurope",
+                "westeurope",
+
+                // France
+                "francecentral",
+                "francesouth",
+
+                // Germany
+                "germanynorth",
+                "germanywestcentral",
+
+                // India
+                "centralindia",
+                "southindia",
+                "westindia",
+                "jioindiacentral",
+                "jioindiawest",
+
+                // Japan
+                "japaneast",
+                "japanwest",
+
+                // Korea
+                "koreacentral",
+                "koreasouth",
+
+                // Norway
+                "norwayeast",
+                "norwaywest",
+
+                // Poland
+                "polandcentral",
+
+                // Qatar
+                "qatarcentral",
+
+                // Sweden
+                "swedencentral",
+                "swedensouth",
+
+                // Switzerland
+                "switzerlandnorth",
+                "switzerlandwest",
+
+                // UAE
+                "uaecentral",
+                "uaenorth",
+
+                // UK
+                "uksouth",
+                "ukwest",
+
+                // USA
+                "centralus",
+                "eastus",
+                "eastus2",
+                "northcentralus",
+                "southcentralus",
+                "westcentralus",
+                "westus",
+                "westus2",
+                "westus3"
+        )
+    }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 JetBrains s.r.o.
+ * Copyright (c) 2020-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -33,6 +33,7 @@ import com.microsoft.azure.management.resources.Subscription
 import com.microsoft.azuretools.core.mvp.model.AzureMvpModel
 import com.microsoft.azuretools.core.mvp.model.webapp.AzureWebAppMvpModel
 import com.microsoft.intellij.helpers.base.AzureMvpPresenter
+import com.microsoft.intellij.helpers.defaults.AzureDefaults
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
 
 abstract class CreateAppViewPresenter<V : CreateAppMvpView> : AzureMvpPresenter<V>() {
@@ -77,7 +78,9 @@ abstract class CreateAppViewPresenter<V : CreateAppMvpView> : AzureMvpPresenter<
                 message("run_config.publish.location.collect_error"),
                 { AzureMvpModel.getInstance().listLocationsBySubscriptionId(subscriptionId)
                         // TODO: This is a workaround for locations that cause exceptions on create entries.
-                        .filter { location -> Region.values().any { region -> region.name().equals(location.name(), true) } }
+                        .filter { location ->
+                            AzureDefaults.SupportedRegions.AppServices.contains(location.name()) ||
+                                    Region.values().any { region -> region.name().equals(location.name(), true) } }
                 },
                 { mvpView.fillLocation(it) })
     }
