@@ -32,6 +32,7 @@
         <h4>Fixed bugs:</h4>
         <ul>
           <li>Azure Web App/Function App Deployments not working without solution file (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/681">#681</a>)</li>
+          <li>When publishing web/function app, not al supported regions are shown (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/708">#708</a>)</li>
         </ul>
         <p>[3.50.0-2023.1]</p>
         <ul>
