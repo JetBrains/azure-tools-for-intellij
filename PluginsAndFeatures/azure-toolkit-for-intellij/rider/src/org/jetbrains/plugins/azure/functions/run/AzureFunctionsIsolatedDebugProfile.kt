@@ -39,6 +39,7 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.rd.util.withBackgroundContext
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.execution.ParametersListUtil
 import com.intellij.util.system.CpuArch
@@ -139,7 +140,7 @@ class AzureFunctionsIsolatedDebugProfile(
 
         // Determine process architecture, and whether it is .NET / .NET Core
         val processExecutablePath = ParametersListUtil.parse(targetProcess.commandLine).firstOrNull()
-        val processArchitecture = getPlatformArchitecture()
+        val processArchitecture = getPlatformArchitecture(lifetime)
         val processTargetFramework = processExecutablePath?.let {
             DebuggerHelperHost.getInstance(executionEnvironment.project)
                     .getAssemblyTargetFramework(it, lifetime)
@@ -158,11 +159,18 @@ class AzureFunctionsIsolatedDebugProfile(
         }
     }
 
-    private fun getPlatformArchitecture() = when (CpuArch.CURRENT) {
-        CpuArch.X86 -> PlatformArchitecture.X86
-        CpuArch.X86_64 -> PlatformArchitecture.X64
-        CpuArch.ARM64 -> PlatformArchitecture.Arm64
-        else -> PlatformArchitecture.Unknown
+    private suspend fun getPlatformArchitecture(lifetime: Lifetime): PlatformArchitecture {
+        if (SystemInfo.isWindows) {
+            return DebuggerHelperHost.getInstance(executionEnvironment.project)
+                    .getProcessArchitecture(lifetime, processId)
+        }
+
+        return when (CpuArch.CURRENT) {
+            CpuArch.X86 -> PlatformArchitecture.X86
+            CpuArch.X86_64 -> PlatformArchitecture.X64
+            CpuArch.ARM64 -> PlatformArchitecture.Arm64
+            else -> PlatformArchitecture.Unknown
+        }
     }
 
     private fun launchAzureFunctionsHost() {
