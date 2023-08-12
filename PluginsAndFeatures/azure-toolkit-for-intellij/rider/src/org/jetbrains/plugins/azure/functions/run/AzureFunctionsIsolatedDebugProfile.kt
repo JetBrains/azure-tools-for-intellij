@@ -160,7 +160,7 @@ class AzureFunctionsIsolatedDebugProfile(
 
     private fun getPlatformArchitecture() = when (CpuArch.CURRENT) {
         CpuArch.X86 -> PlatformArchitecture.X86
-        CpuArch.X86_64 -> PlatformArchitecture.Arm64
+        CpuArch.X86_64 -> PlatformArchitecture.X64
         CpuArch.ARM64 -> PlatformArchitecture.Arm64
         else -> PlatformArchitecture.Unknown
     }
