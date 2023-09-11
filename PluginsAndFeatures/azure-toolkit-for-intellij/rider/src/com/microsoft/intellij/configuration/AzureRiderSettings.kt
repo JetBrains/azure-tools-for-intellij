@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2022 JetBrains s.r.o.
+ * Copyright (c) 2018-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -22,11 +22,13 @@
 
 package com.microsoft.intellij.configuration
 
+import com.intellij.execution.configurations.PathEnvironmentVariableUtil
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.PathUtil
-import com.microsoft.azuretools.azurecommons.util.FileUtil
 import org.jetbrains.plugins.azure.RiderAzureBundle
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsConstants
 import org.jetbrains.plugins.azure.storage.azurite.Azurite
@@ -46,7 +48,7 @@ object AzureRiderSettings {
     const val PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH = "AzureFunctionsCoreToolsDownloadPath"
     @OptIn(kotlin.io.path.ExperimentalPathApi::class)
     val VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH: String = PathUtil.toSystemIndependentName(
-            FileUtil.getDirectoryWithinUserHome(AZURE_TOOLS_FOLDER).resolve("AzureFunctionsCoreTools").absolutePathString())
+            com.microsoft.azuretools.azurecommons.util.FileUtil.getDirectoryWithinUserHome(AZURE_TOOLS_FOLDER).resolve("AzureFunctionsCoreTools").absolutePathString())
 
     @Deprecated("To be removed with 2022.3")
     const val PROPERTY_FUNCTIONS_MIGRATE_CORETOOLS_PATH_NOTIFICATION = "AzureFunctionsCoreToolsPath_Migration_Notify"
@@ -89,8 +91,7 @@ object AzureRiderSettings {
     }
 
     // Azurite
-    const val PROPERTY_AZURITE_NODE_INTERPRETER = "AzureAzuriteNodeInterpreter"
-    const val PROPERTY_AZURITE_NODE_PACKAGE = "AzureAzuriteNodePackage"
+    const val PROPERTY_AZURITE_PATH = "AzureAzuritePath"
 
     const val PROPERTY_AZURITE_BLOB_HOST = "AzureAzuriteBlobHost"
     const val VALUE_AZURITE_BLOB_HOST_DEFAULT = "127.0.0.1"
@@ -122,6 +123,27 @@ object AzureRiderSettings {
     const val PROPERTY_AZURITE_CERT_KEY_PATH = "AzureAzuriteCertKeyPath"
     const val PROPERTY_AZURITE_CERT_PASSWORD = "AzureAzuriteCertPassword"
 
+    fun getAzuriteExecutable(properties: PropertiesComponent): String {
+        var azuritePath = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_PATH)
+
+        if (azuritePath.isNullOrEmpty()) {
+            if (SystemInfo.isWindows) {
+                azuritePath = PathEnvironmentVariableUtil.findInPath("azurite.cmd")?.absolutePath
+
+                if (azuritePath.isNullOrEmpty()) {
+                    azuritePath = PathEnvironmentVariableUtil.findInPath("azurite.exe")?.absolutePath
+                }
+            } else {
+                azuritePath = PathEnvironmentVariableUtil.findInPath("azurite")?.absolutePath
+            }
+
+            if (!File(azuritePath).exists()) {
+                azuritePath = null
+            }
+        }
+
+        return FileUtil.toSystemDependentName(azuritePath ?: "")
+    }
     fun getAzuriteWorkspaceMode(properties: PropertiesComponent): AzuriteLocationMode {
         val mode = properties.getValue(PROPERTY_AZURITE_LOCATION_MODE)
                 ?: return AzuriteLocationMode.Managed

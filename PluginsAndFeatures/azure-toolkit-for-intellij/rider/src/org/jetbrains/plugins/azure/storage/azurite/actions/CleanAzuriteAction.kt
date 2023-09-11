@@ -33,9 +33,7 @@ import com.intellij.openapi.vcs.VcsShowConfirmationOption
 import com.intellij.util.ui.ConfirmationDialog
 import com.microsoft.intellij.configuration.AzureRiderSettings
 import icons.CommonIcons
-import org.jetbrains.plugins.azure.RiderAzureBundle
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
-import org.jetbrains.plugins.azure.storage.azurite.Azurite
 import org.jetbrains.plugins.azure.storage.azurite.AzuriteService
 
 class CleanAzuriteAction
@@ -50,9 +48,9 @@ class CleanAzuriteAction
         val project = e.project ?: return
 
         val properties = PropertiesComponent.getInstance()
-        val packagePath = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_PACKAGE) ?: return
-        val azuritePackage = Azurite.PackageDescriptor.createPackage(packagePath)
-        e.presentation.isEnabled = !azuriteService.isRunning && !azuritePackage.isEmptyPath && AzureRiderSettings.getAzuriteWorkspacePath(properties, project).exists()
+        val azuritePath = AzureRiderSettings.getAzuriteExecutable(properties)
+
+        e.presentation.isEnabled = !azuriteService.isRunning && azuritePath.isNotEmpty() && AzureRiderSettings.getAzuriteWorkspacePath(properties, project).exists()
     }
 
     override fun actionPerformed(e: AnActionEvent) {

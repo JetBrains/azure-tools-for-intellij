@@ -28,15 +28,12 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.CapturingProcessHandler
 import com.intellij.icons.AllIcons
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.javascript.nodejs.interpreter.NodeJsInterpreterRef
-import com.intellij.javascript.nodejs.interpreter.local.NodeJsLocalInterpreter
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.diagnostic.getOrLogException
 import com.intellij.openapi.progress.PerformInBackgroundOption
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -71,9 +68,10 @@ class StartAzuriteAction
         }
 
         val properties = PropertiesComponent.getInstance()
-        val packagePath = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_PACKAGE) ?: return
-        val azuritePackage = Azurite.PackageDescriptor.createPackage(packagePath)
-        e.presentation.isEnabled = !azuritePackage.isEmptyPath
+
+        val azuritePath = AzureRiderSettings.getAzuriteExecutable(properties)
+
+        e.presentation.isEnabled = azuritePath.isNotEmpty()
     }
 
     override fun actionPerformed(e: AnActionEvent) {
@@ -87,43 +85,25 @@ class StartAzuriteAction
         }
 
         val properties = PropertiesComponent.getInstance()
-        val nodeJsInterpreterRef = NodeJsInterpreterRef.create(properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_INTERPRETER) ?: "project")
-        val nodeJsInterpreter = nodeJsInterpreterRef.resolve(project)
-        if (nodeJsInterpreter == null) {
-            logger.warn("Can not start Azurite - invalid configuration (no Node interpreter is configured)")
-            showInvalidConfigurationNotification(project)
+
+        val azuritePath = AzureRiderSettings.getAzuriteExecutable(properties)
+
+        if (azuritePath.isEmpty()) {
+            logger.warn("Can not start Azurite - Azurite executable not configured and not found in \$PATH")
+            showUnableToFindExecutableNotification(project)
             return
         }
 
-        val nodeJsLocalInterpreter = runCatching {
-            NodeJsLocalInterpreter.castAndValidate(nodeJsInterpreter)
-        }.getOrLogException(logger)
-
-        if (nodeJsLocalInterpreter == null) {
-            logger.warn("Can not start Azurite - invalid configuration (local Node interpreter could not be validated)")
-            showInvalidConfigurationNotification(project)
-            return
-        }
-
-        val packagePath = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_PACKAGE)
-        if (packagePath.isNullOrEmpty()) {
-            logger.warn("Can not start Azurite - invalid configuration (no Azurite package is configured)")
-            showInvalidConfigurationNotification(project)
-            return
-        }
-
-        val azuritePackage = Azurite.PackageDescriptor.createPackage(packagePath)
-        val azuriteJsFile = azuritePackage.findBinFile("azurite", null)
-        if (azuriteJsFile == null) {
-            logger.warn("Can not start Azurite - unable to find Azurite module executable")
+        val azuriteExecutable = File(azuritePath)
+        if (!azuriteExecutable.exists()) {
+            logger.warn("Can not start Azurite - Azurite executable not configured and not found in \$PATH")
             showUnableToFindExecutableNotification(project)
             return
         }
 
         val azuriteWorkspaceLocation = AzureRiderSettings.getAzuriteWorkspacePath(properties, project).absolutePath
 
-        logger.debug("Node JS interpreter: ${nodeJsLocalInterpreter.interpreterSystemDependentPath}")
-        logger.debug("Azurite JS file: ${azuriteJsFile.absolutePath}")
+        logger.debug("Azurite executable: ${azuriteExecutable.absolutePath}")
         logger.debug("Azurite workspace: $azuriteWorkspaceLocation")
 
         val application = ApplicationManager.getApplication()
@@ -132,8 +112,7 @@ class StartAzuriteAction
             override fun run(indicator: ProgressIndicator) {
 
                 indicator.text = message("service.azurite.starting.check.table.storage")
-                val includeTableStorageParameters = supportsTableStorage(
-                        nodeJsLocalInterpreter.interpreterSystemDependentPath, azuriteJsFile.absolutePath)
+                val includeTableStorageParameters = supportsTableStorage(azuriteExecutable)
                 logger.info("Azurite supports table storage: $includeTableStorageParameters")
 
                 if (indicator.isCanceled) return
@@ -142,8 +121,7 @@ class StartAzuriteAction
                 application.invokeLaterOnWriteThread {
                     application.runWriteAction {
                         val commandLine = GeneralCommandLine(
-                                nodeJsLocalInterpreter.interpreterSystemDependentPath,
-                                azuriteJsFile.absolutePath,
+                                azuriteExecutable.absolutePath,
 
                                 "--blobHost",
                                 properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_BLOB_HOST).orWhenNullOrEmpty(AzureRiderSettings.VALUE_AZURITE_BLOB_HOST_DEFAULT),
@@ -200,33 +178,23 @@ class StartAzuriteAction
         })
     }
 
-    private fun showInvalidConfigurationNotification(project: Project) = AzureNotifications.notify(
+    private fun showUnableToFindExecutableNotification(project: Project) = AzureNotifications.notify(
             project = project,
-            title = message("action.azurite.start.configure.title"),
-            content = message("action.azurite.start.configure.content"),
+            title = message("action.azurite.start.unable.to.find.executable.title"),
+            content = message("action.azurite.start.unable.to.find.executable.content"),
             type = NotificationType.WARNING,
             action = object : AnAction(message("action.azurite.start.configure.action.configure")) {
                 override fun actionPerformed(e: AnActionEvent) = Azurite.showSettings(e.project)
             })
 
-    private fun showUnableToFindExecutableNotification(project: Project) = AzureNotifications.notify(
-            project = project,
-            title = message("action.azurite.start.unable.to.find.executable.title"),
-            content = message("action.azurite.start.unable.to.find.executable.content"),
-            type = NotificationType.WARNING
-    )
+    private fun supportsTableStorage(azuriteExecutable: File): Boolean {
 
-    private fun supportsTableStorage(nodeJsInterpreterPath: String, azuriteJsFilePath: String): Boolean {
-
-        val nodeJsInterpreterExecutable = File(nodeJsInterpreterPath)
-        val azuriteJsExecutable = File(azuriteJsFilePath)
-        if (!nodeJsInterpreterExecutable.exists() || !azuriteJsExecutable.exists())
+        if (!azuriteExecutable.exists())
             return false
 
         try {
             val commandLine = GeneralCommandLine(
-                    nodeJsInterpreterExecutable.path,
-                    azuriteJsExecutable.path,
+                    azuriteExecutable.absolutePath,
                     "--help"
             )
 
@@ -240,7 +208,7 @@ class StartAzuriteAction
             return output.stdoutLines
                     .any { it.contains("--tableHost", true) }
         } catch (e: Exception) {
-            logger.error("Error while determining whether Azurite version at '$azuriteJsFilePath' supports table storage", e)
+            logger.error("Error while determining whether Azurite version at '${azuriteExecutable.absolutePath}' supports table storage", e)
             return false
         }
     }

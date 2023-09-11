@@ -24,10 +24,6 @@ package org.jetbrains.plugins.azure.storage.azurite
 
 import com.intellij.ide.IdeBundle
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.javascript.nodejs.interpreter.NodeJsInterpreterField
-import com.intellij.javascript.nodejs.interpreter.NodeJsInterpreterRef
-import com.intellij.javascript.nodejs.util.NodePackageField
-import com.intellij.javascript.nodejs.util.NodePackageRef
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.project.ProjectManager
@@ -43,11 +39,11 @@ import com.intellij.ui.layout.selectedValueIs
 import com.microsoft.intellij.configuration.AzureRiderAbstractConfigurable
 import com.microsoft.intellij.configuration.AzureRiderSettings
 import com.microsoft.intellij.helpers.validator.IpAddressInputValidator
-import org.jetbrains.plugins.azure.RiderAzureBundle
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import org.jetbrains.plugins.azure.orWhenNullOrEmpty
 import java.io.File
-import javax.swing.*
+import javax.swing.DefaultComboBoxModel
+import javax.swing.JList
 
 @Suppress("UNUSED_LAMBDA_EXPRESSION")
 class AzuriteConfigurationPanel(parentDisposable: Disposable)
@@ -58,56 +54,26 @@ class AzuriteConfigurationPanel(parentDisposable: Disposable)
 
     private fun createPanel(): DialogPanel =
             panel {
-                group(RiderAzureBundle.message("settings.azurite.row.package")) {
-                    // Node interpreter
-                    val nodeInterpreterField = NodeJsInterpreterField(project, false)
-                    row(JLabel(NodeJsInterpreterField.getLabelTextForComponent()).apply { labelFor = nodeInterpreterField }) {
-                        var value = NodeJsInterpreterRef.create(properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_INTERPRETER) ?: "project")
+                group(message("settings.azurite.row.executable")) {
+                    row(message("settings.azurite.row.executable.path")) {
+                        var value = AzureRiderSettings.getAzuriteExecutable(properties)
 
-                        cell(nodeInterpreterField).bind(
-                                { nodeJsInterpreterField: NodeJsInterpreterField -> nodeJsInterpreterField.interpreterRef },
-                                { nodeJsInterpreterField: NodeJsInterpreterField, interpreterRef: NodeJsInterpreterRef -> nodeJsInterpreterField.interpreterRef = interpreterRef },
-                                MutableProperty({ value }, { value = it })
+                        textFieldWithBrowseButton(
+                                message("settings.azurite.row.executable.path.browse"),
+                                null,
+                                FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor()
                         )
-                            .onApply { properties.setValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_INTERPRETER, value.referenceName) }
-                            .align(AlignX.FILL)
-                    }
-
-                    // Azurite package
-                    val packageField = NodePackageField(nodeInterpreterField, Azurite.PackageName)
-                    row(JLabel(RiderAzureBundle.message("settings.azurite.row.package.path")).apply { labelFor = packageField }) {
-                        fun getNodePackageRefFromSettings(): NodePackageRef {
-                            val packagePath = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_PACKAGE)
-                            if (!packagePath.isNullOrEmpty()) {
-                                val nodePackage = Azurite.PackageDescriptor.createPackage(packagePath)
-                                return NodePackageRef.create(nodePackage)
-                            }
-                            return NodePackageRef.create(Azurite.PackageDescriptor.createPackage(""))
-                        }
-                        var value = getNodePackageRefFromSettings()
-
-                        cell(packageField).bind(
-                                { nodePackageField: NodePackageField -> nodePackageField.selectedRef },
-                                { nodePackageField: NodePackageField, nodePackageRef: NodePackageRef -> nodePackageField.selectedRef = nodePackageRef },
-                                MutableProperty({ value }, { value = it })
-                        )
-                            .onApply { properties.setValue(AzureRiderSettings.PROPERTY_AZURITE_NODE_PACKAGE, value.constantPackage!!.systemDependentPath) }
-                            .validationOnInput {
-                                val selected = it.selected
-                                if (selected.version != null && selected.version!!.major < 3) {
-                                    ValidationInfo(RiderAzureBundle.message("settings.azurite.validation.invalid.package_version"), it)
-                                } else {
-                                    null
-                                }
-                            }
-                            .align(AlignX.FILL)
+                                .bindText({ value }, { value = FileUtil.toSystemIndependentName(it) })
+                                .onApply { properties.setValue(AzureRiderSettings.PROPERTY_AZURITE_PATH, FileUtil.toSystemIndependentName(value)) }
+                                .validationOnInput { validationForPath(it) }
+                                .align(AlignX.FILL)
                     }
                 }
 
-                group(RiderAzureBundle.message("settings.azurite.row.general")) {
+                group(message("settings.azurite.row.general")) {
                     // Workspace folder
                     lateinit var workspaceLocationCombo: Cell<ComboBox<AzureRiderSettings.AzuriteLocationMode>>
-                    row(RiderAzureBundle.message("settings.azurite.row.general.workspace")) {
+                    row(message("settings.azurite.row.general.workspace")) {
                         var value: AzureRiderSettings.AzuriteLocationMode? = AzureRiderSettings.getAzuriteWorkspaceMode(properties)
 
                         workspaceLocationCombo = comboBox(
@@ -129,7 +95,7 @@ class AzuriteConfigurationPanel(parentDisposable: Disposable)
                         }
 
                         textFieldWithBrowseButton(
-                                RiderAzureBundle.message("settings.azurite.row.general.workspace.browse"),
+                                message("settings.azurite.row.general.workspace.browse"),
                                 null,
                                 FileChooserDescriptorFactory.createSingleFolderDescriptor()
                         )
@@ -145,16 +111,16 @@ class AzuriteConfigurationPanel(parentDisposable: Disposable)
                     row {
                         var value = properties.getBoolean(AzureRiderSettings.PROPERTY_AZURITE_LOOSE_MODE)
 
-                        checkBox(RiderAzureBundle.message("settings.azurite.row.general.loosemode"))
+                        checkBox(message("settings.azurite.row.general.loosemode"))
                             .bindSelected(MutableProperty({ value }, { value = it }))
                             .onApply { properties.setValue(AzureRiderSettings.PROPERTY_AZURITE_LOOSE_MODE, value) }
                     }
                 }
 
                 // Host/port settings
-                group(RiderAzureBundle.message("settings.azurite.row.host")) {
+                group(message("settings.azurite.row.host")) {
                     row {
-                        label(RiderAzureBundle.message("settings.azurite.row.blob.host"))
+                        label(message("settings.azurite.row.blob.host"))
 
                         var hostValue = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_BLOB_HOST).orWhenNullOrEmpty(AzureRiderSettings.VALUE_AZURITE_BLOB_HOST_DEFAULT)
                         textField()
@@ -162,7 +128,7 @@ class AzuriteConfigurationPanel(parentDisposable: Disposable)
                                 .validationOnInput { validationForIpAddress(it) }
                                 .onApply { properties.setValue(AzureRiderSettings.PROPERTY_AZURITE_BLOB_HOST, hostValue) }
 
-                        label(RiderAzureBundle.message("settings.azurite.row.blob.port"))
+                        label(message("settings.azurite.row.blob.port"))
 
                         var portValue = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_BLOB_PORT).orWhenNullOrEmpty(AzureRiderSettings.VALUE_AZURITE_BLOB_PORT_DEFAULT)
                         textField()
@@ -172,7 +138,7 @@ class AzuriteConfigurationPanel(parentDisposable: Disposable)
                     }.layout(RowLayout.PARENT_GRID)
 
                     row {
-                        label(RiderAzureBundle.message("settings.azurite.row.queue.host"))
+                        label(message("settings.azurite.row.queue.host"))
 
                         var hostValue = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_QUEUE_HOST).orWhenNullOrEmpty(AzureRiderSettings.VALUE_AZURITE_QUEUE_HOST_DEFAULT)
                         textField()
@@ -180,7 +146,7 @@ class AzuriteConfigurationPanel(parentDisposable: Disposable)
                                 .validationOnInput { validationForIpAddress(it) }
                                 .onApply { properties.setValue(AzureRiderSettings.PROPERTY_AZURITE_QUEUE_HOST, hostValue) }
 
-                        label(RiderAzureBundle.message("settings.azurite.row.queue.port"))
+                        label(message("settings.azurite.row.queue.port"))
 
                         var portValue = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_QUEUE_PORT).orWhenNullOrEmpty(AzureRiderSettings.VALUE_AZURITE_QUEUE_PORT_DEFAULT)
                         textField()
@@ -190,7 +156,7 @@ class AzuriteConfigurationPanel(parentDisposable: Disposable)
                     }.layout(RowLayout.PARENT_GRID)
 
                     row {
-                        label(RiderAzureBundle.message("settings.azurite.row.table.host"))
+                        label(message("settings.azurite.row.table.host"))
 
                         var hostValue = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_TABLE_HOST).orWhenNullOrEmpty(AzureRiderSettings.VALUE_AZURITE_TABLE_HOST_DEFAULT)
                         textField()
@@ -198,7 +164,7 @@ class AzuriteConfigurationPanel(parentDisposable: Disposable)
                                 .validationOnInput { validationForIpAddress(it) }
                                 .onApply { properties.setValue(AzureRiderSettings.PROPERTY_AZURITE_TABLE_HOST, hostValue) }
 
-                        label(RiderAzureBundle.message("settings.azurite.row.table.port"))
+                        label(message("settings.azurite.row.table.port"))
 
                         var portValue = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_TABLE_PORT).orWhenNullOrEmpty(AzureRiderSettings.VALUE_AZURITE_TABLE_PORT_DEFAULT)
                         textField()
@@ -209,8 +175,8 @@ class AzuriteConfigurationPanel(parentDisposable: Disposable)
                 }
 
                 // Certificate settings
-                group(RiderAzureBundle.message("settings.azurite.row.certificate")) {
-                    row(RiderAzureBundle.message("settings.azurite.row.certificate.path")) {
+                group(message("settings.azurite.row.certificate")) {
+                    row(message("settings.azurite.row.certificate.path")) {
                         var value = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_CERT_PATH)?.let { FileUtil.toSystemDependentName(it) } ?: ""
 
                         textFieldWithBrowseButton(
@@ -221,11 +187,11 @@ class AzuriteConfigurationPanel(parentDisposable: Disposable)
                             .bindText({ value }, { value = FileUtil.toSystemIndependentName(it) })
                             .onApply { properties.setValue(AzureRiderSettings.PROPERTY_AZURITE_CERT_PATH, FileUtil.toSystemIndependentName(value)) }
                             .validationOnInput { validationForPath(it) }
-                            .comment(RiderAzureBundle.message("settings.azurite.row.certificate.path.comment"))
+                            .comment(message("settings.azurite.row.certificate.path.comment"))
                             .align(AlignX.FILL)
                     }
 
-                    row(RiderAzureBundle.message("settings.azurite.row.certificate.keypath")) {
+                    row(message("settings.azurite.row.certificate.keypath")) {
                         var value = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_CERT_KEY_PATH)?.let { FileUtil.toSystemDependentName(it) } ?: ""
 
                         textFieldWithBrowseButton(
@@ -236,38 +202,38 @@ class AzuriteConfigurationPanel(parentDisposable: Disposable)
                             .bindText({ value }, { value = FileUtil.toSystemIndependentName(it) })
                             .onApply { properties.setValue(AzureRiderSettings.PROPERTY_AZURITE_CERT_KEY_PATH, FileUtil.toSystemIndependentName(value)) }
                             .validationOnInput { validationForPath(it) }
-                            .comment(RiderAzureBundle.message("settings.azurite.row.certificate.keypath.comment"))
+                            .comment(message("settings.azurite.row.certificate.keypath.comment"))
                             .align(AlignX.FILL)
                     }
 
-                    row(RiderAzureBundle.message("settings.azurite.row.certificate.password")) {
+                    row(message("settings.azurite.row.certificate.password")) {
                         var value = properties.getValue(AzureRiderSettings.PROPERTY_AZURITE_CERT_PASSWORD) ?: ""
 
                         passwordField()
                             .bindText({ value }, { value = it })
                             .onApply { properties.setValue(AzureRiderSettings.PROPERTY_AZURITE_CERT_PASSWORD, value) }
-                            .comment(RiderAzureBundle.message("settings.azurite.row.certificate.password.comment"))
+                            .comment(message("settings.azurite.row.certificate.password.comment"))
                     }
                 }
             }
 
     private fun validationForIpAddress(textField: JBTextField) =
             if (textField.text.isNullOrEmpty() || !IpAddressInputValidator.instance.validateIpV4Address(textField.text)) {
-                ValidationInfo(RiderAzureBundle.message("settings.azurite.validation.invalid.ip"), textField)
+                ValidationInfo(message("settings.azurite.validation.invalid.ip"), textField)
             } else {
                 null
             }
 
     private fun validationForPort(textField: JBTextField) =
             if (textField.text.toIntOrNull() == null) {
-                ValidationInfo(RiderAzureBundle.message("settings.azurite.validation.invalid.port"), textField)
+                ValidationInfo(message("settings.azurite.validation.invalid.port"), textField)
             } else {
                 null
             }
 
     private fun validationForPath(textField: TextFieldWithBrowseButton) =
             if (!textField.text.isNullOrEmpty() && !File(textField.text).exists()) {
-                ValidationInfo(RiderAzureBundle.message("settings.azurite.validation.invalid.path"), textField)
+                ValidationInfo(message("settings.azurite.validation.invalid.path"), textField)
             } else {
                 null
             }
