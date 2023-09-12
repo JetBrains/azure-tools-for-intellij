@@ -137,7 +137,7 @@ object AzureRiderSettings {
                 azuritePath = PathEnvironmentVariableUtil.findInPath("azurite")?.absolutePath
             }
 
-            if (!File(azuritePath).exists()) {
+            if (azuritePath != null && !File(azuritePath).exists()) {
                 azuritePath = null
             }
         }
