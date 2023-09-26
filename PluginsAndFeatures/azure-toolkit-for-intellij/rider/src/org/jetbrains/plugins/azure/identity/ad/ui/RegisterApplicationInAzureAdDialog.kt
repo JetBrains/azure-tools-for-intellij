@@ -28,117 +28,119 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBTextField
-import com.intellij.ui.layout.panel
+import com.intellij.ui.dsl.builder.AlignX
+import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.dsl.builder.bindText
+import com.intellij.ui.dsl.builder.panel
 import org.jetbrains.plugins.azure.RiderAzureBundle
 import org.jetbrains.plugins.azure.isValidGuid
 import org.jetbrains.plugins.azure.isValidUrl
-import javax.swing.JLabel
 
 class RegisterApplicationInAzureAdDialog(project: Project, val model: RegistrationModel)
     : DialogWrapper(project), Disposable {
 
     class RegistrationModel(
             val originalDisplayName: String,
-            val originalClientId : String,
-            val originalDomain : String,
-            val originalCallbackUrl : String,
-            val originalIsMultiTenant : Boolean,
-            var allowOverwrite : Boolean
+            val originalClientId: String,
+            val originalDomain: String,
+            val originalCallbackUrl: String,
+            val originalIsMultiTenant: Boolean,
+            var allowOverwrite: Boolean
     ) {
         var updatedDisplayName: String = originalDisplayName
-        var updatedDomain : String = originalDomain
-        var updatedClientId : String = originalClientId
-        var updatedCallbackUrl : String = originalCallbackUrl
-        var updatedIsMultiTenant : Boolean = originalIsMultiTenant
-        var hasChanges : Boolean = false
+        var updatedDomain: String = originalDomain
+        var updatedClientId: String = originalClientId
+        var updatedCallbackUrl: String = originalCallbackUrl
+        var updatedIsMultiTenant: Boolean = originalIsMultiTenant
+        var hasChanges: Boolean = false
     }
 
     private val panel = panel {
 
-        noteRow(RiderAzureBundle.message("dialog.identity.ad.register_app.description"))
-
         row {
-            val label = JLabel(RiderAzureBundle.message("dialog.identity.ad.register_app.display_name"))
-            label()
-
-            cell {
-                textField({ model.originalDisplayName },
-                        {
-                            model.updatedDisplayName = it.trim()
-                            model.hasChanges = true
-                        })
-                        .withValidationOnInput { validateNotEmpty(it) }
-                        .component.apply { label.labelFor = this }
-            }
+            label(RiderAzureBundle.message("dialog.identity.ad.register_app.description"))
+            browserLink(RiderAzureBundle.message("dialog.identity.ad.register_app.description.link"), "https://go.microsoft.com/fwlink/?LinkId=299424")
         }
 
-        row {
-            val label = JLabel(RiderAzureBundle.message("dialog.identity.ad.register_app.callback_url"))
-            label()
-
-            cell {
-                textField({ model.originalCallbackUrl },
-                        {
-                            model.updatedCallbackUrl = it.trim()
-                            model.hasChanges = true
-                        })
-                        .withValidationOnInput { validateNotEmpty(it) ?: validateUrl(it) }
-                        .component.apply { label.labelFor = this }
-            }
-        }
-
-        row {
-            val label = JLabel(RiderAzureBundle.message("dialog.identity.ad.register_app.domain"))
-            label()
-
-            cell {
-                textField({ model.originalDomain },
-                        {
-                            model.updatedDomain = it.trim()
-                            model.hasChanges = true
-                        })
-                        .withValidationOnInput { validateNotEmpty(it) }
-                        .component.apply { label.labelFor = this }
-            }
-        }
-
-        row {
-            cell {
-                checkBox(RiderAzureBundle.message("dialog.identity.ad.register_app.is_multi_tenant"),
-                        { model.originalIsMultiTenant },
-                        {
-                            model.updatedIsMultiTenant = it
-                            model.hasChanges = true
-                        })
-            }
-        }
-
-        hideableRow(RiderAzureBundle.message("dialog.identity.ad.register_app.more_options")) {
-            row {
-                val label = JLabel(RiderAzureBundle.message("dialog.identity.ad.register_app.client_id"))
-                label()
-
-                cell {
-                    textField({ model.originalClientId },
+        row(RiderAzureBundle.message("dialog.identity.ad.register_app.display_name")) {
+            textField()
+                    .align(AlignX.FILL)
+                    .bindText(
+                            { model.originalDisplayName },
                             {
-                                model.updatedClientId = it.trim()
+                                model.updatedDisplayName = it.trim()
                                 model.hasChanges = true
-                            })
-                            .withValidationOnInput { if (!it.text?.trim().isNullOrEmpty()) { validateUuid(it) } else
-                                null }
-                            .component.apply { label.labelFor = this }
-                }
+                            }
+                    )
+                    .validationOnInput { validateNotEmpty(it) }
+        }
+
+        row(RiderAzureBundle.message("dialog.identity.ad.register_app.callback_url")) {
+            textField()
+                    .align(AlignX.FILL)
+                    .bindText(
+                            { model.originalCallbackUrl },
+                            {
+                                model.updatedCallbackUrl = it.trim()
+                                model.hasChanges = true
+                            }
+                    )
+                    .validationOnInput { validateNotEmpty(it) ?: validateUrl(it) }
+        }
+
+        row(RiderAzureBundle.message("dialog.identity.ad.register_app.domain")) {
+            textField()
+                    .align(AlignX.FILL)
+                    .bindText(
+                            { model.originalDomain },
+                            {
+                                model.updatedDomain = it.trim()
+                                model.hasChanges = true
+                            }
+                    )
+                    .validationOnInput { validateNotEmpty(it) }
+        }
+
+        row {
+            checkBox(RiderAzureBundle.message("dialog.identity.ad.register_app.is_multi_tenant"))
+                    .bindSelected(
+                            { model.originalIsMultiTenant },
+                            {
+                                model.updatedIsMultiTenant = it
+                                model.hasChanges = true
+                            }
+                    )
+        }
+
+        collapsibleGroup(RiderAzureBundle.message("dialog.identity.ad.register_app.more_options")) {
+            row(RiderAzureBundle.message("dialog.identity.ad.register_app.client_id")) {
+
+                textField()
+                        .align(AlignX.FILL)
+                        .bindText(
+                                { model.originalClientId },
+                                {
+                                    model.updatedClientId = it.trim()
+                                    model.hasChanges = true
+                                }
+                        )
+                        .validationOnInput {
+                            if (!it.text?.trim().isNullOrEmpty()) {
+                                validateUuid(it)
+                            } else
+                                null
+                        }
             }
 
             row {
-                cell {
-                    checkBox(RiderAzureBundle.message("dialog.identity.ad.register_app.allow_overwrite"),
-                            { model.allowOverwrite },
-                            {
-                                model.allowOverwrite = it
-                                model.hasChanges = true
-                            })
-                }
+                checkBox(RiderAzureBundle.message("dialog.identity.ad.register_app.allow_overwrite"))
+                        .bindSelected(
+                                { model.allowOverwrite },
+                                {
+                                    model.allowOverwrite = it
+                                    model.hasChanges = true
+                                }
+                        )
             }
         }
     }
