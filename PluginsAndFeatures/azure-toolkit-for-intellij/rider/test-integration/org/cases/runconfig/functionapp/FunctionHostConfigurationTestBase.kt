@@ -101,7 +101,7 @@ abstract class FunctionHostConfigurationTestBase(
     // TODO: Need to make sure function core tools is available on a server before enable.
     @Test(enabled = false, description = "Check before run task that should build a function app project and start Azurite.")
     fun testFunctionHost_BeforeRunTasks_BuildFunctionProject_StartAzurite() {
-        addProject(arrayOf(projectName), "ConsoleApp1", ProjectTemplateIds.sdk(sdkVersion).consoleApplication)
+        addProject(arrayOf(projectName), "ConsoleApp1", ProjectTemplates.Sdk(sdkVersion).sdkTemplate("Microsoft.Common.Console.CSharp"))
 
         val configuration = createRunConfiguration(
                 name = "Run Function App: ${project.name}",
