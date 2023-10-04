@@ -62,8 +62,8 @@ namespace JetBrains.ReSharper.Azure.Intellisense.FunctionApp.ProjectTemplates.Do
                 // Use hardcoded list
                 var isNet6OrHigher = expander.Template.Sdk.Major >= 6 || expander.Template.Sdk.Major == 0; // The Azure Functions templates treat "0" as .NET 6 as well.
                 var supportedAzureFunctionsVersions = isNet6OrHigher
-                    ? new[] { "V4" }
-                    : new[] { "V3", "V2" };
+                    ? new[] { "v4" }
+                    : new[] { "v3", "v2" };
                 
                 foreach (var version in supportedAzureFunctionsVersions)
                 {
