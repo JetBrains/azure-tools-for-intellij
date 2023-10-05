@@ -8,6 +8,10 @@
         <ul>
           <li>Compatibility with Rider 2023.3</li>
         </ul>
+        <h4>Fixed bugs:</h4>
+        <ul>
+          <li>Azure Functions: Fix casing for the `AzureFunctionsVersion` project property (<a href="https://youtrack.jetbrains.com/issue/RIDER-98036">RIDER-98036</a>)</li>
+        </ul>
     </html>
     ]]>
   </change-notes>
