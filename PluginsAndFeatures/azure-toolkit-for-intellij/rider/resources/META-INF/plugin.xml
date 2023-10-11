@@ -387,6 +387,7 @@
     <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.WebJobs" displayName="Azure Toolkit"/>
     <dependencySupport kind="dotnet" coordinate="Microsoft.Identity.Client" displayName="Azure Toolkit"/>
     <dependencySupport kind="dotnet" coordinate="Microsoft.Identity.Web" displayName="Azure Toolkit"/>
+    <dependencySupport kind="executable" coordinate="az"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.microsoft.intellij">
