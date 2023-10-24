@@ -86,11 +86,7 @@ class AzureCoreToolsMissingNupkgNotificationProvider : EditorNotificationProvide
 
     private data class PackageDependency(val id: String, val version: String)
 
-    override fun collectNotificationData(project: Project, file: VirtualFile) = Function { _: FileEditor ->
-        createNotificationPanel(file, project)
-    }
-
-    private fun createNotificationPanel(file: VirtualFile, project: Project): EditorNotificationPanel? {
+    override fun collectNotificationData(project: Project, file: VirtualFile): Function<FileEditor, EditorNotificationPanel?>? {
         if (PropertiesComponent.getInstance(project).getBoolean(AzureRiderSettings.DISMISS_NOTIFICATION_AZURE_FUNCTIONS_MISSING_NUPKG)) return null
 
         if (!hasKnownFileSuffix(file)) return null
@@ -114,32 +110,49 @@ class AzureCoreToolsMissingNupkgNotificationProvider : EditorNotificationProvide
             if (fileContent.contains(triggerName, true)) {
                 for (installableProject in installableProjects) {
                     if (!riderNuGetFacade.isInstalled(installableProject, dependency.id)) {
-                        val panel = EditorNotificationPanel()
-                                .text(RiderAzureBundle.message("notification.function_app.missing_nupkg.title", dependency.id))
-
-                        panel.createActionLabel(RiderAzureBundle.message("notification.function_app.missing_nupkg.action.install"), {
-                            // Install, wait, and refresh editor notifications
-                            riderNuGetFacade.installForProject(
-                                    installableProject.name, dependency.id, dependency.version)
-
-                            pumpMessages(waitForInstallDuration) {
-                                riderNuGetFacade.isInstalled(installableProject, dependency.id)
-                            }
-
-                            EditorNotifications.getInstance(project).updateNotifications(file)
-                        }, true)
-
-                        panel.createActionLabel(RiderAzureBundle.message("notification.function_app.missing_nupkg.action.dismiss"), {
-                            dismissNotification(file, project)
-                        }, true)
-
-                        return panel
+                        return Function { _: FileEditor ->
+                            createNotificationPanel(
+                                    file,
+                                    riderNuGetFacade,
+                                    dependency,
+                                    installableProject,
+                                    project
+                            )
+                        }
                     }
                 }
             }
         }
 
         return null
+    }
+
+    private fun createNotificationPanel(
+            file: VirtualFile,
+            riderNuGetFacade: RiderNuGetFacade,
+            dependency: PackageDependency,
+            installableProject: ProjectModelEntity,
+            project: Project
+    ): EditorNotificationPanel {
+        val panel = EditorNotificationPanel()
+                .text(RiderAzureBundle.message("notification.function_app.missing_nupkg.title", dependency.id))
+
+        panel.createActionLabel(RiderAzureBundle.message("notification.function_app.missing_nupkg.action.install"), {
+            // Install, wait, and refresh editor notifications
+            riderNuGetFacade.installForProject(installableProject.name, dependency.id, dependency.version)
+
+            pumpMessages(waitForInstallDuration) {
+                riderNuGetFacade.isInstalled(installableProject, dependency.id)
+            }
+
+            EditorNotifications.getInstance(project).updateNotifications(file)
+        }, true)
+
+        panel.createActionLabel(RiderAzureBundle.message("notification.function_app.missing_nupkg.action.dismiss"), {
+            dismissNotification(file, project)
+        }, true)
+
+        return panel
     }
 
     private fun dismissNotification(file: VirtualFile, project: Project) {
