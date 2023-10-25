@@ -21,7 +21,6 @@ import com.microsoft.azure.hdinsight.projects.util.ProjectSampleUtil;
 import com.microsoft.azure.toolkit.lib.common.task.AzureTaskManager;
 import com.microsoft.azuretools.azurecommons.helpers.NotNull;
 import com.microsoft.tooling.msservices.components.DefaultLoader;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -154,7 +153,7 @@ public class SbtProjectGenerator {
         sbtLines.add(String.format("\"org.jmockit\" %% \"jmockit\" %% \"%s\" %% \"%s\"", "1.34", "test"));
         sbtLines.add(")");
 
-        return StringUtils.join(sbtLines, "\n");
+        return String.join("\n", sbtLines);
     }
 
     private void importSbtProject(String root) {
