@@ -154,7 +154,7 @@ class AzureFunctionsIsolatedDebugProfile(
         } else {
             // .NET Framework
             val clrRuntime = DesktopClrRuntime("")
-            MsNetAttachProfileState(targetProcess, processArchitecture.getWorkerPlatform(), clrRuntime, executionEnvironment, RiderDebuggerBundle.message("MsNetAttachDebugger.display.name", clrRuntime.version))
+            MsNetAttachProfileState(targetProcess, processArchitecture.getWorkerPlatform(), clrRuntime, executionEnvironment, RiderDebuggerBundle.message("MsNetAttachProvider.display.name", clrRuntime.version))
                     .createWorkerRunInfo(lifetime, helper, port)
         }
     }
@@ -218,7 +218,7 @@ class AzureFunctionsIsolatedDebugProfile(
 
         val commandLineString = commandLine.commandLineString
 
-        targetProcessHandler = TerminalProcessHandler(commandLine)
+        targetProcessHandler = TerminalProcessHandler(executionEnvironment.project, commandLine)
 
         logger.info("Starting functions host process with command line: $commandLineString")
         targetProcessHandler.addProcessListener(object : ProcessAdapter() {
