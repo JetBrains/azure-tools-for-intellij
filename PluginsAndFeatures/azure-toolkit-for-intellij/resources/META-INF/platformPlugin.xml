@@ -11,6 +11,7 @@
         <h4>Fixed bugs:</h4>
         <ul>
           <li>Azure Functions: Fix casing for the `AzureFunctionsVersion` project property (<a href="https://youtrack.jetbrains.com/issue/RIDER-98036">RIDER-98036</a>)</li>
+          <li>Azure Functions: Fix Azure Functions tool paths configuration (<a href="https://youtrack.jetbrains.com/issue/RIDER-98014">RIDER-98014</a>)</li>
         </ul>
     </html>
     ]]>

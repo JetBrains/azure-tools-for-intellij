@@ -31,12 +31,11 @@ import com.intellij.openapi.ui.*
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.ui.ColoredTableCellRenderer
-import com.intellij.ui.InsertPathAction
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.TableSpeedSearch
-import com.intellij.ui.components.fields.ExtendableTextField
-import com.intellij.ui.dsl.builder.*
-import com.intellij.ui.table.JBTable
+import com.intellij.ui.dsl.builder.AlignX
+import com.intellij.ui.dsl.builder.bindText
+import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.table.TableView
 import com.intellij.util.PathUtil
 import com.intellij.util.asSafely
@@ -46,12 +45,10 @@ import com.microsoft.intellij.configuration.AzureRiderSettings
 import com.microsoft.intellij.ui.extension.getSelectedValue
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import org.jetbrains.plugins.azure.orWhenNullOrEmpty
+import java.awt.Component
 import java.io.File
 import javax.swing.JTable
-import javax.swing.JTextField
 import javax.swing.ListSelectionModel
-import javax.swing.plaf.basic.BasicComboBoxEditor
-import javax.swing.table.TableCellEditor
 import javax.swing.table.TableCellRenderer
 
 @Suppress("UnstableApiUsage")
@@ -60,12 +57,12 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
 
     private val properties: PropertiesComponent = PropertiesComponent.getInstance()
 
+    private lateinit var coreToolsConfiguration: List<AzureRiderSettings.AzureCoreToolsPathEntry>
     private lateinit var coreToolsEditorModel: ListTableModel<AzureRiderSettings.AzureCoreToolsPathEntry>
-    private lateinit var coreToolsEditor: JBTable
+    private lateinit var coreToolsEditor: TableView<AzureRiderSettings.AzureCoreToolsPathEntry>
 
     private val isCoreToolsFeedEnabled = Registry.`is`("azure.function_app.core_tools.feed.enabled")
 
-    private var coreToolsEditorChanged = false
     private val coreToolsEditorColumns = arrayOf<ColumnInfo<*, *>>(
             object : ColumnInfo<AzureRiderSettings.AzureCoreToolsPathEntry, String>(message("settings.app_services.function_app.core_tools.configuration.column.functionsVersion")) {
                 override fun valueOf(item: AzureRiderSettings.AzureCoreToolsPathEntry) = item.functionsVersion
@@ -108,64 +105,40 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
                     }
                 }
 
-                override fun getEditor(item: AzureRiderSettings.AzureCoreToolsPathEntry): TableCellEditor? = object : AbstractTableCellEditor() {
-
-                    private val comboBox: ComboBox<CoreToolsComboBoxItem> = ComboBox<CoreToolsComboBoxItem>()
+                override fun getEditor(item: AzureRiderSettings.AzureCoreToolsPathEntry) = object : AbstractTableCellEditor() {
+                    private val comboBox = AzureFunctionComponentBrowseButton()
 
                     init {
                         val coreToolsPath = File(item.coreToolsPath)
 
                         // Setup values for editor
                         if (isCoreToolsFeedEnabled) {
-                            comboBox.addItem(CoreToolsComboBoxItem(message("settings.app_services.function_app.core_tools.configuration.managed_by_ide"), "", true))
-                            if (item.coreToolsPath.isEmpty()) comboBox.selectedIndex = comboBox.itemCount - 1
+                            comboBox.setPath(
+                                    CoreToolsComboBoxItem(
+                                            message("settings.app_services.function_app.core_tools.configuration.managed_by_ide"),
+                                            "",
+                                            true
+                                    ),
+                                    item.coreToolsPath.isEmpty()
+                            )
                         }
 
-                        comboBox.addItem(CoreToolsComboBoxItem(message("settings.app_services.function_app.core_tools.configuration.func_from_path"), "func", true))
-                        if (coreToolsPath.nameWithoutExtension.equals("func", ignoreCase = true)) comboBox.selectedIndex = comboBox.itemCount - 1
-
-                        if (item.coreToolsPath.isNotEmpty() && !coreToolsPath.nameWithoutExtension.equals("func", ignoreCase = true)) {
-                            comboBox.addItem(CoreToolsComboBoxItem(item.coreToolsPath, item.coreToolsPath, false))
-                            comboBox.selectedIndex = comboBox.itemCount - 1
-                        }
-
-                        // Setup editor
-                        val fileBrowserAccessor = object : TextComponentAccessor<ComboBox<CoreToolsComboBoxItem>> {
-                            override fun getText(component: ComboBox<CoreToolsComboBoxItem>) = component.getSelectedValue()?.value ?: ""
-                            override fun setText(component: ComboBox<CoreToolsComboBoxItem>, text: String) {
-                                val normalizedText = PathUtil.toSystemDependentName(text)
-                                comboBox.addItem(CoreToolsComboBoxItem(normalizedText, normalizedText, false))
-                                comboBox.selectedIndex = comboBox.itemCount - 1
-                            }
-                        }
-                        val selectFolderAction = BrowseFolderRunnable<ComboBox<CoreToolsComboBoxItem>>(
-                                null,
-                                null,
-                                null,
-                                FileChooserDescriptorFactory.createSingleFolderDescriptor(),
-                                comboBox,
-                                fileBrowserAccessor
+                        comboBox.setPath(
+                                CoreToolsComboBoxItem(message(
+                                        "settings.app_services.function_app.core_tools.configuration.func_from_path"),
+                                        "func",
+                                        true
+                                ),
+                                coreToolsPath.nameWithoutExtension.equals("func", ignoreCase = true)
                         )
 
-                        comboBox.isEditable = true
-                        comboBox.editor = object : BasicComboBoxEditor() {
-                            override fun createEditorComponent(): JTextField {
-                                val editor = ExtendableTextField()
-                                editor.addBrowseExtension(selectFolderAction, null)
-                                editor.border = null
-                                InsertPathAction.addTo(editor, FileChooserDescriptorFactory.createSingleFolderDescriptor())
-                                return editor
-                            }
-                        }
-
-                        comboBox.addItemListener {
-                            coreToolsEditorChanged = true
+                        if (item.coreToolsPath.isNotEmpty() && !coreToolsPath.nameWithoutExtension.equals("func", ignoreCase = true)) {
+                            comboBox.setPath(CoreToolsComboBoxItem(item.coreToolsPath, item.coreToolsPath, false), true)
                         }
                     }
 
-                    override fun getCellEditorValue(): String {
-                        // Allow for manual input
-                        comboBox.editor.item.asSafely<String>()?.let { textEntry ->
+                    override fun getCellEditorValue(): String? {
+                        comboBox.childComponent.editor.item.asSafely<String>()?.let { textEntry ->
                             if (textEntry.isEmpty()) {
                                 return ""
                             }
@@ -176,10 +149,12 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
                             }
                         }
 
-                        return comboBox.getSelectedValue()?.value ?: ""
+                        return comboBox.getPath()
                     }
 
-                    override fun getTableCellEditorComponent(table: JTable?, value: Any?, isSelected: Boolean, row: Int, column: Int) = comboBox
+                    override fun getTableCellEditorComponent(table: JTable?, value: Any?, isSelected: Boolean, row: Int, column: Int): Component {
+                        return CellEditorComponentWithBrowseButton(comboBox, this)
+                    }
                 }
 
                 override fun isCellEditable(item: AzureRiderSettings.AzureCoreToolsPathEntry) = true
@@ -189,17 +164,13 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
     private fun createPanel(): DialogPanel = panel {
 
         group(message("settings.app_services.function_app.core_tools.group")) {
-            val coreToolsConfiguration = AzureRiderSettings.getAzureCoreToolsPathEntries(properties)
+            coreToolsConfiguration = AzureRiderSettings.getAzureCoreToolsPathEntries(properties)
 
             coreToolsEditorModel = ListTableModel(
                     coreToolsEditorColumns,
                     coreToolsConfiguration,
                     0
-            ).apply {
-                onIsModified {
-                    coreToolsEditorChanged
-                }
-            }
+            )
 
             coreToolsEditor = TableView(coreToolsEditorModel).apply {
                 setShowGrid(false)
@@ -221,10 +192,28 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
             }
 
             row {
-                scrollCell(coreToolsEditor).onApply {
-                    AzureRiderSettings.setAzureCoreToolsPathEntries(properties, coreToolsEditorModel.items)
-                    coreToolsEditorChanged = false
-                }.align(AlignX.FILL)
+                scrollCell(coreToolsEditor)
+                        .onIsModified {
+                            if (coreToolsEditor.isEditing) return@onIsModified true
+
+                            val coreToolsConfiguration = AzureRiderSettings.getAzureCoreToolsPathEntries(properties)
+                            for (i in 0 ..< coreToolsEditor.rowCount) {
+                                val row = coreToolsEditor.getRow(i)
+                                val configuration = coreToolsConfiguration.firstOrNull { it.functionsVersion == row.functionsVersion } ?: return@onIsModified true
+                                val editor = coreToolsEditor.getCellEditor(i, 1)
+
+                                if (editor.cellEditorValue != configuration.coreToolsPath) return@onIsModified true
+                            }
+
+                            return@onIsModified false
+                        }
+                        .onApply {
+                            if (coreToolsEditor.isEditing) {
+                                coreToolsEditor.stopEditing()
+                            }
+                            AzureRiderSettings.setAzureCoreToolsPathEntries(properties, coreToolsEditorModel.items)
+                        }
+                        .align(AlignX.FILL)
             }
 
             if (isCoreToolsFeedEnabled) {
@@ -240,10 +229,10 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
                             null,
                             FileChooserDescriptorFactory.createSingleFolderDescriptor()
                     )
-                        .bindText({ value }, { value = FileUtil.toSystemIndependentName(it) })
-                        .onApply { properties.setValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH, value) }
-                        .validationOnInput { validationForPath(it) }
-                        .align(AlignX.FILL)
+                            .bindText({ value }, { value = FileUtil.toSystemIndependentName(it) })
+                            .onApply { properties.setValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH, value) }
+                            .validationOnInput { validationForPath(it) }
+                            .align(AlignX.FILL)
                 }
             }
         }
@@ -254,7 +243,7 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
     }
 
     private fun validationForPath(textField: TextFieldWithBrowseButton) =
-            if (!textField.text.isNullOrEmpty() && !File(textField.text).exists()) {
+            if (textField.text.isNotEmpty() && !File(textField.text).exists()) {
                 ValidationInfo(message("settings.app_services.function_app.core_tools.download_path.invalid"), textField)
             } else {
                 null
@@ -268,15 +257,45 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
     override fun reset() {
         val coreToolsConfiguration = AzureRiderSettings.getAzureCoreToolsPathEntries(properties)
         coreToolsEditorModel.items = coreToolsConfiguration
-        coreToolsEditorChanged = false
         super.reset()
     }
 
     override fun isProjectLevel() = false
+}
 
-    private data class CoreToolsComboBoxItem(val label: String, val value: String, val isPredefinedEntry: Boolean) {
+private data class CoreToolsComboBoxItem(val label: String, val value: String, val isPredefinedEntry: Boolean) {
+    override fun toString() = label
+}
 
-        override fun toString() = label
+private class AzureFunctionToolsComboBox : ComboBox<CoreToolsComboBoxItem>() {
+    override fun isEditable() = true
+    fun getPath() = getSelectedValue()?.value
+    fun setPath(path: CoreToolsComboBoxItem, selected: Boolean = false) {
+        addItem(path)
+        if (selected) selectedItem = path
     }
 }
 
+private class AzureFunctionComponentBrowseButton : ComponentWithBrowseButton<AzureFunctionToolsComboBox>(AzureFunctionToolsComboBox(), null) {
+    init {
+        val fileBrowserAccessor = object : TextComponentAccessor<AzureFunctionToolsComboBox> {
+            override fun getText(component: AzureFunctionToolsComboBox) = component.getPath() ?: ""
+            override fun setText(component: AzureFunctionToolsComboBox, text: String) {
+                val normalizedText = PathUtil.toSystemDependentName(text)
+                component.setPath(CoreToolsComboBoxItem(normalizedText, normalizedText, false), true)
+            }
+        }
+        addBrowseFolderListener(
+                null,
+                null,
+                null,
+                FileChooserDescriptorFactory.createSingleFolderDescriptor(),
+                fileBrowserAccessor
+        )
+    }
+
+    fun getPath() = childComponent.getPath()
+    fun setPath(path: CoreToolsComboBoxItem, selected: Boolean = false) {
+        childComponent.setPath(path, selected)
+    }
+}
