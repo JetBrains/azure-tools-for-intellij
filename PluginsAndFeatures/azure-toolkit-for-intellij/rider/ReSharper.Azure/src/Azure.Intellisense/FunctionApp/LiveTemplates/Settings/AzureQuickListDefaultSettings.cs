@@ -71,7 +71,11 @@ namespace JetBrains.ReSharper.Azure.Intellisense.FunctionApp.LiveTemplates.Setti
             AddToQuickList(mountPoint, myCSharpMainPoint, "Queue Trigger", ++pos, "7ee1ed3e-3090-4119-9043-e88d376059dc");
             AddToQuickList(mountPoint, myCSharpMainPoint, "Service Bus Queue Trigger", ++pos, "063aeef7-6174-4705-ab87-b8fc949b596a");
             AddToQuickList(mountPoint, myCSharpMainPoint, "Service Bus Topic Trigger", ++pos, "5e6a4a74-7465-4e18-b1eb-a82294ad3391");
+            AddToQuickList(mountPoint, myCSharpMainPoint, "SQL Trigger", ++pos, "4bf02cbd-c8db-46aa-ba9e-56df85f88cec");
             AddToQuickList(mountPoint, myCSharpMainPoint, "Timer Trigger", ++pos, "60bbd781-cc83-4969-8940-44e09ce85725");
+            AddToQuickList(mountPoint, myCSharpMainPoint, "Dapr Publish Output Binding", ++pos, "a50d2862-4c19-4ab2-90d8-4b61be652e5f");
+            AddToQuickList(mountPoint, myCSharpMainPoint, "Dapr Service Invocation Trigger", ++pos, "6a12542b-e634-41c1-a11b-804f08792e6e");
+            AddToQuickList(mountPoint, myCSharpMainPoint, "Dapr Topic Trigger", ++pos, "e0938da7-d4be-412b-aa79-a23745721fda");
 
             // C# templates - Isolated Worker
             AddToQuickList(mountPoint, myCSharpMainPoint, "Blob Trigger", ++pos, "7ae1d45e-28cd-48d2-bbb6-bc92bbd64254");
@@ -82,7 +86,11 @@ namespace JetBrains.ReSharper.Azure.Intellisense.FunctionApp.LiveTemplates.Setti
             AddToQuickList(mountPoint, myCSharpMainPoint, "Queue Trigger", ++pos, "05e6f400-869c-4d10-b9e5-1bec3a50dd75");
             AddToQuickList(mountPoint, myCSharpMainPoint, "Service Bus Queue Trigger", ++pos, "3c11cff7-99a9-47c5-90dd-eb39bf4adf27");
             AddToQuickList(mountPoint, myCSharpMainPoint, "Service Bus Topic Trigger", ++pos, "7f50ad96-6a80-4be0-96b8-9d224997a9aa");
+            AddToQuickList(mountPoint, myCSharpMainPoint, "SQL Trigger", ++pos, "707c458f-6b00-4ae6-aba8-0a02606c76be");
             AddToQuickList(mountPoint, myCSharpMainPoint, "Timer Trigger", ++pos, "ee9b1573-f483-4960-986e-a16242fb0607");
+            AddToQuickList(mountPoint, myCSharpMainPoint, "Dapr Publish Output Binding", ++pos, "5bd6f10c-21a5-4b73-82d0-9da395333736");
+            AddToQuickList(mountPoint, myCSharpMainPoint, "Dapr Service Invocation Trigger", ++pos, "5c9abf80-0f16-48dd-bc66-d6b3c9fcf7d4");
+            AddToQuickList(mountPoint, myCSharpMainPoint, "Dapr Topic Trigger", ++pos, "d9d5ba30-b25c-4010-bf55-94fa43e880f4");
             
             // F# templates - Default Worker
             AddToQuickList(mountPoint, myFSharpMainPoint, "Blob Trigger", ++pos, "3e3ef753-81d7-4130-a8c9-aff5cabc23ed");
@@ -92,6 +100,15 @@ namespace JetBrains.ReSharper.Azure.Intellisense.FunctionApp.LiveTemplates.Setti
             AddToQuickList(mountPoint, myFSharpMainPoint, "HTTP Trigger", ++pos, "e8104b0a-97de-4847-b8f0-5b9f438bdc92");
             AddToQuickList(mountPoint, myFSharpMainPoint, "Queue Trigger", ++pos, "bfccc7d5-0a43-4fc2-a4d4-580d1265b536");
             AddToQuickList(mountPoint, myFSharpMainPoint, "Timer Trigger", ++pos, "71a9a23c-c542-4e82-af8d-4a1bb410a6b2");
+
+            // F# templates - Isolated Worker
+            AddToQuickList(mountPoint, myFSharpMainPoint, "Blob Trigger", ++pos, "9e3ef753-81d7-4130-a8c9-aff5cabc23ed");
+            AddToQuickList(mountPoint, myFSharpMainPoint, "Cosmos DB Trigger", ++pos, "91ebe6f2-b045-4476-87ef-d9458ec74c23");
+            AddToQuickList(mountPoint, myFSharpMainPoint, "Event Grid Trigger", ++pos, "9c32fa2b-ec21-4789-ba43-b5a897fb8f5b");
+            AddToQuickList(mountPoint, myFSharpMainPoint, "Event Hub Trigger", ++pos, "9a3273cb-d595-4bd6-9b69-8eaf71120b55");
+            AddToQuickList(mountPoint, myFSharpMainPoint, "HTTP Trigger", ++pos, "98104b0a-97de-4847-b8f0-5b9f438bdc92");
+            AddToQuickList(mountPoint, myFSharpMainPoint, "Queue Trigger", ++pos, "9fccc7d5-0a43-4fc2-a4d4-580d1265b536");
+            AddToQuickList(mountPoint, myFSharpMainPoint, "Timer Trigger", ++pos, "98a9a23c-c542-4e82-af8d-4a1bb410a6b2");
         }
 
         private void InitialiseQuickList(ISettingsStorageMountPoint mountPoint, IMainScopePoint quickList)

@@ -10,7 +10,7 @@ parameterOrder: (HEADER), (NAMESPACE), (CLASS), PATHVALUE, (CONNECTIONVALUE)
 HEADER-expression: fileheader()
 NAMESPACE-expression: fileDefaultNamespace()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()
-PATHVALUE-expression: constant("samples-workitems")
+PATHVALUE-expression: constant("eventHubNameValue")
 CONNECTIONVALUE-expression: constant("")
 ---
 
@@ -18,18 +18,29 @@ CONNECTIONVALUE-expression: constant("")
 
 ```
 $HEADER$using System;
+using Azure.Messaging.EventHubs;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
 namespace $NAMESPACE$
 {
-    public static class $CLASS$
+    public class $CLASS$
     {
-        [Function("$CLASS$")]
-        public static void Run([EventHubTrigger("$PATHVALUE$", Connection = "$CONNECTIONVALUE$")] string[] input, FunctionContext context)
+        private readonly ILogger<$CLASS$> _logger;
+
+        public $CLASS$(ILogger<$CLASS$> logger)
         {
-            var logger = context.GetLogger("$CLASS$");
-            logger.LogInformation($"First Event Hubs triggered message: {input[0]}");$END$
+            _logger = logger;
+        }
+
+        [Function(nameof($CLASS$))]
+        public void Run([EventHubTrigger("$PATHVALUE$", Connection = "$CONNECTIONVALUE$")] EventData[] events)
+        {
+            foreach (EventData @event in events)
+            {
+                _logger.LogInformation("Event Body: {body}", @event.Body);
+                _logger.LogInformation("Event Content-Type: {contentType}", @event.ContentType);$END$
+            }
         }
     }
 }

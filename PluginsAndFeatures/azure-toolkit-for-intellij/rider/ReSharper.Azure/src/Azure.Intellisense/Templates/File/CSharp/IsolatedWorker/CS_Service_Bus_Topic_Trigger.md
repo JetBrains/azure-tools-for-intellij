@@ -19,18 +19,27 @@ CONNECTIONVALUE-expression: constant("")
 
 ```
 $HEADER$using System;
+using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
 namespace $NAMESPACE$
 {
-    public static class $CLASS$
+    public class $CLASS$
     {
-        [Function("$CLASS$")]
-        public static void Run([ServiceBusTrigger("$TOPICNAME$", "$SUBSCRIPTIONNAME$", Connection = "$CONNECTIONVALUE$")] string mySbMsg, FunctionContext context)
+        private readonly ILogger<$CLASS$> _logger;
+
+        public $CLASS$(ILogger<$CLASS$> logger)
         {
-            var logger = context.GetLogger("$CLASS$");
-            logger.LogInformation($"C# ServiceBus topic trigger function processed message: {mySbMsg}");$END$
+            _logger = logger;
+        }
+
+        [Function(nameof($CLASS$))]
+        public void Run([ServiceBusTrigger("$TOPICNAME$", "$SUBSCRIPTIONNAME$", Connection = "$CONNECTIONVALUE$")] ServiceBusReceivedMessage message)
+        {
+            _logger.LogInformation("Message ID: {id}", message.MessageId);
+            _logger.LogInformation("Message Body: {body}", message.Body);
+            _logger.LogInformation("Message Content-Type: {contentType}", message.ContentType);$END$
         }
     }
 }

@@ -20,22 +20,18 @@ $HEADER$namespace $NAMESPACE$
 // http://localhost:7071/runtime/webhooks/EventGrid?functionName={functionname}
 
 open System
+open Azure.Messaging;
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Extensions.Logging
 
 module $CLASS$ =
-    type MyEvent =
-        { Id: string
-          Topic: string
-          Subject: string
-          EventType: string
-          EventTime: DateTime
-          Data: object }
-
     [<Function("$CLASS$")>]
-    let run ([<EventGridTrigger>] eventGridEvent: MyEvent, context: FunctionContext) =
+    let run ([<EventGridTrigger>] cloudEvent: CloudEvent, context: FunctionContext) =
         let logger =
-            context.GetLogger("EventGridTriggerFSharp")
+            context.GetLogger("$CLASS$")
 
-        log.LogInformation(eventGridEvent.Data.ToString())$END$
+        let msg =
+            sprintf "Event type: %s, Event subject: %s" cloudEvent.Type cloudEvent.Subject
+
+        log.LogInformation msg$END$
 ```

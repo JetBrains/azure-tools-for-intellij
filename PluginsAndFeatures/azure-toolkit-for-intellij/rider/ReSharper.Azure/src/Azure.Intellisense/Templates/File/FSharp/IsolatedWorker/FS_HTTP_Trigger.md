@@ -30,7 +30,7 @@ module $CLASS$ =
         ([<HttpTrigger(AuthorizationLevel.$AUTHLEVELVALUE$, "get", "post", Route = null)>] req: HttpRequestData)
         (context: FunctionContext)
         =
-        let logger = context.GetLogger "HttpTriggerFSharp"
+        let logger = context.GetLogger "$CLASS$"
         logger.LogInformation "F# HTTP trigger function processed a request"
 
         let response = req.CreateResponse(HttpStatusCode.OK)

@@ -20,6 +20,7 @@ CONNECTIONVALUE-expression: constant("")
 $HEADER$namespace $NAMESPACE$
 
 open System
+open Azure.Storage.Queues.Models
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Extensions.Logging
 
@@ -27,12 +28,12 @@ module $CLASS$ =
     [<Function("$CLASS$")>]
     let run
         (
-            [<QueueTrigger("$PATHVALUE$", Connection = "$CONNECTIONVALUE$")>] myQueueItem: string,
+            [<QueueTrigger("$PATHVALUE$", Connection = "$CONNECTIONVALUE$")>] message: QueueMessage,
             context: FunctionContext
         ) =
         let msg =
-            sprintf "F# Queue trigger function processed: %s" myQueueItem
+            sprintf "F# Queue trigger function processed: %s" message.MessageText
 
-        let logger = context.GetLogger "QueueTriggerFSharp"
+        let logger = context.GetLogger "$CLASS$"
         log.LogInformation msg$END$
 ```

@@ -6,12 +6,12 @@ shortenReferences: True
 image: AzureFunctionsTrigger
 customProperties: Extension=fs, FileName=CosmosDbTrigger, ValidateFileName=True
 scopes: InAzureFunctionsFSharpProject;MustUseAzureFunctionsDefaultWorker
-parameterOrder: (HEADER), (NAMESPACE), (CLASS), DATABASEVALUE, COLLECTIONVALUE, (CONNECTIONVALUE)
+parameterOrder: (HEADER), (NAMESPACE), (CLASS), DATABASEVALUE, CONTAINERVALUE, (CONNECTIONVALUE)
 HEADER-expression: fileheader()
 NAMESPACE-expression: fileDefaultNamespace()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()
 DATABASEVALUE-expression: constant("databaseName")
-COLLECTIONVALUE-expression: constant("collectionName")
+CONTAINERVALUE-expression: constant("containerName")
 CONNECTIONVALUE-expression: constant("")
 ---
 
@@ -27,9 +27,13 @@ open Microsoft.Azure.WebJobs.Host
 open Microsoft.Extensions.Logging
 
 module $CLASS$ =
+    type TodoItem =
+        { id: string
+          Description: string }
+
     [<FunctionName("$CLASS$")>]
-    let run([<CosmosDBTrigger(databaseName="$DATABASEVALUE$", collectionName="$COLLECTIONVALUE$", ConnectionStringSetting="$CONNECTIONVALUE$", LeaseCollectionName="leases")>] input: IReadOnlyList<Document>, log: ILogger) =
+    let run([<CosmosDBTrigger(databaseName="$DATABASEVALUE$", containerName="$CONTAINERVALUE$", Connection="$CONNECTIONVALUE$", LeaseContainerName="leases")>] input: IReadOnlyList<TodoItem>, log: ILogger) =
         if not(isNull input) && input.Count > 0 then
             log.LogInformation(sprintf "Documents modified %d" input.Count)
-            log.LogInformation("First document Id " + input.[0].Id)$END$
+            log.LogInformation("First document Id " + input.[0].id)$END$
 ```

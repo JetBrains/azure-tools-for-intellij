@@ -23,10 +23,10 @@ using IoTHubTrigger = Microsoft.Azure.WebJobs.EventHubTriggerAttribute;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
-using Microsoft.Azure.EventHubs;
 using System.Text;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
+using Azure.Messaging.EventHubs;
 
 namespace $NAMESPACE$
 {
@@ -37,7 +37,7 @@ namespace $NAMESPACE$
         [FunctionName("$CLASS$")]
         public static async Task RunAsync([IoTHubTrigger("$PATHVALUE$", Connection = "$CONNECTIONVALUE$")]EventData message, ILogger log)
         {
-            log.LogInformation($"C# IoT Hub trigger function processed a message: {Encoding.UTF8.GetString(message.Body.Array)}");$END$
+            log.LogInformation($"C# IoT Hub trigger function processed a message: {Encoding.UTF8.GetString(message.Body.ToArray())}");$END$
         }
     }
 }
