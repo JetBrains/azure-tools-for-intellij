@@ -6,12 +6,12 @@ shortenReferences: True
 image: AzureFunctionsTrigger
 customProperties: Extension=cs, FileName=CosmosDbTrigger, ValidateFileName=True
 scopes: InAzureFunctionsCSharpProject;MustUseAzureFunctionsIsolatedWorker
-parameterOrder: (HEADER), (NAMESPACE), (CLASS), DATABASEVALUE, COLLECTIONVALUE, (CONNECTIONVALUE)
+parameterOrder: (HEADER), (NAMESPACE), (CLASS), DATABASEVALUE, CONTAINERVALUE, (CONNECTIONVALUE)
 HEADER-expression: fileheader()
 NAMESPACE-expression: fileDefaultNamespace()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()
 DATABASEVALUE-expression: constant("databaseName")
-COLLECTIONVALUE-expression: constant("collectionName")
+CONTAINERVALUE-expression: constant("containerName")
 CONNECTIONVALUE-expression: constant("")
 ---
 
@@ -25,20 +25,26 @@ using Microsoft.Extensions.Logging;
 
 namespace $NAMESPACE$
 {
-    public static class $CLASS$
+    public class $CLASS$
     {
-        [Function("$CLASS$")]
-        public static void Run([CosmosDBTrigger(
-            databaseName: "$DATABASEVALUE$",
-            collectionName: "$COLLECTIONVALUE$",
-            ConnectionStringSetting = "$CONNECTIONVALUE$",
-            LeaseCollectionName = "leases")] IReadOnlyList<MyDocument> input, FunctionContext context)
+        private readonly ILogger _logger;
+
+        public $CLASS$(ILoggerFactory loggerFactory)
         {
-            var logger = context.GetLogger("$CLASS$");
+            _logger = loggerFactory.CreateLogger<$CLASS$>();
+        }
+        
+        [Function("$CLASS$")]
+        public void Run([CosmosDBTrigger(
+            databaseName: "$DATABASEVALUE$",
+            containerName: "$CONTAINERVALUE$",
+            Connection = "$CONNECTIONVALUE$",
+            LeaseContainerName = "leases")] IReadOnlyList<MyDocument> input, FunctionContext context)
+        {
             if (input != null && input.Count > 0)
             {
-                logger.LogInformation("Documents modified: " + input.Count);
-                logger.LogInformation("First document Id: " + input[0].Id);
+                _logger.LogInformation("Documents modified: " + input.Count);
+                _logger.LogInformation("First document Id: " + input[0].Id);
             }$END$
         }
     }

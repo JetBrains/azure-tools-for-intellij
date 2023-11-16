@@ -80,7 +80,7 @@ namespace JetBrains.ReSharper.Azure.Psi.FunctionApp
                 return null;
             }
 
-            return functionNameParameter.ConstantValue.Value?.ToString();
+            return functionNameParameter.ConstantValue.StringValue;
         }
 
         /// <summary>

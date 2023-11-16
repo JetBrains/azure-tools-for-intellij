@@ -6,12 +6,12 @@ shortenReferences: True
 image: AzureFunctionsTrigger
 customProperties: Extension=fs, FileName=CosmosDbTrigger, ValidateFileName=True
 scopes: InAzureFunctionsFSharpProject;MustUseAzureFunctionsIsolatedWorker
-parameterOrder: (HEADER), (NAMESPACE), (CLASS), DATABASEVALUE, COLLECTIONVALUE, (CONNECTIONVALUE)
+parameterOrder: (HEADER), (NAMESPACE), (CLASS), DATABASEVALUE, CONTAINERVALUE, (CONNECTIONVALUE)
 HEADER-expression: fileheader()
 NAMESPACE-expression: fileDefaultNamespace()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()
 DATABASEVALUE-expression: constant("databaseName")
-COLLECTIONVALUE-expression: constant("collectionName")
+CONTAINERVALUE-expression: constant("containerName")
 CONNECTIONVALUE-expression: constant("")
 ---
 
@@ -36,13 +36,13 @@ module $CLASS$ =
     let run
         (
             [<CosmosDBTrigger(databaseName = "$DATABASEVALUE$",
-                              collectionName = "$COLLECTIONVALUE$",
+                              containerName = "$CONTAINERVALUE$",
                               ConnectionStringSetting = "$CONNECTIONVALUE$",
-                              LeaseCollectionName = "leases")>] input: IReadOnlyList<MyDocument>,
+                              LeaseContainerName = "leases")>] input: IReadOnlyList<MyDocument>,
             context: FunctionContext
         ) =
         let logger =
-            context.GetLogger "CosmsoDBTriggerFSharp"
+            context.GetLogger "$CLASS$"
 
         if not (isNull input) && input.Count > 0 then
             log.LogInformation(sprintf "Documents modified %d" input.Count)

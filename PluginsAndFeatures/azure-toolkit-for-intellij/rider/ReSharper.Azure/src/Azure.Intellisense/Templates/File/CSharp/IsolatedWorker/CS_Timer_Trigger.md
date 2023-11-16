@@ -21,32 +21,26 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
 namespace $NAMESPACE$
-{
-    public static class $CLASS$
+{    
+    public class $CLASS$
     {
-        [Function("$CLASS$")]
-        public static void Run([TimerTrigger("$SCHEDULE$")] MyInfo myTimer, FunctionContext context)
+        private readonly ILogger _logger;
+
+        public $CLASS$(ILoggerFactory loggerFactory)
         {
-            var logger = context.GetLogger("$CLASS$");
-            logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
-            logger.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");$END$
+            _logger = loggerFactory.CreateLogger<$CLASS$>();
         }
-    }
 
-    public class MyInfo
-    {
-        public MyScheduleStatus ScheduleStatus { get; set; }
-
-        public bool IsPastDue { get; set; }
-    }
-
-    public class MyScheduleStatus
-    {
-        public DateTime Last { get; set; }
-
-        public DateTime Next { get; set; }
-
-        public DateTime LastUpdated { get; set; }
+        [Function("$CLASS$")]
+        public void Run([TimerTrigger("$SCHEDULE$")] TimerInfo myTimer)
+        {
+            _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+            
+            if (myTimer.ScheduleStatus is not null)
+            {
+                _logger.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");$END$
+            }
+        }
     }
 }
 ```

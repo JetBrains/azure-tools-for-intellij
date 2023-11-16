@@ -18,34 +18,26 @@ CLASS-expression: getAlphaNumericFileNameWithoutExtension()
 $HEADER$// Default URL for triggering event grid function in the local environment.
 // http://localhost:7071/runtime/webhooks/EventGrid?functionName={functionname}
 using System;
+using Azure.Messaging;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
 namespace $NAMESPACE$
 {
-    public static class $CLASS$
+    public class $CLASS$
     {
-        [Function("$CLASS$")]
-        public static void Run([EventGridTrigger] MyEvent input, FunctionContext context)
+        private readonly ILogger<$CLASS$> _logger;
+
+        public $CLASS$(ILogger<$CLASS$> logger)
         {
-            var logger = context.GetLogger("$CLASS$");
-            logger.LogInformation(input.Data.ToString());$END$
+            _logger = logger;
         }
-    }
-
-    public class MyEvent
-    {
-        public string Id { get; set; }
-
-        public string Topic { get; set; }
-
-        public string Subject { get; set; }
-
-        public string EventType { get; set; }
-
-        public DateTime EventTime { get; set; }
-
-        public object Data { get; set; }
+        
+        [Function("$CLASS$")]
+        public void Run([EventGridTrigger] CloudEvent cloudEvent, FunctionContext context)
+        {
+            _logger.LogInformation("Event type: {type}, Event subject: {subject}", cloudEvent.Type, cloudEvent.Subject);$END$
+        }
     }
 }
 ```

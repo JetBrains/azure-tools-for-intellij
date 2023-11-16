@@ -10,7 +10,7 @@ parameterOrder: (HEADER), (NAMESPACE), (CLASS), PATHVALUE, (CONNECTIONVALUE)
 HEADER-expression: fileheader()
 NAMESPACE-expression: fileDefaultNamespace()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()
-PATHVALUE-expression: constant("samples-workitems")
+PATHVALUE-expression: constant("eventHubNameValue")
 CONNECTIONVALUE-expression: constant("")
 ---
 
@@ -20,18 +20,21 @@ CONNECTIONVALUE-expression: constant("")
 $HEADER$namespace $NAMESPACE$
 
 open System
+open Azure.Messaging.EventHubs
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Extensions.Logging
-
+  
 module $CLASS$ =
     [<Function("$CLASS$")>]
     let run
         (
-            [<EventHubTrigger("$PATHVALUE$", Connection = "$CONNECTIONVALUE$")>] input: string [],
+            [<EventHubTrigger("$PATHVALUE$", Connection = "$CONNECTIONVALUE$")>] events: EventData [],
             context: FunctionContext
         ) =
         let logger =
-            context.GetLogger("EventHubTriggerFSharp")
+            context.GetLogger("$CLASS$")
 
-        logger.LogInformation(sprintf "First Event Hubs triggered message: %s" (input |> Array.head))$END$
+        for event in events do
+            logger.LogInformation $"Event Body: {event.Body}"
+            logger.LogInformation $"Event Content-Type: {event.contentType}"$END$
 ```

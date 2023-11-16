@@ -18,19 +18,25 @@ CONNECTIONVALUE-expression: constant("")
 
 ```
 $HEADER$using System;
+using Azure.Storage.Queues.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
 namespace $NAMESPACE$
 {
-    public static class $CLASS$
+    public class $CLASS$
     {
-        [Function("$CLASS$")]
-        public static void Run([QueueTrigger("$PATHVALUE$", Connection = "$CONNECTIONVALUE$")] string myQueueItem,
-            FunctionContext context)
+        private readonly ILogger<$CLASS$> _logger;
+
+        public $CLASS$(ILogger<$CLASS$> logger)
         {
-            var logger = context.GetLogger("$CLASS$");
-            logger.LogInformation($"C# Queue trigger function processed: {myQueueItem}");$END$
+            _logger = logger;
+        }
+
+        [Function(nameof($CLASS$))]
+        public void Run([QueueTrigger("$PATHVALUE$", Connection = "$CONNECTIONVALUE$")] QueueMessage message)
+        {
+            _logger.LogInformation($"C# Queue trigger function processed: {message.MessageText}");$END$
         }
     }
 }
