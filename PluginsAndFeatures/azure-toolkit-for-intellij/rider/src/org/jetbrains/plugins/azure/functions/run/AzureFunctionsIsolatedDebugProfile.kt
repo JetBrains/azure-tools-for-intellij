@@ -20,13 +20,13 @@
  * SOFTWARE.
  */
 
+@file:Suppress("UnstableApiUsage")
+
 package org.jetbrains.plugins.azure.functions.run
 
 import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
-import com.intellij.execution.process.ProcessAdapter
-import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.impl.ProcessListUtil
 import com.intellij.execution.runners.ExecutionEnvironment
@@ -34,18 +34,14 @@ import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.progress.Task
 import com.intellij.openapi.rd.util.withBackgroundContext
-import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.platform.ide.progress.withBackgroundProgress
+import com.intellij.util.application
 import com.intellij.util.execution.ParametersListUtil
 import com.intellij.util.system.CpuArch
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.threading.SpinWait
-import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerWorkerPlatform
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
@@ -64,9 +60,11 @@ import com.jetbrains.rider.runtime.DotNetRuntime
 import com.jetbrains.rider.runtime.apply
 import com.microsoft.azuretools.utils.JsonUtils
 import com.microsoft.intellij.util.PluginUtil
+import kotlinx.coroutines.delay
 import org.jetbrains.plugins.azure.RiderAzureBundle
 import java.io.File
-import java.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 
 class AzureFunctionsIsolatedDebugProfile(
         private val dotNetExecutable: DotNetExecutable,
@@ -76,11 +74,10 @@ class AzureFunctionsIsolatedDebugProfile(
 
     companion object {
         private val logger = Logger.getInstance(AzureFunctionsIsolatedDebugProfile::class.java)
-        private val waitDuration = Duration.ofMinutes(1)
+        private val waitDuration = 1.minutes
         private const val DOTNET_ISOLATED_DEBUG_ARGUMENT = "--dotnet-isolated-debug"
         private const val DOTNET_ENABLE_JSON_OUTPUT_ARGUMENT = "--enable-json-output"
         private const val DOTNET_JSON_OUTPUT_FILE_ARGUMENT = "--json-output-file"
-        private val controlCharsRegex = "\u001B\\[[\\d;]*[^\\d;]".toRegex()
     }
 
     private var processId = 0
@@ -90,24 +87,12 @@ class AzureFunctionsIsolatedDebugProfile(
 
     override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
         // Launch Azure Functions host process
-        launchAzureFunctionsHost()
+        processId = withBackgroundProgress(executionEnvironment.project, RiderAzureBundle.message("run_config.run_function_app.debug.progress.starting_debugger")) {
+            withBackgroundContext {
+                launchAzureFunctionsHost()
+            }
+        } ?: 0
 
-        // Show progress bar
-        ProgressManager.getInstance().run(
-                object : Task.Backgroundable(executionEnvironment.project, RiderAzureBundle.message("run_config.run_function_app.debug.progress.starting_debugger"), false) {
-                    override fun run(indicator: ProgressIndicator) {
-                        indicator.isIndeterminate = true
-
-                        SpinWait.spinUntil(lifetime, waitDuration) {
-                            processId != 0 || targetProcessHandler.isProcessTerminated
-                        }
-                    }
-                })
-
-        // Wait until we get a process ID (or the process terminates)
-        pumpMessages(waitDuration) {
-            processId != 0 || targetProcessHandler.isProcessTerminated
-        }
         if (targetProcessHandler.isProcessTerminated) {
             logger.warn("Azure Functions host process terminated before the debugger could attach.")
 
@@ -116,6 +101,7 @@ class AzureFunctionsIsolatedDebugProfile(
                     executionEnvironment.project,
                     RiderAzureBundle.message("run_config.run_function_app.debug.notification.title"),
                     RiderAzureBundle.message("run_config.run_function_app.debug.notification.isolated_worker_process_terminated"))
+            return createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu)
         }
         if (processId == 0) {
             logger.warn("Azure Functions host did not return isolated worker process id.")
@@ -125,6 +111,7 @@ class AzureFunctionsIsolatedDebugProfile(
                     executionEnvironment.project,
                     RiderAzureBundle.message("run_config.run_function_app.debug.notification.title"),
                     RiderAzureBundle.message("run_config.run_function_app.debug.notification.isolated_worker_pid_unspecified"))
+            return createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu)
         }
 
         // Get process info
@@ -140,7 +127,7 @@ class AzureFunctionsIsolatedDebugProfile(
 
         // Determine process architecture, and whether it is .NET / .NET Core
         val processExecutablePath = ParametersListUtil.parse(targetProcess.commandLine).firstOrNull()
-        val processArchitecture = getPlatformArchitecture(lifetime)
+        val processArchitecture = getPlatformArchitecture(lifetime, processId)
         val processTargetFramework = processExecutablePath?.let {
             DebuggerHelperHost.getInstance(executionEnvironment.project)
                     .getAssemblyTargetFramework(it, lifetime)
@@ -159,10 +146,10 @@ class AzureFunctionsIsolatedDebugProfile(
         }
     }
 
-    private suspend fun getPlatformArchitecture(lifetime: Lifetime): PlatformArchitecture {
+    private suspend fun getPlatformArchitecture(lifetime: Lifetime, pid: Int): PlatformArchitecture {
         if (SystemInfo.isWindows) {
             return DebuggerHelperHost.getInstance(executionEnvironment.project)
-                    .getProcessArchitecture(lifetime, processId)
+                    .getProcessArchitecture(lifetime, pid)
         }
 
         return when (CpuArch.CURRENT) {
@@ -173,7 +160,8 @@ class AzureFunctionsIsolatedDebugProfile(
         }
     }
 
-    private fun launchAzureFunctionsHost() {
+    private suspend fun launchAzureFunctionsHost(): Int? {
+        application.assertIsNonDispatchThread()
 
         val programParameters = ParametersListUtil.parse(dotNetExecutable.programParameterString)
 
@@ -184,12 +172,10 @@ class AzureFunctionsIsolatedDebugProfile(
 
         // We will need to read the worker process PID, so the debugger can later attach to it.
         //
-        // In typical scenarios, the PID is written to the process output,
-        // which we will read further down this method.
-        //
-        // However, there are cases where the PID is not printed to console
+        // We are using this file to read the PID,
         // (see https://github.com/Azure/azure-functions-dotnet-worker/issues/900).
-        // For those cases, we're adding a backup of writing the PID to a temporary file.
+        //
+        // Example contents: { "name":"dotnet-worker-startup", "workerProcessId" : 28460 }
 
         val tempPidFile = FileUtil.createTempFile(
                 File(FileUtil.getTempDirectory()),
@@ -221,56 +207,6 @@ class AzureFunctionsIsolatedDebugProfile(
         targetProcessHandler = TerminalProcessHandler(commandLine)
 
         logger.info("Starting functions host process with command line: $commandLineString")
-        targetProcessHandler.addProcessListener(object : ProcessAdapter() {
-
-            override fun processTerminated(event: ProcessEvent) = logger.info("Process terminated: $commandLineString")
-
-            override fun startNotified(event: ProcessEvent) {
-                logger.info("Started functions host process")
-                super.startNotified(event)
-            }
-
-            override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-                val processText = event.text.replace(controlCharsRegex, "")
-
-                // Typical approach: read PID from process output
-                if (processId == 0 &&
-                        processText.contains("Azure Functions .NET Worker (PID: ", ignoreCase = true) &&
-                        processText.contains(") initialized", ignoreCase = true)) {
-
-                    val pidFromLog = processText.substringAfter("PID: ")
-                            .dropWhile { !it.isDigit() }
-                            .takeWhile { it.isDigit() }
-                            .toInt()
-
-                    logger.info("Got functions isolated worker process id from console output.")
-                    logger.info("Functions isolated worker process id: $pidFromLog")
-                    processId = pidFromLog
-                }
-
-                // Case where the PID is emitted to the temporary file
-                if (processId == 0) {
-                    // Example contents: { "name":"dotnet-worker-startup", "workerProcessId" : 28460 }
-                    val pidFileJson = JsonUtils.readJsonFile(tempPidFile)
-                    if (pidFileJson != null) {
-                        if (pidFileJson.has("workerProcessId")) {
-                            val pidFromJson = pidFileJson.get("workerProcessId").asInt
-
-                            logger.info("Got functions isolated worker process id from JSON output.")
-                            logger.info("Functions isolated worker process id: $pidFromJson")
-                            processId = pidFromJson
-                        }
-                    }
-                }
-
-                // No need to keep listening when the PID is known
-                if (processId != 0) {
-                    targetProcessHandler.removeProcessListener(this)
-                }
-
-                super.onTextAvailable(event, outputType)
-            }
-        })
 
         processListeners.filterNotNull().forEach { targetProcessHandler.addProcessListener(it) }
 
@@ -288,6 +224,24 @@ class AzureFunctionsIsolatedDebugProfile(
         console.attachToProcess(targetProcessHandler)
 
         targetProcessHandler.startNotify()
+
+        var timeout = 0.milliseconds
+        while (timeout <= waitDuration) {
+            val pidFileJson = JsonUtils.readJsonFile(tempPidFile)
+            if (pidFileJson != null) {
+                if (pidFileJson.has("workerProcessId")) {
+                    val pidFromJson = pidFileJson.get("workerProcessId").asInt
+
+                    logger.info("Got functions isolated worker process id from JSON output.")
+                    logger.info("Functions isolated worker process id: $pidFromJson")
+                    return pidFromJson
+                }
+            }
+            delay(500)
+            timeout += 500.milliseconds
+        }
+
+        return null
     }
 
     override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler): ExecutionResult {
