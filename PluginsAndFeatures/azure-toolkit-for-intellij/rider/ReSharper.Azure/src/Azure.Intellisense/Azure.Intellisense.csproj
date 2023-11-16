@@ -8,7 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="JetBrains.Rider.SDK" Version="$(RiderSDKVersion)" />
-        <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="3.3.0">
+        <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="3.4.0">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

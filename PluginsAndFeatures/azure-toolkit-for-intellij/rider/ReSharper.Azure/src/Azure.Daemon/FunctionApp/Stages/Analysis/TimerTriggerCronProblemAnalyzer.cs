@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp.Stages.Analysis
             var expressionArgument = element.Arguments.First().Value;
             if (!expressionArgument.Type().IsString()) return;
 
-            var literal = (expressionArgument as ICSharpLiteralExpression)?.ConstantValue.Value as string;
+            var literal = (expressionArgument as ICSharpLiteralExpression)?.ConstantValue.StringValue;
             if (literal.IsEmpty()) return;
             
             if (literal.StartsWith("%") && literal.EndsWith("%") && literal.Length > 2) return;

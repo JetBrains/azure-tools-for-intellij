@@ -6,12 +6,12 @@ shortenReferences: True
 image: AzureFunctionsTrigger
 customProperties: Extension=cs, FileName=CosmosDbTrigger, ValidateFileName=True
 scopes: InAzureFunctionsCSharpProject;MustUseAzureFunctionsDefaultWorker
-parameterOrder: (HEADER), (NAMESPACE), (CLASS), DATABASEVALUE, COLLECTIONVALUE, (CONNECTIONVALUE)
+parameterOrder: (HEADER), (NAMESPACE), (CLASS), DATABASEVALUE, CONTAINERVALUE, (CONNECTIONVALUE)
 HEADER-expression: fileheader()
 NAMESPACE-expression: fileDefaultNamespace()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()
 DATABASEVALUE-expression: constant("databaseName")
-COLLECTIONVALUE-expression: constant("collectionName")
+CONTAINERVALUE-expression: constant("containerName")
 CONNECTIONVALUE-expression: constant("")
 ---
 
@@ -21,7 +21,6 @@ CONNECTIONVALUE-expression: constant("")
 $HEADER$using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Azure.Documents;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
@@ -33,16 +32,25 @@ namespace $NAMESPACE$
         [FunctionName("$CLASS$")]
         public static async Task RunAsync([CosmosDBTrigger(
             databaseName: "$DATABASEVALUE$",
-            collectionName: "$COLLECTIONVALUE$",
-            ConnectionStringSetting = "$CONNECTIONVALUE$",
-            LeaseCollectionName = "leases")]IReadOnlyList<Document> input, ILogger log)
+            containerName: "$CONTAINERVALUE$",
+            Connection = "$CONNECTIONVALUE$",
+            LeaseContainerName = "leases",
+            CreateLeaseContainerIfNotExists = true)]IReadOnlyList<ToDoItem> input,
+            ILogger log)
         {
             if (input != null && input.Count > 0)
             {
                 log.LogInformation("Documents modified " + input.Count);
-                log.LogInformation("First document Id " + input[0].Id);$END$
-            }
+                log.LogInformation("First document Id " + input[0].id);
+            }$END$
         }
+    }
+
+    // Customize the model with your own desired properties
+    public class ToDoItem
+    {
+        public string id { get; set; }
+        public string Description { get; set; }
     }
 }
 ```

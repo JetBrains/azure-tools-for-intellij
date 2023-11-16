@@ -7,6 +7,7 @@
         <h4>Added:</h4>
         <ul>
           <li>Compatibility with Rider 2023.3</li>
+          <li>Azure Functions: Update file templates (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/730">#730</a>)</li>
         </ul>
         <h4>Fixed bugs:</h4>
         <ul>
