@@ -19,19 +19,27 @@ CONNECTIONVALUE-expression: constant("")
 ```
 $HEADER$using System;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
 namespace $NAMESPACE$
 {
-    public static class $CLASS$
+    public class $CLASS$
     {
-        [Function("$CLASS$")]
-        public static void Run([BlobTrigger("$PATHVALUE$/{name}", Connection = "$CONNECTIONVALUE$")] string myBlob, string name,
-            FunctionContext context)
+        private readonly ILogger<$CLASS$> _logger;
+
+        public $CLASS$(ILogger<$CLASS$> logger)
         {
-            var logger = context.GetLogger("BlobTriggerCSharp");
-            logger.LogInformation($"C# Blob trigger function Processed blob\n Name: {name} \n Data: {myBlob}");$END$
+            _logger = logger;
+        }
+
+        [Function(nameof($CLASS$))]
+        public async Task Run([BlobTrigger("$PATHVALUE$/{name}", Connection = "$CONNECTIONVALUE$")] Stream stream, string name)
+        {
+            using var blobStreamReader = new StreamReader(stream);
+            var content = await blobStreamReader.ReadToEndAsync();
+            _logger.LogInformation($"C# Blob trigger function Processed blob\n Name: {name} \n Data: {content}");$END$
         }
     }
 }

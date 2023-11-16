@@ -24,14 +24,20 @@ using Microsoft.Extensions.Logging;
 
 namespace $NAMESPACE$
 {
-    public static class $CLASS$
+    public class $CLASS$
     {
+        private readonly ILogger _logger;
+
+        public $CLASS$(ILoggerFactory loggerFactory)
+        {
+            _logger = loggerFactory.CreateLogger<$CLASS$>();
+        }
+        
         [Function("$CLASS$")]
-        public static HttpResponseData Run([HttpTrigger(AuthorizationLevel.$AUTHLEVELVALUE$, "get", "post")] HttpRequestData req,
+        public HttpResponseData Run([HttpTrigger(AuthorizationLevel.$AUTHLEVELVALUE$, "get", "post")] HttpRequestData req,
             FunctionContext executionContext)
         {
-            var logger = executionContext.GetLogger("$CLASS$");
-            logger.LogInformation("C# HTTP trigger function processed a request.");
+            _logger.LogInformation("C# HTTP trigger function processed a request.");
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "text/plain; charset=utf-8");

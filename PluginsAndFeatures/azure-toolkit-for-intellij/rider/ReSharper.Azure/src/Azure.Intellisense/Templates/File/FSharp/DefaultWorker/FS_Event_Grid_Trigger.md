@@ -21,9 +21,9 @@ $HEADER$namespace $NAMESPACE$
 
 open Microsoft.Azure.WebJobs
 open Microsoft.Azure.WebJobs.Host
-open Microsoft.Azure.EventGrid.Models
 open Microsoft.Azure.WebJobs.Extensions.EventGrid
 open Microsoft.Extensions.Logging
+open Azure.Messaging.EventGrid
 
 module $CLASS$ =
     [<FunctionName("$CLASS$")>]

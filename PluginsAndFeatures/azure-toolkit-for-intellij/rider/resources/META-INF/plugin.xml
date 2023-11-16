@@ -29,6 +29,7 @@
           <li>Azure Functions: Support debugging .NET 4.8 isolated worker projects (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/691">#691</a>)</li>
           <li>Update Azure logo for Rider's Azure Toolkit icons (<a href="https://youtrack.jetbrains.com/issue/RIDER-78226">RIDER-78226</a>)</li>
           <li>Azurite - Reference Azurite executable directly (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/712">#712</a> and <a href="https://youtrack.jetbrains.com/issue/RIDER-98716">RIDER-98716</a>)</li>
+          <li>Azure Functions: Update file templates (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/730">#730</a>)</li>
         </ul>
         <h4>Fixed bugs:</h4>
         <ul>
