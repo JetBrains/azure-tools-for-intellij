@@ -34,10 +34,10 @@ import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.withBackgroundProgress
 import com.intellij.openapi.rd.util.withBackgroundContext
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.util.application
 import com.intellij.util.execution.ParametersListUtil
 import com.intellij.util.system.CpuArch
