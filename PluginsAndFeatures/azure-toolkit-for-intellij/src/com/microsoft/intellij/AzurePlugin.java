@@ -20,7 +20,7 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleTypeId;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.startup.StartupActivity;
+import com.intellij.openapi.startup.ProjectActivity;
 import com.intellij.openapi.startup.StartupManager;
 import com.intellij.util.ExceptionUtil;
 import com.intellij.util.PlatformUtils;
@@ -30,6 +30,7 @@ import com.microsoft.applicationinsights.preference.ApplicationInsightsResource;
 import com.microsoft.applicationinsights.preference.ApplicationInsightsResourceRegistry;
 import com.microsoft.azuretools.azurecommons.deploy.DeploymentEventArgs;
 import com.microsoft.azuretools.azurecommons.deploy.DeploymentEventListener;
+import com.microsoft.azuretools.azurecommons.helpers.Nullable;
 import com.microsoft.azuretools.azurecommons.helpers.StringHelper;
 import com.microsoft.azuretools.azurecommons.util.*;
 import com.microsoft.azuretools.azurecommons.xmlhandling.DataOperations;
@@ -44,6 +45,8 @@ import com.microsoft.intellij.ui.libraries.AzureLibrary;
 import com.microsoft.intellij.ui.messages.AzureBundle;
 import com.microsoft.intellij.util.PluginHelper;
 import com.microsoft.intellij.util.PluginUtil;
+import kotlin.Unit;
+import kotlin.coroutines.Continuation;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Document;
@@ -61,7 +64,7 @@ import java.util.zip.ZipInputStream;
 import static com.microsoft.azuretools.telemetry.TelemetryConstants.*;
 import static com.microsoft.intellij.ui.messages.AzureBundle.message;
 
-public class AzurePlugin implements StartupActivity.DumbAware {
+public class AzurePlugin implements ProjectActivity {
 
     private static final Logger LOG = Logger.getInstance("#com.microsoft.intellij.AzurePlugin");
     public static final String PLUGIN_VERSION = CommonConst.PLUGIN_VERISON;
@@ -90,8 +93,10 @@ public class AzurePlugin implements StartupActivity.DumbAware {
 
     private Boolean firstInstallationByVersion;
 
+    @Nullable
     @Override
-    public void runActivity(@NotNull Project project) {
+    public Object execute(@com.microsoft.azuretools.azurecommons.helpers.NotNull final Project project,
+                          @com.microsoft.azuretools.azurecommons.helpers.NotNull final Continuation<? super Unit> continuation) {
         this.azureSettings = AzureSettings.getSafeInstance(project);
         String hasMac = GetHashMac.getHashMac();
         this.installationID = StringUtils.isNotEmpty(hasMac) ? hasMac : GetHashMac.hash(PermanentInstallationID.get());
@@ -122,6 +127,8 @@ public class AzurePlugin implements StartupActivity.DumbAware {
                 LOG.error(AzureBundle.message("expErlStrtUp"), e);
             }
         }
+
+        return Unit.INSTANCE;
     }
 
     private void initializeWhatsNew(Project project) {

@@ -7,11 +7,10 @@
 package org.jetbrains.icons
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.StartupActivity
+import com.intellij.openapi.startup.ProjectActivity
 
-internal class RiderIconsPatcherRegistrar : StartupActivity {
-
-    override fun runActivity(project: Project) {
+internal class RiderIconsPatcherRegistrar : ProjectActivity {
+    override suspend fun execute(project: Project) {
         RiderIconsPatcher.install()
     }
 }

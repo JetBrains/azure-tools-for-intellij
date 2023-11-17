@@ -348,7 +348,6 @@
     <postStartupActivity implementation="com.microsoft.intellij.AzureRiderPlugin" />
     <postStartupActivity implementation="org.jetbrains.icons.RiderIconsPatcherRegistrar"/>
     <postStartupActivity implementation="org.jetbrains.plugins.azure.functions.TryRefreshAzureCoreToolsProjectTemplatesActivity" order="last" />
-    <postStartupActivity implementation="org.jetbrains.plugins.azure.functions.CleanupDeprecatedAzureCoreToolsConfigurationActivity" order="last" />
 
     <projectTemplateProvider implementation="org.jetbrains.plugins.azure.functions.projectTemplating.FunctionsCoreToolsTemplatesProvider" order="first"/>
 
@@ -389,6 +388,8 @@
     <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.WebJobs" displayName="Azure Toolkit"/>
     <dependencySupport kind="dotnet" coordinate="Microsoft.Identity.Client" displayName="Azure Toolkit"/>
     <dependencySupport kind="dotnet" coordinate="Microsoft.Identity.Web" displayName="Azure Toolkit"/>
+
+    <errorHandler implementation="com.intellij.diagnostic.JetBrainsMarketplaceErrorReportSubmitter"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.microsoft.intellij">
