@@ -16,6 +16,7 @@
         <ul>
           <li>Azure Web App/Function App Deployments not working without solution file (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/681">#681</a>)</li>
           <li>When publishing web/function app, not al supported regions are shown (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/708">#708</a>)</li>
+          <li>Azure Functions: azure function worker SDK 1.16.0 - functions do not startup in debugger (<a href="https://youtrack.jetbrains.com/issue/RIDER-101681">RIDER-101681</a>)</li>
         </ul>
     </html>
     ]]>
