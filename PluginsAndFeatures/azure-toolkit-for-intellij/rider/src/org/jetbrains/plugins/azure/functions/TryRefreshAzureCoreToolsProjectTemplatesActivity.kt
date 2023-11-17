@@ -23,12 +23,11 @@
 package org.jetbrains.plugins.azure.functions
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.StartupActivity
+import com.intellij.openapi.startup.ProjectActivity
 import org.jetbrains.plugins.azure.functions.projectTemplating.FunctionsCoreToolsTemplateManager
 
-class TryRefreshAzureCoreToolsProjectTemplatesActivity : StartupActivity {
-
-    override fun runActivity(project: Project) {
+class TryRefreshAzureCoreToolsProjectTemplatesActivity : ProjectActivity {
+    override suspend fun execute(project: Project) {
         FunctionsCoreToolsTemplateManager.tryReload()
     }
 }
