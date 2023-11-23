@@ -120,6 +120,7 @@ task buildReSharperPlugin {
             "**/bin/$BuildConfiguration/net472/JetBrains.ReSharper.Azure*.dll",
             "**/bin/$BuildConfiguration/net472/JetBrains.ReSharper.Azure*.pdb",
             "Azure.Daemon/bin/$BuildConfiguration/net472/NCrontab.Signed.dll",
+            "Azure.Daemon/bin/$BuildConfiguration/net472/CronExpressionDescriptor.dll",
     ]
 
     def srcPath = "${resharperPluginPath.absolutePath}/src"

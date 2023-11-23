@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 JetBrains s.r.o.
+// Copyright (c) 2020-2023 JetBrains s.r.o.
 //
 // All rights reserved.
 //
@@ -19,13 +19,17 @@
 // SOFTWARE.
 
 using System;
+using CronExpressionDescriptor;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Azure.Daemon.Errors.FunctionAppErrors;
+using JetBrains.ReSharper.Azure.Daemon.FunctionApp.InlayHints;
 using JetBrains.ReSharper.Azure.Psi.FunctionApp;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
+using Microsoft.CodeAnalysis.Elfie.Extensions;
 using NCrontab;
 
 namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp.Stages.Analysis
@@ -53,9 +57,10 @@ namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp.Stages.Analysis
     /// </summary>
     [ElementProblemAnalyzer(typeof(IAttribute), HighlightingTypes = new[]
     {
-        typeof(TimerTriggerCronExpressionError)
+        typeof(TimerTriggerCronExpressionError),
+        typeof(TimerTriggerCronExpressionHint)
     })]
-    public class TimerTriggerCronProblemAnalyzer : ElementProblemAnalyzer<IAttribute>
+    public class TimerTriggerCronExpressionAnalyzer : ElementProblemAnalyzer<IAttribute>
     {
         protected override void Run(IAttribute element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
@@ -78,46 +83,71 @@ namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp.Stages.Analysis
             var mayBeTimeSpanSchedule = literal.Contains(":");
             if (mayBeTimeSpanSchedule)
             {
-                if (!IsValidTimeSpanSchedule(literal, out var errorMessage))
+                if (IsValidTimeSpanSchedule(literal, out var errorMessage, out var description))
+                {
+                    consumer.AddHighlighting(new TimerTriggerCronExpressionHint(description, expressionArgument, expressionArgument.GetDocumentEndOffset()));
+                }
+                else if (!string.IsNullOrEmpty(description))
                 {
                     consumer.AddHighlighting(new TimerTriggerCronExpressionError(expressionArgument, errorMessage));
                 }
             }
-            else if (!IsValidCrontabSchedule(literal, out var errorMessage))
+            else
             {
-                consumer.AddHighlighting(new TimerTriggerCronExpressionError(expressionArgument, errorMessage));
+                if (IsValidCrontabSchedule(literal, out var errorMessage, out var description))
+                {
+                    consumer.AddHighlighting(new TimerTriggerCronExpressionHint(description, expressionArgument, expressionArgument.GetDocumentEndOffset()));
+                }
+                else if (!string.IsNullOrEmpty(description))
+                {
+                    consumer.AddHighlighting(new TimerTriggerCronExpressionError(expressionArgument, errorMessage));
+                }
             }
         }
 
-        private bool IsValidCrontabSchedule(string literal, [CanBeNull] out string errorMessage)
+        private bool IsValidCrontabSchedule(
+            string literal,
+            [CanBeNull] out string errorMessage,
+            [CanBeNull] out string description)
         {
             try
             {
                 var normalizedLiteral = NormalizeCronSchedule(literal);
-                CrontabSchedule.Parse(normalizedLiteral, new CrontabSchedule.ParseOptions {IncludingSeconds = true});
+                CrontabSchedule.Parse(normalizedLiteral, new CrontabSchedule.ParseOptions { IncludingSeconds = true });
                 errorMessage = null;
+                try
+                {
+                    description = ExpressionDescriptor.GetDescription(normalizedLiteral);
+                }
+                catch (Exception)
+                {
+                    description = null;
+                }
                 return true;
             }
             catch (CrontabException e)
             {
                 errorMessage = e.Message;
+                description = null;
                 return false;
             }
         }
         
-        private bool IsValidTimeSpanSchedule(string literal, out string errorMessage)
+        private bool IsValidTimeSpanSchedule(string literal, [CanBeNull] out string errorMessage, [CanBeNull] out string description)
         {
             // See https://github.com/Azure/azure-webjobs-sdk-extensions/blob/dev/src/WebJobs.Extensions/Extensions/Timers/Scheduling/TimerSchedule.cs#L77
             try
             {
                 // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-                TimeSpan.Parse(literal);
+                var timeSpan = TimeSpan.Parse(literal);
                 errorMessage = null;
+                description = $"Every {timeSpan.ToFriendlyString()}";
                 return true;
             }
             catch (FormatException e)
             {
                 errorMessage = e.Message;
+                description = null;
                 return false;
             }
         }
