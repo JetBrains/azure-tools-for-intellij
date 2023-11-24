@@ -72,8 +72,8 @@ namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp.Stages.Analysis
 
             if (!FunctionAppFinder.IsTimerTriggerAttribute(typeElement)) return;
 
-            var expressionArgument = element.Arguments.First().Value;
-            if (!expressionArgument.Type().IsString()) return;
+            var expressionArgument = element.Arguments.FirstOrDefault()?.Value;
+            if (expressionArgument == null || !expressionArgument.Type().IsString()) return;
 
             var literal = (expressionArgument as ICSharpLiteralExpression)?.ConstantValue.StringValue;
             if (literal.IsEmpty()) return;
