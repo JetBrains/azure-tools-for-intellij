@@ -27,6 +27,7 @@
         <ul>
           <li>Compatibility with Rider 2023.3</li>
           <li>Azure Functions: Update file templates (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/730">#730</a>)</li>
+          <li>Azure Functions: Inlay Hints with Timer Trigger Cron description (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/740">#740</a>)</li>
         </ul>
         <h4>Fixed bugs:</h4>
         <ul>
