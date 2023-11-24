@@ -83,22 +83,22 @@ namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp.Stages.Analysis
             var mayBeTimeSpanSchedule = literal.Contains(":");
             if (mayBeTimeSpanSchedule)
             {
-                if (IsValidTimeSpanSchedule(literal, out var errorMessage, out var description))
+                if (IsValidTimeSpanSchedule(literal, out var errorMessage, out var description) && !string.IsNullOrEmpty(description))
                 {
                     consumer.AddHighlighting(new TimerTriggerCronExpressionHint(description, expressionArgument, expressionArgument.GetDocumentEndOffset()));
                 }
-                else if (!string.IsNullOrEmpty(description))
+                else
                 {
                     consumer.AddHighlighting(new TimerTriggerCronExpressionError(expressionArgument, errorMessage));
                 }
             }
             else
             {
-                if (IsValidCrontabSchedule(literal, out var errorMessage, out var description))
+                if (IsValidCrontabSchedule(literal, out var errorMessage, out var description) && !string.IsNullOrEmpty(description))
                 {
                     consumer.AddHighlighting(new TimerTriggerCronExpressionHint(description, expressionArgument, expressionArgument.GetDocumentEndOffset()));
                 }
-                else if (!string.IsNullOrEmpty(description))
+                else
                 {
                     consumer.AddHighlighting(new TimerTriggerCronExpressionError(expressionArgument, errorMessage));
                 }
