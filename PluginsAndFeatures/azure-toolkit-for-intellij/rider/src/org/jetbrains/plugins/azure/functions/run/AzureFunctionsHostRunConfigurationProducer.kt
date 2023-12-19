@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2022 JetBrains s.r.o.
+ * Copyright (c) 2020-2023 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -23,6 +23,7 @@
 package org.jetbrains.plugins.azure.functions.run
 
 import com.intellij.execution.actions.ConfigurationContext
+import com.intellij.execution.actions.ConfigurationFromContext
 import com.intellij.execution.actions.LazyRunConfigurationProducer
 import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.openapi.util.Ref
@@ -81,5 +82,9 @@ class AzureFunctionsHostRunConfigurationProducer
         }
 
         return true
+    }
+
+    override fun shouldReplace(self: ConfigurationFromContext, other: ConfigurationFromContext): Boolean {
+        return !other.isProducedBy(AzureFunctionsHostRunConfigurationProducer::class.java)
     }
 }
