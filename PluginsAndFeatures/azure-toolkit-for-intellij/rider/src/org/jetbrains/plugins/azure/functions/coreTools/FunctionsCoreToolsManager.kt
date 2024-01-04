@@ -297,7 +297,7 @@ object FunctionsCoreToolsManager {
                     "Azure Functions version: '${azureFunctionsVersion.lowercase()}'; " +
                     "Download path: ${downloadFolderForTagRelease.path}")
 
-            return downloadFolderForTagRelease.path
+            return downloadFolderForTagRelease.absolutePath
         }
 
         logger.warn("Could not determine existing Azure Functions Core Tools path. " +
