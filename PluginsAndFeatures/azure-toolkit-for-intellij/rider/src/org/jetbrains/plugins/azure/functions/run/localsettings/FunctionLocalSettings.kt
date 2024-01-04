@@ -38,6 +38,6 @@ data class FunctionValuesModel(
 data class FunctionHostModel(val localHttpPort: Int?, val cors: String?, val corsCredentials: Boolean?)
 
 enum class FunctionsWorkerRuntime(val value: String) {
-    DotNetDefault("dotnet"),
+    DotNetDefault("DOTNET"),
     DotNetIsolated("DOTNET-ISOLATED")
 }
