@@ -39,5 +39,5 @@ data class FunctionHostModel(val localHttpPort: Int?, val cors: String?, val cor
 
 enum class FunctionsWorkerRuntime(val value: String) {
     DotNetDefault("dotnet"),
-    DotNetIsolated("dotnet-isolated")
+    DotNetIsolated("DOTNET-ISOLATED")
 }
