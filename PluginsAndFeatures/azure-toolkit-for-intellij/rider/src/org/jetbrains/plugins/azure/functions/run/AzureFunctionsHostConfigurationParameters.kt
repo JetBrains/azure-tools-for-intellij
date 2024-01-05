@@ -55,6 +55,7 @@ import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsInfo
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsInfoProvider
 import java.io.File
 import java.nio.file.Path
+import kotlin.io.path.absolutePathString
 
 open class AzureFunctionsHostConfigurationParameters(
         project: Project,
@@ -137,7 +138,7 @@ open class AzureFunctionsHostConfigurationParameters(
                 }
 
         return DotNetExecutable(
-                exePath = coreToolsInfo.coreToolsExecutable,
+                exePath = coreToolsInfo.coreToolsExecutable.absolutePathString(),
                 projectTfm = projectOutput?.tfm,
                 workingDirectory = effectiveWorkingDirectory,
                 programParameterString = effectiveArguments,
@@ -147,7 +148,7 @@ open class AzureFunctionsHostConfigurationParameters(
                 environmentVariables = envs,
                 isPassParentEnvs = isPassParentEnvs,
                 onBeforeProcessStarted = startBrowserAction,
-                assemblyToDebug = coreToolsInfo.coreToolsExecutable,
+                assemblyToDebug = coreToolsInfo.coreToolsExecutable.absolutePathString(),
                 runtimeArguments = runtimeArguments,
                 executeAsIs = true)
     }

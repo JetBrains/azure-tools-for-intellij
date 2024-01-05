@@ -38,6 +38,7 @@ import com.jetbrains.rider.runtime.dotNetCore.DotNetCoreRuntimeType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsInfo
 import org.jetbrains.plugins.azure.functions.run.localsettings.FunctionsWorkerRuntime
+import kotlin.io.path.absolutePathString
 
 class AzureFunctionsDotNetCoreRuntime(val coreToolsInfo: FunctionsCoreToolsInfo, val workerRuntime: FunctionsWorkerRuntime)
     : DotNetRuntime(DotNetCoreRuntimeType), SuspendedAttachableDotNetRuntime {
@@ -45,8 +46,17 @@ class AzureFunctionsDotNetCoreRuntime(val coreToolsInfo: FunctionsCoreToolsInfo,
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun createDebugState(dotNetExecutable: DotNetExecutable, executionEnvironment: ExecutionEnvironment) : IDotNetDebugProfileState {
         return when (workerRuntime) {
-            FunctionsWorkerRuntime.DotNetDefault -> DotNetCoreDebugProfile(DotNetCoreRuntime(coreToolsInfo.coreToolsExecutable), dotNetExecutable, executionEnvironment, coreToolsInfo.coreToolsExecutable)
-            FunctionsWorkerRuntime.DotNetIsolated -> AzureFunctionsIsolatedDebugProfile(dotNetExecutable, this, executionEnvironment)
+            FunctionsWorkerRuntime.DotNetDefault -> DotNetCoreDebugProfile(
+                    DotNetCoreRuntime(coreToolsInfo.coreToolsExecutable.absolutePathString()),
+                    dotNetExecutable,
+                    executionEnvironment,
+                    coreToolsInfo.coreToolsExecutable.absolutePathString()
+            )
+            FunctionsWorkerRuntime.DotNetIsolated -> AzureFunctionsIsolatedDebugProfile(
+                    dotNetExecutable,
+                    this,
+                    executionEnvironment
+            )
         }
     }
 
@@ -61,7 +71,7 @@ class AzureFunctionsDotNetCoreRuntime(val coreToolsInfo: FunctionsCoreToolsInfo,
                     commandLine.parametersList[0] != exePath) {
                 commandLine.parametersList.prepend(exePath)
             }
-            commandLine.exePath = coreToolsInfo.coreToolsExecutable
+            commandLine.exePath = coreToolsInfo.coreToolsExecutable.absolutePathString()
         }
     }
 

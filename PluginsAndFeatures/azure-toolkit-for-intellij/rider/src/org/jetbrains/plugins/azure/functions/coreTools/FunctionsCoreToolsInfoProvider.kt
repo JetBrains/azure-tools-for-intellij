@@ -30,8 +30,9 @@ import com.intellij.openapi.util.registry.Registry
 import com.microsoft.azure.toolkit.intellij.function.runner.core.FunctionCliResolver
 import com.microsoft.intellij.configuration.AzureRiderSettings
 import java.io.File
+import java.nio.file.Path
 
-data class FunctionsCoreToolsInfo(val coreToolsPath: String, var coreToolsExecutable: String)
+data class FunctionsCoreToolsInfo(val coreToolsPath: Path, var coreToolsExecutable: Path)
 
 object FunctionsCoreToolsInfoProvider {
 
@@ -114,12 +115,7 @@ object FunctionsCoreToolsInfoProvider {
                 project, azureFunctionsVersion, Registry.get("azure.function_app.core_tools.feed.url").asString(), allowDownload)
                 ?: return null
 
-        val coreToolsInfoFromFeed = resolveFromPath(File(coreToolsPathFromFeed))
-        if (coreToolsInfoFromFeed != null) {
-            return coreToolsInfoFromFeed
-        }
-
-        return null
+        return resolveFromPath(File(coreToolsPathFromFeed))
     }
 
     private fun resolveFromPath(funcCoreToolsPath: File): FunctionsCoreToolsInfo? {
@@ -145,7 +141,7 @@ object FunctionsCoreToolsInfoProvider {
             }
         }
 
-        return FunctionsCoreToolsInfo(patchedFuncCoreToolsPath.path, coreToolsExecutablePath.path)
+        return FunctionsCoreToolsInfo(patchedFuncCoreToolsPath.toPath(), coreToolsExecutablePath.toPath())
     }
 
     private fun normalizeCoreToolsPath(funcCoreToolsPath: File): File {
