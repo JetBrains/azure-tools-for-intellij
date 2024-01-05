@@ -57,3 +57,4 @@ JetBrains [opened a pull request](https://github.com/Microsoft/azure-tools-for-j
 ## Contributing
 
 Please see the [contribution instructions](CONTRIBUTING.md) if you wish to build the plugin from source.
+ 

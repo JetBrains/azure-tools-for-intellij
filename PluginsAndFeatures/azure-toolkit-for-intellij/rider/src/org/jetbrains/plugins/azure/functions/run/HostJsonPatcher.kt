@@ -57,20 +57,34 @@ object HostJsonPatcher {
         val functions = functionNames
                 .map { it.trim() }
                 .filter { it.isNotBlank() }
-
-        if (functions.isEmpty()) {
-            logger.info("Skip patching " + hostJsonFile.absolutePath + " - no function names were specified.")
-            return
-        }
+                .sortedBy { it }
 
         logger.info("Patching " + hostJsonFile.absolutePath + " with function names: ${functions.joinToString(", ")}")
+
         try {
             val gson = GsonBuilder().setPrettyPrinting().create()
             val hostJson = gson.fromJson(hostJsonFile.readText(), JsonElement::class.java).asJsonObject
 
-            val functionsArray = JsonArray()
-            functions.forEach { functionsArray.add(JsonPrimitive(it)) }
-            hostJson.add(FUNCTION_PROPERTY_NAME, functionsArray)
+            val existingFunctionsArray = hostJson.getAsJsonArray(FUNCTION_PROPERTY_NAME)
+
+            if (existingFunctionsArray == null) {
+                if (functions.isEmpty()) return
+
+                val functionsArray = JsonArray()
+                functions.forEach { functionsArray.add(JsonPrimitive(it)) }
+                hostJson.add(FUNCTION_PROPERTY_NAME, functionsArray)
+            } else {
+                val existingFunctions = existingFunctionsArray.map { it.asString }.sortedBy { it }.toList()
+                if (functions == existingFunctions) return
+
+                if (functions.isNotEmpty()) {
+                    val functionsArray = JsonArray()
+                    functions.forEach { functionsArray.add(JsonPrimitive(it)) }
+                    hostJson.add(FUNCTION_PROPERTY_NAME, functionsArray)
+                } else {
+                    hostJson.remove(FUNCTION_PROPERTY_NAME)
+                }
+            }
 
             hostJsonFile.writeText(gson.toJson(hostJson))
         } catch (e: JsonParseException) {
