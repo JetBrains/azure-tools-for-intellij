@@ -29,6 +29,8 @@ import com.jetbrains.rider.projectView.actions.projectTemplating.backend.ReSharp
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsConstants
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsInfoProvider
 import java.io.File
+import kotlin.io.path.exists
+import kotlin.io.path.listDirectoryEntries
 
 object FunctionsCoreToolsTemplateManager {
 
@@ -57,24 +59,27 @@ object FunctionsCoreToolsTemplateManager {
 
         // Add available templates
         val templateFolders = listOf(
-                File(coreToolsInfo.coreToolsPath).resolve("templates"), // Default worker
-                File(coreToolsInfo.coreToolsPath).resolve("templates").resolve("net5-isolated"), // Isolated worker - .NET 5
-                File(coreToolsInfo.coreToolsPath).resolve("templates").resolve("net6-isolated"), // Isolated worker - .NET 6
-                File(coreToolsInfo.coreToolsPath).resolve("templates").resolve("net-isolated")   // Isolated worker - .NET 5 - .NET 8
+                coreToolsInfo.coreToolsPath.resolve("templates"), // Default worker
+                coreToolsInfo.coreToolsPath.resolve("templates").resolve("net5-isolated"), // Isolated worker - .NET 5
+                coreToolsInfo.coreToolsPath.resolve("templates").resolve("net6-isolated"), // Isolated worker - .NET 6
+                coreToolsInfo.coreToolsPath.resolve("templates").resolve("net-isolated")   // Isolated worker - .NET 5 - .NET 8
         ).filter { it.exists() }
 
         for (templateFolder in templateFolders) {
             try {
-                val templateFiles = templateFolder.listFiles { f: File? -> isFunctionsProjectTemplate(f) }
-                        ?: emptyArray<File>()
+                val templateFiles = templateFolder.listDirectoryEntries()
+                        .asSequence()
+                        .map { it.toFile() }
+                        .sortedBy { isFunctionsProjectTemplate(it) }
+                        .toList()
 
-                logger.info("Found ${templateFiles.size} function template(s) in ${templateFolder.path}")
+                logger.info("Found ${templateFiles.size} function template(s) in $templateFolder")
 
                 templateFiles.forEach { file ->
                     ReSharperProjectTemplateProvider.addUserTemplateSource(file)
                 }
             } catch (e: Exception) {
-                logger.error("Could not register project templates from ${templateFolder.path}", e)
+                logger.error("Could not register project templates from $templateFolder", e)
             }
         }
     }

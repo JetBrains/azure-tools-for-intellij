@@ -30,6 +30,7 @@ import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.model.debuggerWorker.DotNetCoreAttachSuspendedStartInfo
 import com.jetbrains.rider.run.dotNetCore.DotNetCoreAttachProfileState
 import com.jetbrains.rider.runtime.RunningAssemblyInfo
+import kotlin.io.path.absolutePathString
 
 class AzureFunctionsDotNetCoreAttachSuspendedProfileState(
         private val runtime: AzureFunctionsDotNetCoreRuntime,
@@ -43,7 +44,7 @@ class AzureFunctionsDotNetCoreAttachSuspendedProfileState(
 
     override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase =
         DotNetCoreAttachSuspendedStartInfo(
-                dotNetCoreRuntimeExecutable = runtime.coreToolsInfo.coreToolsExecutable,
+                dotNetCoreRuntimeExecutable = runtime.coreToolsInfo.coreToolsExecutable.absolutePathString(),
                 processId = processInfo.pid,
                 threadId = runningAssemblyInfo.threadId,
                 assemblyPath = runningAssemblyInfo.executableAssemblyPath
