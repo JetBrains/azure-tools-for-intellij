@@ -24,10 +24,10 @@ package org.jetbrains.plugins.azure.functions.run.localsettings
 
 import com.intellij.json.JsonUtil
 import com.intellij.json.psi.*
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Computable
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.application
 import org.jetbrains.plugins.azure.util.JsonParser.findBooleanProperty
 import org.jetbrains.plugins.azure.util.JsonParser.findNumberProperty
 import org.jetbrains.plugins.azure.util.JsonParser.findStringProperty
@@ -52,14 +52,16 @@ object FunctionLocalSettingsParser {
     const val OBJECT_CONNECTION_STRINGS = "ConnectionStrings"
 
     fun readLocalSettingsJsonFrom(virtualFile: VirtualFile, project: Project): FunctionLocalSettings? {
-        val jsonFile = ApplicationManager.getApplication().runReadAction(Computable {
+        val jsonFile = application.runReadAction(Computable {
             jsonFileFromVirtualFile(virtualFile, project)
         }) ?: return null
 
-        return readFunctionLocalSettingsFrom(jsonFile)
+        return application.runReadAction(Computable {
+            readFunctionLocalSettingsFrom(jsonFile)
+        })
     }
 
-    fun readFunctionLocalSettingsFrom(jsonFile: JsonFile): FunctionLocalSettings? {
+    private fun readFunctionLocalSettingsFrom(jsonFile: JsonFile): FunctionLocalSettings? {
         val topLevelObject = JsonUtil.getTopLevelObject(jsonFile) ?: return null
 
         val isEncrypted = findBooleanProperty(topLevelObject, PROPERTY_IS_ENCRYPTED)

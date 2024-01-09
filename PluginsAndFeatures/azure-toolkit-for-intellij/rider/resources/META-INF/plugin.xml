@@ -341,6 +341,7 @@
     <stepsBeforeRunProvider implementation="org.jetbrains.plugins.azure.functions.buildTasks.BuildFunctionsProjectBeforeRunTaskProvider"/>
     <configurationType implementation="org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostConfigurationType"/>
     <runConfigurationProducer implementation="org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostRunConfigurationProducer"/>
+    <programRunner implementation="org.jetbrains.plugins.azure.functions.run.AzureFunctionsHostProgramRunner"/>
 
     <registryKey key="azure.function_app.core_tools.feed.enabled"
                  defaultValue="true"

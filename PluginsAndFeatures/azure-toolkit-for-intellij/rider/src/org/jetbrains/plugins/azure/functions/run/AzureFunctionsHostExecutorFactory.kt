@@ -28,7 +28,9 @@ import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.diagnostic.Logger
-import com.jetbrains.rider.run.configurations.IExecutorFactory
+import com.intellij.openapi.rd.util.withBackgroundContext
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.run.configurations.AsyncExecutorFactory
 import com.jetbrains.rider.runtime.msNet.MsNetRuntime
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsInfoProvider
 import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsMsBuild
@@ -38,13 +40,13 @@ import java.io.File
 
 class AzureFunctionsHostExecutorFactory(
         private val parameters: AzureFunctionsHostConfigurationParameters
-) : IExecutorFactory {
+) : AsyncExecutorFactory {
 
     companion object {
         private val logger = Logger.getInstance(AzureFunctionsHostExecutorFactory::class.java)
     }
 
-    override fun create(executorId: String, environment: ExecutionEnvironment): RunProfileState {
+    override suspend fun create(executorId: String, environment: ExecutionEnvironment, lifetime: Lifetime): RunProfileState {
 
         // Determine project kind
         val projectKind = parameters.projectKind
@@ -67,9 +69,11 @@ class AzureFunctionsHostExecutorFactory(
 
         // Determine worker runtime (default, isolated)
         logger.debug("Determine worker runtime from local.settings.json")
-        val functionLocalSettings = FunctionLocalSettingsUtil.readFunctionLocalSettings(
-                project = parameters.project,
-                basePath = File(parameters.projectFilePath).parent)
+        val functionLocalSettings = withBackgroundContext {
+            FunctionLocalSettingsUtil.readFunctionLocalSettings(
+                    project = parameters.project,
+                    basePath = File(parameters.projectFilePath).parent)
+        }
         val workerRuntime = functionLocalSettings?.values?.workerRuntime ?: FunctionsWorkerRuntime.DotNetDefault
         logger.info("Worker runtime: $workerRuntime")
 
