@@ -27,57 +27,92 @@ import com.intellij.execution.process.ColoredProcessHandler
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.services.ServiceEventListener
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.Key
+import com.intellij.util.application
 import com.intellij.util.io.BaseOutputReader
+import com.jetbrains.rd.platform.util.idea.LifetimedService
+import com.jetbrains.rd.util.lifetime.SequentialLifetimes
 import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 
-class AzuriteService : Disposable {
+@Service(Service.Level.APP)
+class AzuriteService : LifetimedService() {
+    companion object {
+        fun getInstance() = service<AzuriteService>()
+        private val logger = logger<AzuriteService>()
+    }
 
-    private val logger = Logger.getInstance(AzuriteService::class.java)
+    private val sessionLifetimes = SequentialLifetimes(serviceLifetime)
+
+    private val sessionStarted = AtomicBoolean(false)
+    var session: AzuriteSession = AzuriteNotStartedSession()
+        private set
 
     var processHandler: ColoredProcessHandler? = null
-        get() = field
-        private set(value) {
-            field = value
-        }
+        private set
 
     var workspace: String? = null
-        get() = field
-        private set(value) {
-            field = value
-        }
+        private set
 
     val isRunning: Boolean
         get() {
-            val currentHandler = processHandler
-            return currentHandler != null && !currentHandler.isProcessTerminated
+            return sessionStarted.get() && !sessionLifetimes.isTerminated
         }
 
     fun start(commandLine: GeneralCommandLine, workspaceLocation: String) {
-        if (processHandler != null) {
-            logger.warn("start() was called while processHandler was not null. The caller should verify if an existing session is running, before calling start()")
+        if (isRunning) {
+            logger.warn("The caller should verify if an existing session is running, before calling start()")
             return
         }
 
-        processHandler = object : ColoredProcessHandler(commandLine) {
+        val sessionLifetime = sessionLifetimes.next()
+
+        val newProcessHandler = object : ColoredProcessHandler(commandLine) {
             // If it's a long-running mostly idle daemon process, 'BaseOutputReader.Options.forMostlySilentProcess()' helps to reduce CPU usage.
             override fun readerOptions(): BaseOutputReader.Options = BaseOutputReader.Options.forMostlySilentProcess()
         }
-        workspace = workspaceLocation
-        processHandler?.let {
-            it.addProcessListener(object : ProcessListener {
-                override fun onTextAvailable(p0: ProcessEvent, p1: Key<*>) { }
 
-                override fun processTerminated(e: ProcessEvent) {
-                    processHandler = null
+        sessionLifetime.onTermination {
+            if (!newProcessHandler.isProcessTerminating && !newProcessHandler.isProcessTerminated) {
+                logger.trace("Killing Azurite process")
+                newProcessHandler.killProcess()
+            }
+        }
+
+        newProcessHandler.addProcessListener(object : ProcessListener {
+            override fun onTextAvailable(e: ProcessEvent, outputType: Key<*>) {}
+
+            override fun processTerminated(e: ProcessEvent) {
+                sessionLifetime.executeIfAlive {
+                    logger.trace("Terminating Azurite session lifetime")
+                    sessionLifetime.terminate(true)
                 }
+            }
 
-                override fun startNotified(e: ProcessEvent) { }
-            })
-            it.startNotify()
+            override fun startNotified(e: ProcessEvent) {}
+        })
+
+        sessionLifetime.bracketIfAlive({
+            processHandler = newProcessHandler
+            workspace = workspaceLocation
+        }, {
+            processHandler = null
+            workspace = null
+        })
+
+        newProcessHandler.startNotify()
+
+        setStartedSession()
+
+        publishSessionStartedEvent(newProcessHandler, workspaceLocation)
+    }
+
+    private fun setStartedSession() {
+        if (sessionStarted.compareAndSet(false, true)) {
+            session = AzuriteStartedSession()
             syncServices()
         }
     }
@@ -93,28 +128,20 @@ class AzuriteService : Disposable {
         }
     }
 
-    fun stop() = stopInternal {
-        syncServices()
+    fun stop() {
+        sessionLifetimes.terminateCurrent()
+        publishSessionStoppedEvent()
     }
 
-    private fun stopInternal(runAfter: (() -> Unit)? = null) {
-        if (processHandler == null) return
+    private fun syncServices() = application.messageBus
+            .syncPublisher(ServiceEventListener.TOPIC)
+            .handle(ServiceEventListener.ServiceEvent.createResetEvent(AzuriteServiceViewContributor::class.java))
 
-        processHandler?.let {
-            try {
-                it.destroyProcess()
-            } finally {
-                if (!it.isProcessTerminating && !it.isProcessTerminated) {
-                    it.killProcess()
-                }
-                runAfter?.invoke()
-            }
-        }
-    }
+    private fun publishSessionStartedEvent(processHandler: ColoredProcessHandler, workspace: String) = application.messageBus
+            .syncPublisher(AzuriteSessionListener.TOPIC)
+            .sessionStarted(processHandler, workspace)
 
-    override fun dispose() = stopInternal()
-
-    private fun syncServices() =
-            ApplicationManager.getApplication().messageBus.syncPublisher(ServiceEventListener.TOPIC)
-                    .handle(ServiceEventListener.ServiceEvent.createResetEvent(AzuriteServiceViewContributor.AzuriteSession::class.java))
+    private fun publishSessionStoppedEvent() = application.messageBus
+            .syncPublisher(AzuriteSessionListener.TOPIC)
+            .sessionStopped()
 }
