@@ -82,17 +82,13 @@ class AzuriteService : LifetimedService() {
             }
         }
 
-        newProcessHandler.addProcessListener(object : ProcessListener {
-            override fun onTextAvailable(e: ProcessEvent, outputType: Key<*>) {}
-
+        newProcessHandler.addProcessListener(object : ProcessAdapter() {
             override fun processTerminated(e: ProcessEvent) {
                 sessionLifetime.executeIfAlive {
                     logger.trace("Terminating Azurite session lifetime")
                     sessionLifetime.terminate(true)
                 }
             }
-
-            override fun startNotified(e: ProcessEvent) {}
         })
 
         sessionLifetime.bracketIfAlive({
