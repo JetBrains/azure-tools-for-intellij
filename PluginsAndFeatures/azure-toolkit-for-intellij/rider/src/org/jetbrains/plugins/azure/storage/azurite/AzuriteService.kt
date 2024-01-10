@@ -46,6 +46,8 @@ class AzuriteService : LifetimedService() {
 
     private val sessionLifetimes = SequentialLifetimes(serviceLifetime)
 
+    private val handlerLock = Any()
+
     private val sessionStarted = AtomicBoolean(false)
     var session: AzuriteSession = AzuriteNotStartedSession()
         private set
@@ -91,11 +93,15 @@ class AzuriteService : LifetimedService() {
         })
 
         sessionLifetime.bracketIfAlive({
-            processHandler = newProcessHandler
-            workspace = workspaceLocation
+            synchronized(handlerLock) {
+                processHandler = newProcessHandler
+                workspace = workspaceLocation
+            }
         }, {
-            processHandler = null
-            workspace = null
+            synchronized(handlerLock) {
+                processHandler = null
+                workspace = null
+            }
         })
 
         newProcessHandler.startNotify()
