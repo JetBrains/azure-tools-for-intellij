@@ -99,7 +99,6 @@ class AzuriteSessionDescriptor(project: Project)
         if (processHandler == activeProcessHandler) return
 
         synchronized(myLock) {
-            processHandler?.detachProcess()
             processHandler = activeProcessHandler
             workspace = activeWorkspace
         }
@@ -113,14 +112,12 @@ class AzuriteSessionDescriptor(project: Project)
         if (processHandler == null) return
 
         synchronized(myLock) {
-            processHandler?.detachProcess()
             processHandler = null
             workspace = null
         }
     }
 
     override fun dispose() {
-        Disposer.dispose(consoleView)
     }
 
     override fun sessionStarted(processHandler: ColoredProcessHandler, workspace: String) {

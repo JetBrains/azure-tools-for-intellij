@@ -24,13 +24,12 @@ package org.jetbrains.plugins.azure.storage.azurite
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ColoredProcessHandler
+import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
-import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.services.ServiceEventListener
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.util.Key
 import com.intellij.util.application
 import com.intellij.util.io.BaseOutputReader
 import com.jetbrains.rd.platform.util.idea.LifetimedService
