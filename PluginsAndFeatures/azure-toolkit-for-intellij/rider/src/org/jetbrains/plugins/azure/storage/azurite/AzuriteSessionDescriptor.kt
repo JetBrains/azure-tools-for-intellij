@@ -27,26 +27,24 @@ import com.intellij.execution.process.ColoredProcessHandler
 import com.intellij.execution.services.SimpleServiceViewDescriptor
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
-import com.intellij.navigation.ItemPresentation
+import com.intellij.ide.projectView.PresentationData
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import com.intellij.ui.components.JBPanelWithEmptyText
+import com.intellij.ui.SimpleTextAttributes
+import com.intellij.util.application
+import com.intellij.util.ui.JBUI
+import com.intellij.util.ui.components.BorderLayoutPanel
 import icons.CommonIcons
 import org.jetbrains.plugins.azure.RiderAzureBundle
 import org.jetbrains.plugins.azure.storage.azurite.actions.CleanAzuriteAction
 import org.jetbrains.plugins.azure.storage.azurite.actions.ShowAzuriteSettingsAction
 import org.jetbrains.plugins.azure.storage.azurite.actions.StartAzuriteAction
 import org.jetbrains.plugins.azure.storage.azurite.actions.StopAzuriteAction
-import java.awt.BorderLayout
-import javax.swing.BorderFactory
-import javax.swing.JComponent
-import javax.swing.JPanel
 
-class AzuriteServiceViewSessionDescriptor(private val project: Project)
-    : SimpleServiceViewDescriptor(RiderAzureBundle.message("service.azurite.name"), CommonIcons.Azurite), Disposable {
+class AzuriteSessionDescriptor(project: Project)
+    : SimpleServiceViewDescriptor(RiderAzureBundle.message("service.azurite.name"), CommonIcons.Azurite), Disposable, AzuriteSessionListener {
 
     companion object {
         val defaultToolbarActions = DefaultActionGroup(
@@ -57,66 +55,76 @@ class AzuriteServiceViewSessionDescriptor(private val project: Project)
         )
     }
 
-    private val azuriteService = service<AzuriteService>()
+    private val myLock = Any()
     private var processHandler: ColoredProcessHandler? = null
     private var workspace: String? = null
 
-    private val consoleView: ConsoleView = TextConsoleBuilderFactory.getInstance()
-            .createBuilder(project).apply { setViewer(true) }.console
+    private val consoleView: ConsoleView = TextConsoleBuilderFactory
+            .getInstance()
+            .createBuilder(project)
+            .apply { setViewer(true) }
+            .console
 
     init {
-        Disposer.register(project, this)
-        Disposer.register(project, consoleView)
-    }
+        val service = AzuriteService.getInstance()
+        val activeProcessHandler = service.processHandler
+        val activeWorkSpace = service.workspace
+        if (activeProcessHandler != null && activeWorkSpace != null) {
+            connectToSession(activeProcessHandler, activeWorkSpace)
+        }
 
-    protected val panel = createEmptyComponent()
+        application.messageBus
+                .connect(this)
+                .subscribe(AzuriteSessionListener.TOPIC, this)
+
+        Disposer.register(project, this)
+        Disposer.register(this, consoleView)
+    }
 
     override fun getToolbarActions() = defaultToolbarActions
 
-    override fun getPresentation(): ItemPresentation {
-        ensureConsoleView()
-
-        val superPresentation = super.getPresentation()
-        return object : ItemPresentation {
-            override fun getLocationString(): String? = workspace
-            override fun getIcon(p: Boolean) = superPresentation.getIcon(p)
-            override fun getPresentableText() = superPresentation.presentableText
-        }
+    @Suppress("DialogTitleCapitalization")
+    override fun getPresentation() = PresentationData().apply {
+        locationString = workspace
+        setIcon(CommonIcons.Azurite)
+        addText(RiderAzureBundle.message("service.azurite.name"), SimpleTextAttributes.REGULAR_ATTRIBUTES)
     }
 
-    override fun getContentComponent(): JComponent? {
-        ensureConsoleView()
-        return panel
+    override fun getContentComponent() = BorderLayoutPanel().apply {
+        border = JBUI.Borders.empty()
+        add(consoleView.component)
     }
 
-    private fun ensureConsoleView() {
-        azuriteService.processHandler?.let { activeProcessHandler ->
+    private fun connectToSession(activeProcessHandler: ColoredProcessHandler, activeWorkspace: String) {
+        if (processHandler == activeProcessHandler) return
 
-            if (processHandler != activeProcessHandler) {
-                processHandler?.detachProcess()
-                processHandler = activeProcessHandler
-                workspace = azuriteService.workspace
-
-                consoleView.print(RiderAzureBundle.message("action.azurite.reattach.workspace", workspace.orEmpty()) + "\n", ConsoleViewContentType.LOG_INFO_OUTPUT)
-                consoleView.attachToProcess(activeProcessHandler)
-                consoleView.print(RiderAzureBundle.message("action.azurite.reattach.finished") + "\n", ConsoleViewContentType.LOG_INFO_OUTPUT)
-            }
+        synchronized(myLock) {
+            processHandler = activeProcessHandler
+            workspace = activeWorkspace
         }
 
-        if (processHandler != null && panel.components.isEmpty()) {
-            panel.add(consoleView.component, BorderLayout.CENTER)
-        }
+        consoleView.print(RiderAzureBundle.message("action.azurite.reattach.workspace", activeWorkspace) + "\n", ConsoleViewContentType.LOG_INFO_OUTPUT)
+        consoleView.attachToProcess(activeProcessHandler)
+        consoleView.print(RiderAzureBundle.message("action.azurite.reattach.finished") + "\n", ConsoleViewContentType.LOG_INFO_OUTPUT)
     }
 
-    private fun createEmptyComponent(): JPanel {
-        val panel: JPanel = JBPanelWithEmptyText(BorderLayout())
-                .withEmptyText(RiderAzureBundle.message("service.azurite.not_started"))
-                .withBorder(BorderFactory.createEmptyBorder())
-        panel.isFocusable = true
-        return panel
+    private fun disconnectFromSession() {
+        if (processHandler == null) return
+
+        synchronized(myLock) {
+            processHandler = null
+            workspace = null
+        }
     }
 
     override fun dispose() {
-        Disposer.dispose(consoleView)
+    }
+
+    override fun sessionStarted(processHandler: ColoredProcessHandler, workspace: String) {
+        connectToSession(processHandler, workspace)
+    }
+
+    override fun sessionStopped() {
+        disconnectFromSession()
     }
 }

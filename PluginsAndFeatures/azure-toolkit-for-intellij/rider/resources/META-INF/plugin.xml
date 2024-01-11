@@ -311,9 +311,6 @@
   <depends>JavaScript</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <applicationService serviceInterface="org.jetbrains.plugins.azure.storage.azurite.AzuriteService"
-                        serviceImplementation="org.jetbrains.plugins.azure.storage.azurite.AzuriteService"/>
-
     <projectConfigurable groupId="tools"
                          id="com.microsoft.intellij.configuration.AzureRiderConfigurable"
                          displayName="Azure"
