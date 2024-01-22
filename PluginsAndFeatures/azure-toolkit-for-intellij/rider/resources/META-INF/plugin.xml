@@ -23,6 +23,10 @@
   <change-notes>
     <![CDATA[
       <html>
+        <p>[3.50.0-2024.1]</p>
+        <ul>
+          <li>Compatibility with Rider 2024.1</li>
+        </ul>
         <p>[3.50.0-2023.3]</p>
         <ul>
           <li>Compatibility with Rider 2023.3</li>
@@ -300,7 +304,7 @@
   <xi:include href="/META-INF/platformPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
   <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-  <idea-version since-build="233" until-build="233.*"/>
+  <idea-version since-build="241" until-build="241.*"/>
 
   <resource-bundle>messages.RiderAzureMessages</resource-bundle>
 
