@@ -46,6 +46,8 @@ class CloseCloudShellPortActionGroup : ActionGroup() {
 
         val cloudShellComponent = CloudShellService.getInstance(project)
 
+        e.presentation.isHideGroupIfEmpty = true
+
         e.presentation.isEnabled = CommonDataKeys.PROJECT.getData(e.dataContext) != null
                 && cloudShellComponent.activeConnector() != null
                 && cloudShellComponent.activeConnector()!!.openPreviewPorts.any()
@@ -69,10 +71,6 @@ class CloseCloudShellPortActionGroup : ActionGroup() {
         actions.add(CloseAllCloudShellPortsAction)
 
         return actions.toTypedArray()
-    }
-
-    override fun hideIfNoVisibleChildren(): Boolean {
-        return true
     }
 }
 

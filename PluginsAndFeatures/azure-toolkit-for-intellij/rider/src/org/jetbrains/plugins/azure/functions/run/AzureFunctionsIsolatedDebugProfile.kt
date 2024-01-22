@@ -44,7 +44,6 @@ import com.intellij.util.execution.ParametersListUtil
 import com.intellij.util.system.CpuArch
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.debugger.DebuggerHelperHost
-import com.jetbrains.rider.debugger.DebuggerWorkerPlatform
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.RiderDebuggerBundle
 import com.jetbrains.rider.model.DesktopClrRuntime
@@ -54,7 +53,7 @@ import com.jetbrains.rider.model.debuggerWorker.DotNetClrAttachStartInfo
 import com.jetbrains.rider.model.debuggerWorker.DotNetCoreAttachStartInfo
 import com.jetbrains.rider.run.*
 import com.jetbrains.rider.run.dotNetCore.DotNetCoreAttachProfileState
-import com.jetbrains.rider.run.dotNetCore.getWorkerPlatform
+import com.jetbrains.rider.run.dotNetCore.toCPUKind
 import com.jetbrains.rider.run.msNet.MsNetAttachProfileState
 import com.jetbrains.rider.runtime.DotNetExecutable
 import com.jetbrains.rider.runtime.DotNetRuntime
@@ -102,7 +101,7 @@ class AzureFunctionsIsolatedDebugProfile(
                     executionEnvironment.project,
                     RiderAzureBundle.message("run_config.run_function_app.debug.notification.title"),
                     RiderAzureBundle.message("run_config.run_function_app.debug.notification.isolated_worker_process_terminated"))
-            return createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu)
+            return super.createWorkerRunInfo(lifetime, helper, port)
         }
         if (processId == 0) {
             logger.warn("Azure Functions host did not return isolated worker process id.")
@@ -112,7 +111,7 @@ class AzureFunctionsIsolatedDebugProfile(
                     executionEnvironment.project,
                     RiderAzureBundle.message("run_config.run_function_app.debug.notification.title"),
                     RiderAzureBundle.message("run_config.run_function_app.debug.notification.isolated_worker_pid_unspecified"))
-            return createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu)
+            return super.createWorkerRunInfo(lifetime, helper, port)
         }
 
         // Get process info
@@ -123,7 +122,7 @@ class AzureFunctionsIsolatedDebugProfile(
         if (targetProcess == null) {
             logger.warn("Unable to find target process with pid $processId")
             // Create debugger worker info
-            return createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu)
+            return super.createWorkerRunInfo(lifetime, helper, port)
         }
 
         // Determine process architecture, and whether it is .NET / .NET Core
@@ -142,7 +141,13 @@ class AzureFunctionsIsolatedDebugProfile(
         } else {
             // .NET Framework
             val clrRuntime = DesktopClrRuntime("")
-            MsNetAttachProfileState(targetProcess, processArchitecture.getWorkerPlatform(), clrRuntime, executionEnvironment, RiderDebuggerBundle.message("MsNetAttachProvider.display.name", clrRuntime.version))
+            MsNetAttachProfileState(
+                    targetProcess,
+                    processArchitecture.toCPUKind(),
+                    clrRuntime,
+                    executionEnvironment,
+                    RiderDebuggerBundle.message("MsNetAttachProvider.display.name", clrRuntime.version)
+            )
                     .createWorkerRunInfo(lifetime, helper, port)
         }
     }
