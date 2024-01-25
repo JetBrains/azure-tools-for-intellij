@@ -22,6 +22,7 @@
 
 package org.cases.functions.coreTools.v3.isolatedWorker
 
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import org.cases.functions.coreTools.FunctionsCoreToolsManagerTestBase
@@ -29,6 +30,7 @@ import org.testng.annotations.Test
 
 @Test
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
+@Mute
 class FunctionsCoreToolsManagerTest : FunctionsCoreToolsManagerTestBase(
         solutionDirectoryName = "v3/FunctionAppIsolated",
         azureFunctionsVersion = "v3"

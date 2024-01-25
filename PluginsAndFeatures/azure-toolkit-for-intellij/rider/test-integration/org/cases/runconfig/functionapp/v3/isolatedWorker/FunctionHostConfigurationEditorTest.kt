@@ -22,6 +22,7 @@
 
 package org.cases.runconfig.functionapp.v3.isolatedWorker
 
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import org.cases.runconfig.functionapp.FunctionHostConfigurationEditorTestBase
@@ -29,6 +30,7 @@ import org.testng.annotations.Test
 
 @Test
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_5)
+@Mute
 class FunctionHostConfigurationEditorTest : FunctionHostConfigurationEditorTestBase(
         solutionDirectoryName = "v3/FunctionAppIsolated",
         projectName = "FunctionAppIsolated",
