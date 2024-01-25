@@ -6,17 +6,7 @@
     <html>
         <h4>Added:</h4>
         <ul>
-          <li>Compatibility with Rider 2023.3</li>
-          <li>Azure Functions: Update file templates (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/730">#730</a>)</li>
-          <li>Azure Functions: Inlay Hints with Timer Trigger Cron description (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/740">#740</a>)</li>
-        </ul>
-        <h4>Fixed bugs:</h4>
-        <ul>
-          <li>Azure Functions: Default run configuration is no longer Azure Functions run configuration (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/746">#746</a>)</li>
-          <li>Azure Functions: Fix casing for the `AzureFunctionsVersion` project property (<a href="https://youtrack.jetbrains.com/issue/RIDER-98036">RIDER-98036</a>)</li>
-          <li>Azure Functions: Fix Azure Functions tool paths configuration (<a href="https://youtrack.jetbrains.com/issue/RIDER-98014">RIDER-98014</a>)</li>
-          <li>IDE overwrites the original uppercased runtime value with the lowercased version during deployment (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/752">#752</a>)</li>
-          <li>Azure Functions: Fix Clicking Run or Debug an Azure Function Project only runs last function (<a href="https://youtrack.jetbrains.com/issue/RIDER-73239">RIDER-73239</a>)</li>
+          <li>Compatibility with Rider 2024.1</li>
         </ul>
     </html>
     ]]>

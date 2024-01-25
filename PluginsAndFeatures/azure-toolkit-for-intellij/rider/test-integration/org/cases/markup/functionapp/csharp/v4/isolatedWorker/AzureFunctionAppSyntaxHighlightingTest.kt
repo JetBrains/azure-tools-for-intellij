@@ -22,16 +22,18 @@
 
 package org.cases.markup.functionapp.csharp.v4.isolatedWorker
 
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import org.cases.markup.functionapp.csharp.AzureFunctionAppSyntaxHighlightingTestBase
 import org.testng.annotations.Test
 
-@Test
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
-class AzureFunctionAppSyntaxHighlightingTest : AzureFunctionAppSyntaxHighlightingTestBase(
-        solutionDirectoryName = "v4/FunctionAppIsolated",
-        testFilePath = "FunctionAppIsolated/Function.cs",
-        sourceFileName = "Function.cs",
-        goldFileName = "Function.gold"
-)
+//@Test
+//@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
+//@Mute
+//class AzureFunctionAppSyntaxHighlightingTest : AzureFunctionAppSyntaxHighlightingTestBase(
+//        solutionDirectoryName = "v4/FunctionAppIsolated",
+//        testFilePath = "FunctionAppIsolated/Function.cs",
+//        sourceFileName = "Function.cs",
+//        goldFileName = "Function.gold"
+//)

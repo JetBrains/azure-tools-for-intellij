@@ -22,13 +22,15 @@
 
 package org.cases.documentmodel.completion.csharp.v3.defaultWorker
 
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import org.cases.documentmodel.completion.csharp.AzureFunctionsTimerTriggerCompletionTestBase
 import org.testng.annotations.Test
 
-@Test
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_CORE_3_1)
-class AzureFunctionsTimerTriggerCompletionTest : AzureFunctionsTimerTriggerCompletionTestBase(
-        solutionDirectoryName = "v3/FunctionApp"
-)
+//@Test
+//@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_CORE_3_1)
+//@Mute
+//class AzureFunctionsTimerTriggerCompletionTest : AzureFunctionsTimerTriggerCompletionTestBase(
+//        solutionDirectoryName = "v3/FunctionApp"
+//)

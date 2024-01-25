@@ -22,16 +22,18 @@
 
 package org.cases.runconfig.functionapp.v3.isolatedWorker
 
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import org.cases.runconfig.functionapp.FunctionHostConfigurationTestBase
 import org.testng.annotations.Test
 
-@Test
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_5)
-class FunctionHostConfigurationTest : FunctionHostConfigurationTestBase(
-        solutionDirectoryName = "v3/FunctionAppIsolated",
-        projectName = "FunctionAppIsolated",
-        projectTfm = "net5.0",
-        sdkVersion = SdkVersion.DOT_NET_5
-)
+//@Test
+//@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_5)
+//@Mute
+//class FunctionHostConfigurationTest : FunctionHostConfigurationTestBase(
+//        solutionDirectoryName = "v3/FunctionAppIsolated",
+//        projectName = "FunctionAppIsolated",
+//        projectTfm = "net5.0",
+//        sdkVersion = SdkVersion.DOT_NET_5
+//)

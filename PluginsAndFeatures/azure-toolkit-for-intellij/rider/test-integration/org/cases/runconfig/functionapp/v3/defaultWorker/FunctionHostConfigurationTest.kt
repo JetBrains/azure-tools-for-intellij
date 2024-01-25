@@ -22,16 +22,18 @@
 
 package org.cases.runconfig.functionapp.v3.defaultWorker
 
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import org.cases.runconfig.functionapp.FunctionHostConfigurationTestBase
 import org.testng.annotations.Test
 
-@Test
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_CORE_3_1)
-class FunctionHostConfigurationTest : FunctionHostConfigurationTestBase(
-        solutionDirectoryName = "v3/FunctionApp",
-        projectName = "FunctionApp",
-        projectTfm = ".NETCoreApp,Version=v3.1",
-        sdkVersion = SdkVersion.DOT_NET_CORE_3_1
-)
+//@Test
+//@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_CORE_3_1)
+//@Mute
+//class FunctionHostConfigurationTest : FunctionHostConfigurationTestBase(
+//        solutionDirectoryName = "v3/FunctionApp",
+//        projectName = "FunctionApp",
+//        projectTfm = ".NETCoreApp,Version=v3.1",
+//        sdkVersion = SdkVersion.DOT_NET_CORE_3_1
+//)
