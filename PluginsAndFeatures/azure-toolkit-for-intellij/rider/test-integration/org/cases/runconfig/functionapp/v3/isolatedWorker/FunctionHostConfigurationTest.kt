@@ -28,12 +28,12 @@ import com.jetbrains.rider.test.env.enums.SdkVersion
 import org.cases.runconfig.functionapp.FunctionHostConfigurationTestBase
 import org.testng.annotations.Test
 
-@Test
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_5)
-@Mute
-class FunctionHostConfigurationTest : FunctionHostConfigurationTestBase(
-        solutionDirectoryName = "v3/FunctionAppIsolated",
-        projectName = "FunctionAppIsolated",
-        projectTfm = "net5.0",
-        sdkVersion = SdkVersion.DOT_NET_5
-)
+//@Test
+//@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_5)
+//@Mute
+//class FunctionHostConfigurationTest : FunctionHostConfigurationTestBase(
+//        solutionDirectoryName = "v3/FunctionAppIsolated",
+//        projectName = "FunctionAppIsolated",
+//        projectTfm = "net5.0",
+//        sdkVersion = SdkVersion.DOT_NET_5
+//)

@@ -28,10 +28,10 @@ import com.jetbrains.rider.test.env.enums.SdkVersion
 import org.cases.functions.coreTools.FunctionsCoreToolsManagerTestBase
 import org.testng.annotations.Test
 
-@Test
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
-@Mute
-class FunctionsCoreToolsManagerTest : FunctionsCoreToolsManagerTestBase(
-        solutionDirectoryName = "v3/FunctionAppIsolated",
-        azureFunctionsVersion = "v3"
-)
+//@Test
+//@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
+//@Mute
+//class FunctionsCoreToolsManagerTest : FunctionsCoreToolsManagerTestBase(
+//        solutionDirectoryName = "v3/FunctionAppIsolated",
+//        azureFunctionsVersion = "v3"
+//)

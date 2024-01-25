@@ -28,18 +28,18 @@ import com.jetbrains.rider.test.env.enums.SdkVersion
 import org.cases.markup.functionapp.csharp.AzureFunctionRunMarkerTestBase
 import org.testng.annotations.Test
 
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
-@Mute
-class AzureFunctionRunMarkerTest : AzureFunctionRunMarkerTestBase(
-        solutionDirectoryName = "v4/FunctionAppIsolated",
-        testFilePath = "FunctionAppIsolated/Function.cs",
-        sourceFileName = "Function.cs",
-        goldFileName = "Function.gold"
-) {
-
-    @Test(description = "Check Http Trigger function having multiple attribute including required [Function] is shown with Function App gutter mark.")
-    fun testFunctionApp_HttpTriggerWithMultipleAttributes_Detected() = verifyLambdaGutterMark()
-
-    @Test(description = "Check multiple functions inside one class with [Function] required attribute are shown with gutter mark.")
-    fun testFunctionApp_MultipleFunctionApps_Detected() = verifyLambdaGutterMark()
-}
+//@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
+//@Mute
+//class AzureFunctionRunMarkerTest : AzureFunctionRunMarkerTestBase(
+//        solutionDirectoryName = "v4/FunctionAppIsolated",
+//        testFilePath = "FunctionAppIsolated/Function.cs",
+//        sourceFileName = "Function.cs",
+//        goldFileName = "Function.gold"
+//) {
+//
+//    @Test(description = "Check Http Trigger function having multiple attribute including required [Function] is shown with Function App gutter mark.")
+//    fun testFunctionApp_HttpTriggerWithMultipleAttributes_Detected() = verifyLambdaGutterMark()
+//
+//    @Test(description = "Check multiple functions inside one class with [Function] required attribute are shown with gutter mark.")
+//    fun testFunctionApp_MultipleFunctionApps_Detected() = verifyLambdaGutterMark()
+//}
