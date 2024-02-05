@@ -54,14 +54,9 @@ class AzuriteBeforeRunTaskProvider : BeforeRunTaskProvider<AzuriteBeforeRunTask>
 
     override fun getIcon(): Icon = CommonIcons.Azurite
 
-    private fun shouldCreateBuildBeforeRunTaskByDefault(runConfiguration: RunConfiguration): Boolean {
-        return runConfiguration is AzureFunctionsHostConfiguration
-    }
-
-    override fun createTask(runConfiguration: RunConfiguration): AzuriteBeforeRunTask? {
-        if (!shouldCreateBuildBeforeRunTaskByDefault(runConfiguration)) return null
+    override fun createTask(runConfiguration: RunConfiguration): AzuriteBeforeRunTask {
         val task = AzuriteBeforeRunTask()
-        task.isEnabled = true
+        task.isEnabled = runConfiguration is AzureFunctionsHostConfiguration
         return task
     }
 

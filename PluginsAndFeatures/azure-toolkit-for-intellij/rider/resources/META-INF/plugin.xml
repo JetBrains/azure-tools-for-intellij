@@ -26,6 +26,7 @@
         <p>[3.50.0-2024.1]</p>
         <ul>
           <li>Compatibility with Rider 2024.1</li>
+          <li>Enable "Start Azurite" task for all run configurations (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/780">#780</a>)</li>
         </ul>
         <p>[3.50.0-2023.3]</p>
         <ul>
