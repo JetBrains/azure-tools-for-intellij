@@ -281,7 +281,7 @@ class AzureFunctionsHostConfigurationViewModel(
                     val fakeProjectName = File(projectFilePath).name
                     val fakeProject = RunnableProject(
                             fakeProjectName, fakeProjectName, projectFilePath, RunnableProjectKinds.Unloaded,
-                            listOf(ProjectOutput(RdTargetFrameworkId("", projectTfm, false, false), exePath,
+                            listOf(ProjectOutput(RdTargetFrameworkId(RdVersionInfo(0, 0, 0), "", projectTfm, false, false), exePath,
                                     ParametersListUtil.parse(programParameters), workingDirectory, "", null, emptyList())),
                             envs.map { EnvironmentVariable(it.key, it.value) }.toList(), null, listOf()
                     )

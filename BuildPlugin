@@ -38,7 +38,7 @@ tc_open "Initializing build script"
     IJ_VERSION_MINOR=
     IJ_VERSION_LATEST=$IJ_VERSION_MAJOR.$IJ_VERSION_MINOR \
                       && [[ -z $IJ_VERSION_MINOR ]] && IJ_VERSION_LATEST=$IJ_VERSION_MAJOR
-    IJ_SCALA_VERSION_LATEST=2024.1.2
+    IJ_SCALA_VERSION_LATEST=2024.1.4
 
     while getopts ":hqvBC:e:" option; do
         case $option in
