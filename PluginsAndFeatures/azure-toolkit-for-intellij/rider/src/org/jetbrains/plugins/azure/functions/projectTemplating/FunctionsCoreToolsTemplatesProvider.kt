@@ -22,72 +22,59 @@
 
 package org.jetbrains.plugins.azure.functions.projectTemplating
 
+import com.intellij.openapi.observable.properties.AtomicBooleanProperty
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.reactive.IOptProperty
-import com.jetbrains.rd.util.reactive.OptProperty
+import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.fire
-import com.jetbrains.rider.projectView.actions.projectTemplating.RiderProjectTemplate
-import com.jetbrains.rider.projectView.actions.projectTemplating.RiderProjectTemplateGenerator
-import com.jetbrains.rider.projectView.actions.projectTemplating.RiderProjectTemplateProvider
-import com.jetbrains.rider.projectView.actions.projectTemplating.RiderProjectTemplateState
-import com.jetbrains.rider.projectView.actions.projectTemplating.common.InfoProjectTemplateGeneratorBase
-import com.jetbrains.rider.projectView.actions.projectTemplating.impl.ProjectTemplateDialog
-import com.jetbrains.rider.projectView.actions.projectTemplating.impl.ProjectTemplateDialogContext
-import com.jetbrains.rider.projectView.actions.projectTemplating.impl.ProjectTemplateTransferableModel
+import com.jetbrains.rider.projectView.projectTemplates.NewProjectDialogContext
+import com.jetbrains.rider.projectView.projectTemplates.ProjectTemplatesSharedModel
+import com.jetbrains.rider.projectView.projectTemplates.generators.ProjectTemplateGenerator
+import com.jetbrains.rider.projectView.projectTemplates.providers.ProjectTemplateProvider
+import com.jetbrains.rider.projectView.projectTemplates.templateTypes.ProjectTemplateType
 import icons.CommonIcons
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
-import javax.swing.Icon
 import javax.swing.JComponent
 
-class FunctionsCoreToolsTemplatesProvider : RiderProjectTemplateProvider {
+class FunctionsCoreToolsTemplatesProvider : ProjectTemplateProvider {
 
     override val isReady = Property(true)
 
-    override fun load(lifetime: Lifetime, context: ProjectTemplateDialogContext): IOptProperty<RiderProjectTemplateState> {
-        val state = RiderProjectTemplateState(arrayListOf(), arrayListOf())
+    override fun load(lifetime: Lifetime, context: NewProjectDialogContext): IProperty<Set<ProjectTemplateType>?> {
+        isReady.set(false)
+        val result = Property<Set<ProjectTemplateType>?>(setOf())
 
         if (!FunctionsCoreToolsTemplateManager.areRegistered()) {
             FunctionsCoreToolsTemplateManager.tryReload()
         }
 
         if (!FunctionsCoreToolsTemplateManager.areRegistered()) {
-            state.new.add(InstallTemplates())
+            result.set(setOf(InstallTemplates()))
         }
 
-        return OptProperty(state)
+        isReady.set(true)
+        return result
     }
 
-    private class InstallTemplates : RiderProjectTemplate {
+    private class InstallTemplates : ProjectTemplateType {
+        override val group = message("template.project.function_app.install.group")
+        override val icon = CommonIcons.AzureFunctions.TemplateAzureFunc
+        override val name = message("template.project.function_app.install.name")
+        override val order = 90
 
-        override val group: String
-            get() = ".NET / .NET Core"
-        override val localizedGroup: String
-            get() = message("template.project.function_app.install.group")
-        override val name: String
-            get() = "Azure Functions"
-        override val localizedName: String
-            get() = message("template.project.function_app.install.name")
-        override val icon: Icon
-            get() = CommonIcons.AzureFunctions.TemplateAzureFunc
+        override fun getKeywords() = setOf(name)
 
-        override fun getKeywords() = arrayOf(name)
-
-        override fun createGenerator(context: ProjectTemplateDialogContext, transferableModel: ProjectTemplateTransferableModel): RiderProjectTemplateGenerator {
-            return object : InfoProjectTemplateGeneratorBase() {
-
-                override val expandActionName: String
-                    get() = message("template.project.function_app.actions.expand.reload")
-
-                override fun expand(): Runnable? {
-                    // just close dialog and show again to refresh templates
-                    return Runnable { ProjectTemplateDialog.show(context.project, context.entity) }
-                }
+        override fun createGenerator(lifetime: Lifetime, context: NewProjectDialogContext, sharedModel: ProjectTemplatesSharedModel): ProjectTemplateGenerator {
+            return object : ProjectTemplateGenerator {
+                override val canExpand = AtomicBooleanProperty(false)
+                override suspend fun expandTemplate(): suspend () -> Unit { throw Error("Expand template should not be called") }
+                override fun getFocusComponentId(): String? = null
+                override fun requestFocusComponent(focusComponentId: String?) {  }
 
                 override fun getComponent(): JComponent {
-                    return InstallFunctionsCoreToolsComponent(this.validationError) {
+                    return InstallFunctionsCoreToolsComponent {
                         FunctionsCoreToolsTemplateManager.tryReload()
-                        context.restart.fire()
+                        context.reloadTemplates.fire()
                     }.getView()
                 }
             }
