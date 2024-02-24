@@ -72,6 +72,8 @@ class CloseCloudShellPortActionGroup : ActionGroup() {
 
         return actions.toTypedArray()
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.EDT
 }
 
 private class CloseCloudShellPortAction(val port: Int) : AnAction(port.toString()) {

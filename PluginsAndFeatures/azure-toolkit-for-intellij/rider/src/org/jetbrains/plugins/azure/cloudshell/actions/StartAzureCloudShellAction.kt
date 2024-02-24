@@ -25,6 +25,7 @@ package org.jetbrains.plugins.azure.cloudshell.actions
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.ui.IdeUiService
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -284,4 +285,6 @@ class StartAzureCloudShellAction : AnAction() {
                     override fun actionPerformed(e: AnActionEvent) = BrowserUtil.browse("https://shell.azure.com")
                 })
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

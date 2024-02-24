@@ -8,6 +8,7 @@ package com.microsoft.azure.toolkit.intellij.webapp;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionToolbarPosition;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
@@ -237,6 +238,11 @@ public abstract class WebAppBasePropertyView extends BaseEditor implements WebAp
                 tableModel.addRow(new String[]{"", ""});
                 tblAppSetting.editCellAt(tblAppSetting.getRowCount() - 1, 0);
             }
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.EDT;
+            }
         };
 
         btnRemove = new AnActionButton(BUTTON_REMOVE, AllIcons.General.Remove) {
@@ -250,6 +256,11 @@ public abstract class WebAppBasePropertyView extends BaseEditor implements WebAp
                 tableModel.removeRow(selectedRow);
                 updateSaveAndDiscardBtnStatus();
             }
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.EDT;
+            }
         };
 
         btnEdit = new AnActionButton(BUTTON_EDIT, AllIcons.Actions.Edit) {
@@ -261,6 +272,11 @@ public abstract class WebAppBasePropertyView extends BaseEditor implements WebAp
                     return;
                 }
                 tblAppSetting.editCellAt(selectedRow, selectedCol);
+            }
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.EDT;
             }
         };
 

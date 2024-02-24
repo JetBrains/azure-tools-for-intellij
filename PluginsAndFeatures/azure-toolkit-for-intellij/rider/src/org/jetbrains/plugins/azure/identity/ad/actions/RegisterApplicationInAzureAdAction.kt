@@ -26,6 +26,7 @@ package org.jetbrains.plugins.azure.identity.ad.actions
 
 import com.intellij.ide.BrowserUtil
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
@@ -401,4 +402,6 @@ class RegisterApplicationInAzureAdAction
                     null
                 })
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.EDT
 }

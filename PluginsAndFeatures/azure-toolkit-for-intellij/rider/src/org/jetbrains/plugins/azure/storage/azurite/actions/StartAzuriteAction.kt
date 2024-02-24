@@ -29,6 +29,7 @@ import com.intellij.execution.process.CapturingProcessHandler
 import com.intellij.icons.AllIcons
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
@@ -212,4 +213,6 @@ class StartAzuriteAction
             return false
         }
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

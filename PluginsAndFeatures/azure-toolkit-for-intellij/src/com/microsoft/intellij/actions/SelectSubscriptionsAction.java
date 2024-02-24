@@ -5,6 +5,7 @@
 
 package com.microsoft.intellij.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
@@ -88,5 +89,10 @@ public class SelectSubscriptionsAction extends AzureAnAction {
             ProgressManager.getInstance().getProgressIndicator().setIndeterminate(true);
             return subscriptionManager.getSubscriptionDetails();
         }));
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
     }
 }
