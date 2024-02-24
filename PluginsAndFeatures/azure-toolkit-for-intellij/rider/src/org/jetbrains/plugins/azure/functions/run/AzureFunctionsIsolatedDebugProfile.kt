@@ -231,7 +231,9 @@ class AzureFunctionsIsolatedDebugProfile(
 
         console.attachToProcess(targetProcessHandler)
 
-        targetProcessHandler.startNotify()
+        withUiContext {
+            targetProcessHandler.startNotify()
+        }
 
         var timeout = 0.milliseconds
         while (timeout <= waitDuration) {
