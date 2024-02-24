@@ -189,7 +189,9 @@ class FunctionAppRunState(project: Project, private val myModel: FunctionAppSett
     }
 
     override fun onSuccess(result: FunctionAppDeployResult, processHandler: RunProcessHandler) {
-        processHandler.notifyComplete()
+        application.invokeLater {
+            processHandler.notifyComplete()
+        }
 
         // Refresh for both cases (when create new function app and publish into existing one)
         // to make sure separate functions are updated as well
@@ -224,7 +226,9 @@ class FunctionAppRunState(project: Project, private val myModel: FunctionAppSett
         showPublishNotification(message("notification.publish.publish_failed"), NotificationType.ERROR)
 
         processHandler.println(error.message, ProcessOutputTypes.STDERR)
-        processHandler.notifyComplete()
+        application.invokeLater {
+            processHandler.notifyComplete()
+        }
     }
 
     private fun refreshAppsAfterPublish(app: WebAppBase, model: FunctionAppPublishModel) {
