@@ -7,6 +7,7 @@
 package com.microsoft.intellij.ui;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -163,6 +164,11 @@ public class SubscriptionsDialog extends AzureDialogWrapper {
             public void actionPerformed(AnActionEvent anActionEvent) {
                 AppInsightsClient.createByType(AppInsightsClient.EventType.Subscription, "", "Refresh", null);
                 refreshSubscriptions();
+            }
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.EDT;
             }
         };
 

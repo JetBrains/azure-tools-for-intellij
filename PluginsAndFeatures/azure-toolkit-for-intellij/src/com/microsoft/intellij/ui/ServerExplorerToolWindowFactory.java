@@ -8,6 +8,7 @@ package com.microsoft.intellij.ui;
 
 import com.google.common.collect.ImmutableList;
 import com.intellij.ide.util.treeView.NodeRenderer;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -415,6 +416,11 @@ public class ServerExplorerToolWindowFactory implements ToolWindowFactory, Prope
                                     boolean isDarkTheme = DefaultLoader.getUIHelper().isDarkTheme();
                                     final String iconPath = isDarkTheme ? RefreshableNode.REFRESH_ICON_DARK : RefreshableNode.REFRESH_ICON_LIGHT;
                                     e.getPresentation().setIcon(UIHelperImpl.loadIcon(iconPath));
+                                }
+
+                                @Override
+                                public @NotNull ActionUpdateThread getActionUpdateThread() {
+                                    return ActionUpdateThread.EDT;
                                 }
                             },
                             new AzureSignInAction(),

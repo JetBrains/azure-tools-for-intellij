@@ -6,6 +6,7 @@
 
 package com.microsoft.intellij.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
@@ -148,5 +149,10 @@ public class AzureSignInAction extends AzureAnAction {
         } else {
             return Single.fromCallable(authMethodManager::isSignedIn);
         }
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
     }
 }

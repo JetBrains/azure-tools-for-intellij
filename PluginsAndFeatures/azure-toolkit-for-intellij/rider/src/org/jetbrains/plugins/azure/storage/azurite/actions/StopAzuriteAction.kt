@@ -23,6 +23,7 @@
 package org.jetbrains.plugins.azure.storage.azurite.actions
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.components.service
@@ -46,4 +47,6 @@ class StopAzuriteAction
             azuriteService.stop()
         }
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

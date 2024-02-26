@@ -24,6 +24,7 @@ package com.microsoft.intellij.ui.component.appservice
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionToolbarPosition
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.ui.AnActionButton
 import com.intellij.ui.ToolbarDecorator
@@ -211,6 +212,8 @@ open class ExistingAppsTableComponent<T : WebAppBase> :
                     resetWidget()
                     tableRefreshAction()
                 }
+
+                override fun getActionUpdateThread() = ActionUpdateThread.EDT
             }
 
     private fun resetWidget() {

@@ -27,6 +27,7 @@ import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
+import com.intellij.util.application
 import com.microsoft.azure.management.appservice.OperatingSystem
 import com.microsoft.azure.management.appservice.WebApp
 import com.microsoft.azure.management.appservice.WebAppBase
@@ -154,7 +155,9 @@ class RiderWebAppRunState(project: Project,
     }
 
     override fun onSuccess(result: WebAppDeployResult, processHandler: RunProcessHandler) {
-        processHandler.notifyComplete()
+        application.invokeLater {
+            processHandler.notifyComplete()
+        }
 
         if (myModel.webAppModel.isCreatingNewApp) {
             refreshAzureExplorer(listenerId = "WebAppModule")
@@ -187,7 +190,9 @@ class RiderWebAppRunState(project: Project,
         showPublishNotification(message("notification.publish.publish_failed"), NotificationType.ERROR)
 
         processHandler.println(error.message, ProcessOutputTypes.STDERR)
-        processHandler.notifyComplete()
+        application.invokeLater {
+            processHandler.notifyComplete()
+        }
     }
 
     override fun getDeployTarget(): String =

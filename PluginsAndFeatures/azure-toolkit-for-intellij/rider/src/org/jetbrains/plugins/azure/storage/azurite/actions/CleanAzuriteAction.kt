@@ -25,6 +25,7 @@ package org.jetbrains.plugins.azure.storage.azurite.actions
 import com.intellij.CommonBundle
 import com.intellij.icons.AllIcons
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
@@ -74,4 +75,6 @@ class CleanAzuriteAction
             }
         }
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

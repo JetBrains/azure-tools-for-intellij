@@ -22,6 +22,7 @@
 
 package org.jetbrains.plugins.azure.cloudshell.actions
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -97,4 +98,6 @@ class OpenCloudShellPortAction : AnAction() {
             return checkInput(input)
         }
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.EDT
 }
