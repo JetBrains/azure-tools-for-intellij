@@ -252,11 +252,12 @@ class AzureFunctionsIsolatedDebugProfile(
         return null
     }
 
-    override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler): ExecutionResult {
+    override suspend fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler): ExecutionResult {
         throw UnsupportedOperationException("Use overload with lifetime")
     }
 
-    override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime): ExecutionResult {
+    override suspend fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime):
+            ExecutionResult {
 
         if (processId == 0) {
             // If we do not get pid from the isolated worker process, destroy the process here
