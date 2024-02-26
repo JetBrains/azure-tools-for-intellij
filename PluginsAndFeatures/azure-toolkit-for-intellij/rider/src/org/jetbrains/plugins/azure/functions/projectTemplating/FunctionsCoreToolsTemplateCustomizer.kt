@@ -53,6 +53,7 @@ class AzureProjectTemplateType : PredefinedProjectTemplateType() {
         object : TypeBasedProjectTemplateGenerator(lifetime, context, sharedModel, projectTemplates, hideSdk = true) {
         override val defaultName = "FunctionApp1"
         override fun customizeTypeRowLabel() = RiderAzureBundle.message("template.project.function_app.type.row.label")
+        private val isolatedWorker = RiderAzureBundle.message("template.project.function_app.isolated.worker")
 
         override fun getType(template: RdProjectTemplate2): String {
             // Isolated worker known template identities:
@@ -61,7 +62,7 @@ class AzureProjectTemplateType : PredefinedProjectTemplateType() {
                 template.id == "Microsoft.AzureFunctions.ProjectTemplate.CSharp.Isolated.4.x" ||
                 template.id == "Microsoft.AzureFunctions.ProjectTemplate.FSharp.Isolated.4.x"
             ) {
-                return RiderAzureBundle.message("template.project.function_app.isolated.worker")
+                return isolatedWorker
             }
 
             // Default worker known template identities:
@@ -75,5 +76,7 @@ class AzureProjectTemplateType : PredefinedProjectTemplateType() {
 
             return template.id
         }
+
+        override fun typeComparator(): Comparator<String> = compareBy ({ !it.contains(isolatedWorker, true) }, { it })
     }
 }
