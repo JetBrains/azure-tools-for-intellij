@@ -25,8 +25,11 @@ package org.jetbrains.plugins.azure.functions.projectTemplating
 import com.intellij.ide.actions.ShowSettingsUtilImpl
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.registry.Registry
+import com.intellij.ui.IdeBorderFactory
+import com.intellij.ui.dsl.builder.Align
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.util.ui.JBInsets
 import com.intellij.util.ui.JBUI
-import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rider.ui.components.ComponentFactories
 import com.jetbrains.rider.ui.components.base.Viewable
 import com.microsoft.intellij.AzureConfigurable.AZURE_CONFIGURABLE_PREFIX
@@ -37,12 +40,14 @@ import org.jetbrains.plugins.azure.functions.coreTools.FunctionsCoreToolsInfoPro
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-class InstallFunctionsCoreToolsComponent(private val validationError: IProperty<String?>, reloadTemplates: Runnable) : Viewable<JComponent> {
+class InstallFunctionsCoreToolsComponent(reloadTemplates: Runnable) : Viewable<JComponent> {
 
     val pane = JPanel(MigLayout("fill, ins 0, flowy, gap ${JBUI.scale(2)}", "[push]", "[min!][grow]"))
 
     override fun getView(): JComponent {
-        return pane
+        return panel {
+            row { cell(pane).align(Align.FILL).resizableColumn() }.resizableRow()
+        }.apply { border = IdeBorderFactory.createEmptyBorder(JBInsets(10, 20, 10, 20)) }
     }
 
     init {
@@ -57,7 +62,6 @@ class InstallFunctionsCoreToolsComponent(private val validationError: IProperty<
                     FunctionsCoreToolsInfoProvider.retrieveForVersion(
                             project, FunctionsCoreToolsConstants.FUNCTIONS_CORETOOLS_LATEST_SUPPORTED_VERSION, allowDownload = true)
 
-                    validationError.set(null)
                     reloadTemplates.run()
                 })
             }
@@ -67,7 +71,6 @@ class InstallFunctionsCoreToolsComponent(private val validationError: IProperty<
                 // TODO: FIX_LOCALIZATION: Using displayName parameter here for Settings ID need to be fixed to use ID to avoid localization issues.
                 ShowSettingsUtilImpl.showSettingsDialog(project, AZURE_CONFIGURABLE_PREFIX + message("settings.app_services.function_app.name"), "")
 
-                validationError.set(null)
                 reloadTemplates.run()
             })
         }
