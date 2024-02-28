@@ -77,6 +77,7 @@ class AzureProjectTemplateType : PredefinedProjectTemplateType() {
             return template.id
         }
 
-        override fun typeComparator(): Comparator<String> = compareBy ({ !it.contains(isolatedWorker, true) }, { it })
+        //todo: uncomment in EAP 7
+        //override fun typeComparator(): Comparator<String> = compareBy ({ !it.contains(isolatedWorker, true) }, { it })
     }
 }
