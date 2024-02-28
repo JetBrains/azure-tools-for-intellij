@@ -8,6 +8,8 @@
         <ul>
           <li>Compatibility with Rider 2024.1</li>
           <li>Enable "Start Azurite" task for all run configurations (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/780">#780</a>)</li>
+          <li>New Azure Explorer icon</li>
+          <li>Support for the New Solution dialog (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/793">#793</a>)</li>
         </ul>
     </html>
     ]]>
