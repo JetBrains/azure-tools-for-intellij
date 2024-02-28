@@ -1,0 +1,9 @@
+{
+  "icons": {
+    "expui": {
+      "Rider": {
+        "AzureToolWindow.svg": "icons/ToolWindow/AzureToolWindow.svg"
+      }
+    }
+  }
+}

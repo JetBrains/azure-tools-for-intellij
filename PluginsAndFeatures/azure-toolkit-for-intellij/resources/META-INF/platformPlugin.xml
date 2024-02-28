@@ -71,6 +71,7 @@
     <completion.contributor language="JSON" order="first"
                             implementationClass="com.microsoft.intellij.language.arm.codeinsight.ARMCompletionContributor"/>
 
+      <iconMapper mappingFile="AzureIconMappings.json"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.microsoft.intellij">
