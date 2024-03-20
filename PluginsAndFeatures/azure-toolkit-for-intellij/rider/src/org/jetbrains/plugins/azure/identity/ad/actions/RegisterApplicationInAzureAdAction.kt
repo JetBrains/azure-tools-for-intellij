@@ -403,5 +403,5 @@ class RegisterApplicationInAzureAdAction
                 })
     }
 
-    override fun getActionUpdateThread() = ActionUpdateThread.EDT
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }
