@@ -38,12 +38,12 @@
 | [Queue Trigger](File/CSharp/IsolatedWorker/CS_Queue_Trigger.md)                                     |
 | [Queue Trigger](File/FSharp/DefaultWorker/FS_Queue_Trigger.md)                                      |
 | [Queue Trigger](File/FSharp/IsolatedWorker/FS_Queue_Trigger.md)                                     |
+| [SQL Trigger](File/CSharp/DefaultWorker/CS_SQL_Trigger.md)                                          |
+| [SQL Trigger](File/CSharp/IsolatedWorker/CS_SQL_Trigger.md)                                         |
 | [Service Bus Queue Trigger](File/CSharp/DefaultWorker/CS_Service_Bus_Queue_Trigger.md)              |
 | [Service Bus Queue Trigger](File/CSharp/IsolatedWorker/CS_Service_Bus_Queue_Trigger.md)             |
 | [Service Bus Topic Trigger](File/CSharp/DefaultWorker/CS_Service_Bus_Topic_Trigger.md)              |
 | [Service Bus Topic Trigger](File/CSharp/IsolatedWorker/CS_Service_Bus_Topic_Trigger.md)             |
-| [SQL Trigger](File/CSharp/DefaultWorker/CS_SQL_Trigger.md)                                          |
-| [SQL Trigger](File/CSharp/IsolatedWorker/CS_SQL_Trigger.md)                                         |
 | [Timer Trigger](File/CSharp/DefaultWorker/CS_Timer_Trigger.md)                                      |
 | [Timer Trigger](File/CSharp/IsolatedWorker/CS_Timer_Trigger.md)                                     |
 | [Timer Trigger](File/FSharp/DefaultWorker/FS_Timer_Trigger.md)                                      |
