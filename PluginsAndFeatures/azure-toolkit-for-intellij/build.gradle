@@ -129,7 +129,7 @@ dependencies {
     implementation project(path: ':azure-intellij-plugin-guidance-java', configuration: 'instrumentedJar')
     implementation project(path: ':azure-sdk-reference-book', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-springcloud', configuration: 'instrumentedJar')
-    implementation project(path: ':azure-intellij-plugin-storage', configuration: 'instrumentedJar')
+    implementation project(path: ':azure-intellij-plugin-storage-java', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-appservice-java', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-arm', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-applicationinsights', configuration: 'instrumentedJar')

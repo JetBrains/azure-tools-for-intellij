@@ -17,6 +17,8 @@ dependencies {
     runtimeOnly project(path: ':azure-intellij-plugin-guidance-java', configuration: 'instrumentedJar')
     compileOnly project(path: ':azure-intellij-plugin-storage')
     runtimeOnly project(path: ':azure-intellij-plugin-storage', configuration: 'instrumentedJar')
+    compileOnly project(path: ':azure-intellij-plugin-storage-java')
+    runtimeOnly project(path: ':azure-intellij-plugin-storage-java', configuration: 'instrumentedJar')
     compileOnly project(path: ':azure-intellij-resource-connector-lib')
     runtimeOnly project(path: ':azure-intellij-resource-connector-lib', configuration: 'instrumentedJar')
     compileOnly project(path: ':azure-intellij-plugin-containerregistry')

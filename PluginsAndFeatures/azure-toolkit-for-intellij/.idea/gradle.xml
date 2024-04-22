@@ -39,6 +39,7 @@
             <option value="$PROJECT_DIR$/azure-intellij-plugin-springcloud" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-sqlserverbigdata" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-storage" />
+            <option value="$PROJECT_DIR$/azure-intellij-plugin-storage-java" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-synapse" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-vm" />
             <option value="$PROJECT_DIR$/azure-intellij-resource-connector-aad" />
