@@ -29,6 +29,7 @@
             <option value="$PROJECT_DIR$/azure-intellij-plugin-hdinsight-base" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-hdinsight-lib" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-keyvault" />
+            <option value="$PROJECT_DIR$/azure-intellij-plugin-keyvault-java" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-lib" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-lib-java" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-monitor" />

@@ -1,0 +1,8 @@
+intellij {
+    plugins = ['java']
+}
+
+dependencies {
+    compileOnly project(path: ':azure-intellij-resource-connector-lib-java')
+    runtimeOnly project(path: ':azure-intellij-resource-connector-lib-java', configuration: 'instrumentedJar')
+}
