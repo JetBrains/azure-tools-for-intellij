@@ -1,8 +1,17 @@
 intellij {
-    plugins = ['java']
+    plugins = ['java', "properties", "yaml"]
 }
 
 dependencies {
+    compileOnly project(path: ':azure-intellij-plugin-lib')
+    runtimeOnly project(path: ':azure-intellij-plugin-lib', configuration: 'instrumentedJar')
+    compileOnly project(path: ':azure-intellij-resource-connector-lib')
+    runtimeOnly project(path: ':azure-intellij-resource-connector-lib', configuration: 'instrumentedJar')
     compileOnly project(path: ':azure-intellij-resource-connector-lib-java')
     runtimeOnly project(path: ':azure-intellij-resource-connector-lib-java', configuration: 'instrumentedJar')
+    compileOnly project(path: ':azure-intellij-plugin-keyvault')
+    runtimeOnly project(path: ':azure-intellij-plugin-keyvault', configuration: 'instrumentedJar')
+    implementation 'com.microsoft.azure:azure-toolkit-keyvault-lib'
+    implementation 'com.microsoft.azure:azure-toolkit-ide-common-lib'
+    implementation 'com.microsoft.azure:azure-toolkit-ide-keyvault-lib'
 }
