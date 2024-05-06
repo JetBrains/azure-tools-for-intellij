@@ -1,0 +1,6 @@
+dependencies {
+    compileOnly project(path: ':azure-intellij-plugin-redis')
+    runtimeOnly project(path: ':azure-intellij-plugin-redis', configuration: 'instrumentedJar')
+    compileOnly project(path: ':azure-intellij-resource-connector-lib-java')
+    runtimeOnly project(path: ':azure-intellij-resource-connector-lib-java', configuration: 'instrumentedJar')
+}

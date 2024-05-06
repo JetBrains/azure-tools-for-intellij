@@ -141,7 +141,7 @@ dependencies {
     implementation project(path: ':azure-intellij-plugin-containerapps', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-database-java', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-vm', configuration: 'instrumentedJar')
-    implementation project(path: ':azure-intellij-plugin-redis', configuration: 'instrumentedJar')
+    implementation project(path: ':azure-intellij-plugin-redis-java', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-samples', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-bicep', configuration: 'instrumentedJar')
     implementation project(path: ':azure-intellij-plugin-eventhubs', configuration: 'instrumentedJar')
