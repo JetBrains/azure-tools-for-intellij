@@ -25,6 +25,7 @@ package org.jetbrains.plugins.azure.functions.run
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.debugger.IRiderDebuggable
+import com.jetbrains.rider.run.configurations.IAutoSelectableRunConfiguration
 import com.jetbrains.rider.run.configurations.RiderAsyncRunConfiguration
 import com.jetbrains.rider.runtime.RiderDotNetActiveRuntimeHost
 import org.jdom.Element
@@ -40,7 +41,7 @@ class AzureFunctionsHostConfiguration(
         factory,
         { AzureFunctionsHostSettingsEditorGroup(it) },
         AzureFunctionsHostExecutorFactory(parameters)
-), IRiderDebuggable {
+), IRiderDebuggable, IAutoSelectableRunConfiguration {
 
     private val riderDotNetActiveRuntimeHost = RiderDotNetActiveRuntimeHost.getInstance(project)
 
@@ -58,4 +59,6 @@ class AzureFunctionsHostConfiguration(
         super.writeExternal(element)
         parameters.writeExternal(element)
     }
+
+    override fun getAutoSelectPriority() = 10
 }
