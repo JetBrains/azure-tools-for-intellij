@@ -75,6 +75,11 @@ class AzureCoreToolsMissingNupkgNotificationProvider : EditorNotificationProvide
             service.installPackage(file, dependency)
         }, true)
 
+        panel.createActionLabel(RiderAzureBundle.message("notification.function_app.missing_nupkg.action.reload"), {
+            FunctionMissingNugetPackageService.getInstance(project).clearCache()
+            EditorNotifications.getInstance(project).updateNotifications(file)
+        }, true)
+
         panel.createActionLabel(RiderAzureBundle.message("notification.function_app.missing_nupkg.action.dismiss"), {
             dismissNotification(file, project)
         }, true)

@@ -3,6 +3,7 @@ package org.jetbrains.plugins.azure.functions
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.readText
@@ -18,7 +19,10 @@ import java.nio.file.Path
 import java.util.concurrent.ConcurrentHashMap
 
 @Service(Service.Level.PROJECT)
-class FunctionMissingNugetPackageService(private val project: Project, private val scope: CoroutineScope) : LifetimedService() {
+class FunctionMissingNugetPackageService(
+    private val project: Project,
+    private val scope: CoroutineScope
+) : LifetimedService() {
     companion object {
         fun getInstance(project: Project) = project.service<FunctionMissingNugetPackageService>()
 
@@ -48,55 +52,57 @@ class FunctionMissingNugetPackageService(private val project: Project, private v
         private val markerToTriggerMap = mapOf(
             // Default worker
             "Microsoft.Azure.WebJobs" to mapOf(
-                "BlobTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Storage.Blobs", "5.2.1")),
-                "QueueTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Storage.Queues", "5.2.0")),
-                "CosmosDBTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.CosmosDB", "4.4.0")),
-                "OrchestrationTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.DurableTask", "2.13.0")),
-                "EventGridTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.EventGrid", "3.3.1")),
-                "EventHubTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.EventHubs", "6.0.2")),
-                "IoTHubTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.EventHubs", "6.0.2")),
-                "ServiceBusTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.ServiceBus", "5.13.4")),
-                "SqlTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Sql", "3.0.461")),
-                "DaprPublish" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Dapr", "0.17.0-preview01")),
-                "DaprInvoke" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Dapr", "0.17.0-preview01")),
-                "DaprState" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Dapr", "0.17.0-preview01")),
-                "DaprServiceInvocationTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Dapr", "0.17.0-preview01")),
-                "DaprTopicTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Dapr", "0.17.0-preview01")),
+                "BlobTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Storage.Blobs", "5.3.0")),
+                "QueueTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Storage.Queues", "5.3.0")),
+                "CosmosDBTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.CosmosDB", "4.6.1")),
+                "OrchestrationTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.DurableTask", "2.13.3")),
+                "EventGridTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.EventGrid", "3.4.1")),
+                "EventHubTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.EventHubs", "6.3.2")),
+                "IoTHubTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.EventHubs", "6.3.2")),
+                "ServiceBusTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.ServiceBus", "5.15.1")),
+                "SqlTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Sql", "3.0.534")),
+                "DaprPublish" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Dapr", "1.0.0")),
+                "DaprInvoke" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Dapr", "1.0.0")),
+                "DaprState" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Dapr", "1.0.0")),
+                "DaprServiceInvocationTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Dapr", "1.0.0")),
+                "DaprTopicTrigger" to listOf(PackageDependency("Microsoft.Azure.WebJobs.Extensions.Dapr", "1.0.0")),
             ),
 
             // Isolated worker
             "Microsoft.Azure.Functions.Worker" to mapOf(
-                "BlobTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs", "6.2.0")),
-                "QueueTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues", "5.2.0")),
-                "CosmosDBTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.CosmosDB", "4.4.2")),
-                "EventGridTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.EventGrid", "3.4.0")),
-                "EventHubTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.EventHubs", "6.0.1")),
-                "HttpTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Http", "3.1.0")),
-                "ServiceBusTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.ServiceBus", "5.14.1")),
+                "BlobTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs", "6.4.0")),
+                "QueueTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues", "5.4.0")),
+                "CosmosDBTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.CosmosDB", "4.8.1")),
+                "EventGridTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.EventGrid", "3.4.1")),
+                "EventHubTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.EventHubs", "6.3.1")),
+                "HttpTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Http", "3.2.0")),
+                "ServiceBusTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.ServiceBus", "5.18.0")),
                 "TimerTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Timer", "4.3.0")),
-                "SqlTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Sql", "3.0.461")),
+                "SqlTrigger" to listOf(PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Sql", "3.0.534")),
                 "DaprPublish" to listOf(
-                    PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Dapr", "0.17.0-preview01"),
+                    PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Dapr", "1.0.0"),
                     PackageDependency("CloudNative.CloudEvents", "2.7.1")
                 ),
                 "DaprInvoke" to listOf(
-                    PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Dapr", "0.17.0-preview01"),
+                    PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Dapr", "1.0.0"),
                     PackageDependency("CloudNative.CloudEvents", "2.7.1")
                 ),
                 "DaprState" to listOf(
-                    PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Dapr", "0.17.0-preview01"),
+                    PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Dapr", "1.0.0"),
                     PackageDependency("CloudNative.CloudEvents", "2.7.1")
                 ),
                 "DaprServiceInvocationTrigger" to listOf(
-                    PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Dapr", "0.17.0-preview01"),
+                    PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Dapr", "1.0.0"),
                     PackageDependency("CloudNative.CloudEvents", "2.7.1")
                 ),
                 "DaprTopicTrigger" to listOf(
-                    PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Dapr", "0.17.0-preview01"),
+                    PackageDependency("Microsoft.Azure.Functions.Worker.Extensions.Dapr", "1.0.0"),
                     PackageDependency("CloudNative.CloudEvents", "2.7.1")
                 ),
             )
         )
+
+        private val LOG = logger<FunctionMissingNugetPackageService>()
     }
 
     init {
@@ -105,6 +111,7 @@ class FunctionMissingNugetPackageService(private val project: Project, private v
             if (it.entity.isDependencyPackage()) {
                 val packageName = it.entity.name.substringBefore("/")
                 if (packageNames.contains(packageName)) {
+                    LOG.trace("Package $packageName was installed")
                     cache.clear()
                 }
             }
@@ -113,6 +120,7 @@ class FunctionMissingNugetPackageService(private val project: Project, private v
             if (it.entity.isDependencyPackage()) {
                 val packageName = it.entity.name.substringBefore("/")
                 if (packageNames.contains(packageName)) {
+                    LOG.trace("Package $packageName was removed")
                     cache.clear()
                 }
             }
@@ -125,13 +133,17 @@ class FunctionMissingNugetPackageService(private val project: Project, private v
     data class InstallableDependency(val dependency: PackageDependency, val installableProjectPath: Path)
 
     fun getMissingPackages(file: VirtualFile): List<InstallableDependency>? {
-        val fileName = file.name
-        val (modificationStamp, dependencies) = cache[fileName] ?: return null
+        val filePath = file.path
+        LOG.trace("Getting packages for $filePath")
+
+        val (modificationStamp, dependencies) = cache[filePath] ?: return null
         if (modificationStamp == file.modificationStamp) {
+            LOG.trace("Found dependencies in cache for $filePath: ${dependencies.joinToString()}")
             return dependencies
         }
 
-        cache.remove(fileName)
+        LOG.trace("Removing $filePath from cache")
+        cache.remove(filePath)
         return null
     }
 
@@ -139,12 +151,18 @@ class FunctionMissingNugetPackageService(private val project: Project, private v
         scope.launch {
             val modificationStamp = file.modificationStamp
             val dependencies = getInstallableDependencies(file).toMutableList()
-            cache[file.name] = modificationStamp to dependencies
+            cache[file.path] = modificationStamp to dependencies
+            LOG.trace("Saving dependencies to cache for ${file.path}: ${dependencies.joinToString()}")
 
             withContext(Dispatchers.EDT) {
                 EditorNotifications.getInstance(project).updateNotifications(file)
             }
         }
+    }
+
+    fun clearCache() {
+        LOG.trace("Clearing the cache")
+        cache.clear()
     }
 
     private suspend fun getInstallableDependencies(file: VirtualFile): List<InstallableDependency> {
@@ -189,14 +207,20 @@ class FunctionMissingNugetPackageService(private val project: Project, private v
 
     fun installPackage(file: VirtualFile, dependency: InstallableDependency) {
         scope.launch {
+            LOG.trace("Installing dependency $dependency for ${file.path}")
             val installableProject = WorkspaceModel.getInstance(project)
                 .getProjectModelEntities(dependency.installableProjectPath, project)
                 .firstOrNull()
 
             if (installableProject != null) {
+                LOG.trace("Installing dependency $dependency in project ${installableProject.name}")
                 val riderNuGetFacade = RiderNuGetHost.getInstance(project).facade
                 withContext(Dispatchers.EDT) {
-                    riderNuGetFacade.installForProject(installableProject.name, dependency.dependency.id, dependency.dependency.version)
+                    riderNuGetFacade.installForProject(
+                        installableProject.name,
+                        dependency.dependency.id,
+                        dependency.dependency.version
+                    )
                 }
 
                 for (i in 0..<30) {
