@@ -29,6 +29,7 @@
           <li>Enable "Start Azurite" task for all run configurations (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/780">#780</a>)</li>
           <li>New Azure Explorer icon</li>
           <li>Support for the New Solution dialog (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/793">#793</a>)</li>
+          <li>Improve "Trigger HTTP function" action (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/831">#831</a>)</li>
         </ul>
         <p>[3.50.0-2023.3]</p>
         <ul>
@@ -375,6 +376,7 @@
                      groupName="Azure"
                      implementationClass="org.jetbrains.plugins.azure.functions.codeInspection.msbuild.AzureFunctionsVersionInspection"/>
 
+    <internalFileTemplate name="Trigger Azure HTTP Function"/>
     <internalFileTemplate name="Trigger Azure Function"/>
 
     <completion.contributor language="C#"

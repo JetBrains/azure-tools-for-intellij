@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 JetBrains s.r.o.
+ * Copyright (c) 2020-2024 JetBrains s.r.o.
  *
  * All rights reserved.
  *
@@ -50,6 +50,18 @@ object DaemonCSharpGenerator : ExternalGenerator(
 @Suppress("unused")
 object FunctionAppDaemonModel : Ext(SolutionModel.Solution) {
 
+    private val FunctionAppTriggerType = enum {
+        +"HttpTrigger"
+        +"Other"
+    }
+
+    private val FunctionAppHttpTriggerAttribute = structdef {
+        field("authLevel", string.nullable)
+        field("methods", immutableList(string))
+        field("route", string.nullable)
+        field("routeForHttpClient", string.nullable)
+    }
+
     private val FunctionAppRunDebugRequest = structdef {
         field("projectFilePath", string)
         field("methodName", string.nullable)
@@ -60,6 +72,8 @@ object FunctionAppDaemonModel : Ext(SolutionModel.Solution) {
         field("projectFilePath", string)
         field("methodName", string)
         field("functionName", string)
+        field("triggerType", FunctionAppTriggerType)
+        field("httpTriggerAttribute", FunctionAppHttpTriggerAttribute.nullable)
     }
 
     private val AzureFunctionsVersionRequest = structdef {

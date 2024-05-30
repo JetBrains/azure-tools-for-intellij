@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 JetBrains s.r.o.
+// Copyright (c) 2020-2024 JetBrains s.r.o.
 //
 // All rights reserved.
 //
@@ -70,11 +70,13 @@ namespace JetBrains.ReSharper.Azure.Daemon.FunctionApp
                 methodName: methodName, 
                 functionName: functionName));
 
-        public void TriggerFunctionApp([NotNull] string projectFilePath, [NotNull] string methodName, [NotNull] string functionName) => _model.TriggerFunctionApp(
+        public void TriggerFunctionApp([NotNull] string projectFilePath, [NotNull] string methodName, [NotNull] string functionName, FunctionAppTriggerType triggerType, [CanBeNull] FunctionAppHttpTriggerAttribute httpTriggerAttribute) => _model.TriggerFunctionApp(
             new FunctionAppTriggerRequest(
                 projectFilePath: projectFilePath, 
                 methodName: methodName, 
-                functionName: functionName));
+                functionName: functionName,
+                triggerType: triggerType,
+                httpTriggerAttribute: httpTriggerAttribute));
 
         private RdTask<string> GetAzureFunctionsVersionHandler(Lifetime lifetime, AzureFunctionsVersionRequest request)
         {
