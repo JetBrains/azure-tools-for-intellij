@@ -26,7 +26,9 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Azure.Daemon.FunctionApp;
 using JetBrains.ReSharper.Azure.Localization;
 using JetBrains.ReSharper.Azure.Psi.FunctionApp;
+using JetBrains.ReSharper.Azure.Psi.FunctionApp.Routing;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Rider.Azure.Model;
 using JetBrains.Rider.Backend.Features.RunMarkers;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.UI.Icons;
@@ -70,6 +72,8 @@ namespace JetBrains.ReSharper.Azure.Daemon.RunMarkers
             var functionName = FunctionAppFinder.GetFunctionNameFromMethod(runMarker.Method) ??
                                runMarker.Method.ShortName;
 
+            var httpTriggerAttributeInfo = FunctionAppFinder.GetHttpTriggerAttributeFromMethod(runMarker.Method);
+
             var projectFilePath = runMarker.Project.ProjectFileLocation.NormalizeSeparators(FileSystemPathEx.SeparatorStyle.Unix);
             
             var subAnchor = BulbMenuAnchors.PermanentItem.CreateNext(separate: true);
@@ -99,7 +103,18 @@ namespace JetBrains.ReSharper.Azure.Daemon.RunMarkers
                 subAnchor);
 
             yield return new BulbMenuItem(
-                new ExecutableItem(() => { functionAppDaemonHost.TriggerFunctionApp(projectFilePath, methodName, functionName); }),
+                new ExecutableItem(() => { 
+                    functionAppDaemonHost.TriggerFunctionApp(projectFilePath, methodName, functionName,
+                        httpTriggerAttributeInfo == null 
+                            ? FunctionAppTriggerType.Other 
+                            : FunctionAppTriggerType.HttpTrigger,
+                        httpTriggerAttributeInfo == null 
+                            ? null 
+                            : new FunctionAppHttpTriggerAttribute(
+                                authLevel: httpTriggerAttributeInfo.AuthLevel, 
+                                methods: httpTriggerAttributeInfo.Methods?.ToList(it => it) ?? new List<string>(0), 
+                                route: httpTriggerAttributeInfo.Route,
+                                routeForHttpClient: httpTriggerAttributeInfo.GetRouteForHttpClient())); }),
                 new RichText(javaPropertiesLoader.GetLocalizedString("gutter.function_app.trigger", functionName)),
                 FunctionAppRunMarkersThemedIcons.Trigger.Id,
                 subAnchor);

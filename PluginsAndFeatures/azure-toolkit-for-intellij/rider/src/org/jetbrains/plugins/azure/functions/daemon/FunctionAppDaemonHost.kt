@@ -76,7 +76,10 @@ class FunctionAppDaemonHost(project: Project) : LifetimedProjectComponent(projec
 
     private fun initTriggerFunctionAppHandler() {
         model.triggerFunctionApp.advise(componentLifetime) { triggerFunctionRequest ->
-            val triggerAction = TriggerAzureFunctionAction(functionName = triggerFunctionRequest.functionName)
+            val triggerAction = TriggerAzureFunctionAction(
+                functionName = triggerFunctionRequest.functionName,
+                triggerType = triggerFunctionRequest.triggerType,
+                httpTriggerAttribute = triggerFunctionRequest.httpTriggerAttribute)
 
             ActionUtil.invokeAction(
                     triggerAction,

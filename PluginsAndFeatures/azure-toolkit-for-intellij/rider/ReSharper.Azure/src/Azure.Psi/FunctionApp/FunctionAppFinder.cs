@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 JetBrains s.r.o.
+// Copyright (c) 2020-2024 JetBrains s.r.o.
 //
 // All rights reserved.
 //
@@ -18,6 +18,7 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
@@ -40,6 +41,9 @@ namespace JetBrains.ReSharper.Azure.Psi.FunctionApp
 
             public static readonly IClrTypeName TimerTriggerAttributeTypeName =
                 new ClrTypeName("Microsoft.Azure.WebJobs.TimerTriggerAttribute");
+            
+            public static readonly IClrTypeName HttpTriggerAttributeTypeName =
+                new ClrTypeName("Microsoft.Azure.WebJobs.HttpTriggerAttribute");
         }
         
         static class IsolatedWorker
@@ -49,6 +53,9 @@ namespace JetBrains.ReSharper.Azure.Psi.FunctionApp
 
             public static readonly IClrTypeName TimerTriggerAttributeTypeName =
                 new ClrTypeName("Microsoft.Azure.Functions.Worker.TimerTriggerAttribute");
+            
+            public static readonly IClrTypeName HttpTriggerAttributeTypeName =
+                new ClrTypeName("Microsoft.Azure.Functions.Worker.HttpTriggerAttribute");
         }
 
         /// <summary>
@@ -81,6 +88,70 @@ namespace JetBrains.ReSharper.Azure.Psi.FunctionApp
             }
 
             return functionNameParameter.ConstantValue.StringValue;
+        }
+        
+        /// <summary>
+        /// Get Http Trigger Attribute properties for a provided method's parameters, or null if attribute is missing
+        /// </summary>
+        /// <param name="method">A Method instance to check.</param>
+        /// <returns>Function App Http Trigger Attribute properties.</returns>
+        [CanBeNull]
+        public static HttpTriggerAttributeProperties GetHttpTriggerAttributeFromMethod([CanBeNull] IMethod method)
+        {
+            if (method == null) return null;
+            if (GetFunctionNameAttribute(method) == null) return null;
+
+            foreach (var methodParameter in method.Parameters)
+            {
+                var httpTriggerAttribute = GetHttpTriggerAttribute(methodParameter);
+                if (httpTriggerAttribute != null)
+                {
+                    var httpTriggerAttributeProperties = new HttpTriggerAttributeProperties();
+                    
+                    // Try with positional parameters (known signatures)
+                    var positionParameters = httpTriggerAttribute.PositionParameters().ToArray();
+                    if (positionParameters.Length == 1 && positionParameters[0].IsArray)
+                    {
+                        // HttpTriggerAttribute(params string[] methods)
+                        httpTriggerAttributeProperties.Methods =
+                            positionParameters[0].ArrayValue?.Select(it => it.ConstantValue.StringValue).AsArray();
+                    }
+                    else if (positionParameters.Length == 1)
+                    {
+                        // HttpTriggerAttribute(AuthLevel AuthLevel)
+                        httpTriggerAttributeProperties.AuthLevel = positionParameters[0].ConstantValue.AsString();
+                    }
+                    else if (positionParameters.Length == 2 && positionParameters[1].IsArray)
+                    {
+                        // HttpTriggerAttribute(AuthLevel, params string[] methods)
+                        httpTriggerAttributeProperties.AuthLevel = positionParameters[0].ConstantValue.AsString();
+                        httpTriggerAttributeProperties.Methods =
+                            positionParameters[1].ArrayValue?.Select(it => it.ConstantValue.StringValue).AsArray();
+                    }
+                    
+                    // Try with named parameters
+                    foreach (var (name, value) in httpTriggerAttribute.NamedParameters())
+                    {
+                        if (string.Equals(name, "Route", StringComparison.OrdinalIgnoreCase) && value.IsConstant)
+                        {
+                            httpTriggerAttributeProperties.Route = value.ConstantValue.StringValue;
+                        }
+                        else if (string.Equals(name, "Methods", StringComparison.OrdinalIgnoreCase) && value.IsArray)
+                        {
+                            httpTriggerAttributeProperties.Methods =
+                                value.ArrayValue?.Select(it => it.ConstantValue.StringValue).AsArray();
+                        }
+                        else if (string.Equals(name, "AuthLevel", StringComparison.OrdinalIgnoreCase))
+                        {
+                            httpTriggerAttributeProperties.AuthLevel = value.ConstantValue.AsString();
+                        }
+                    }
+
+                    return httpTriggerAttributeProperties;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -134,6 +205,33 @@ namespace JetBrains.ReSharper.Azure.Psi.FunctionApp
             }
 
             return functionAttributes.First();
+        }
+        
+        [CanBeNull]
+        private static IAttributeInstance GetHttpTriggerAttribute([NotNull] IParameter parameter)
+        {
+            var httpTriggerAttributes = parameter.GetAttributeInstances(DefaultWorker.HttpTriggerAttributeTypeName, false)
+                .Union(parameter.GetAttributeInstances(IsolatedWorker.HttpTriggerAttributeTypeName, false))
+                .ToList();
+
+            if (httpTriggerAttributes.IsEmpty())
+            {
+                if (ourLogger.IsTraceEnabled())
+                {
+                    ourLogger.Trace(
+                        $"No HttpTriggerAttribute was found for parameter '{parameter.ShortName}'.");
+                }
+
+                return null;
+            }
+
+            if (httpTriggerAttributes.Count > 1)
+            {
+                ourLogger.Info(
+                    $"Found more than one HttpTriggerAttribute attribute for parameter '{parameter.ShortName}'. Return the first match.");
+            }
+
+            return httpTriggerAttributes.First();
         }
     }
 }

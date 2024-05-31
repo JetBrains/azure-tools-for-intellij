@@ -7,9 +7,6 @@ ${comment} https://learn.microsoft.com/en-us/azure/azure-functions/functions-man
 ${comment}
 ${comment} Make sure to update the below calls to suit your function host and port.
 ${comment}
-${comment} Call the following administrative endpoint to trigger non-HTTP functions:
+${comment} Call the following endpoint to locally run HTTP and webhook-triggered functions:
 
-${requestMethod.toUpperCase()} http://localhost:7071/admin/functions/${functionName}
-Content-Type: application/json
-
-{}
+${requestMethod.toUpperCase()} http://localhost:7071/api/${urlPath}
