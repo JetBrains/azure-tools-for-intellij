@@ -40,6 +40,7 @@ import com.jetbrains.rd.util.concurrentMapOf
 import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.microsoft.intellij.configuration.AzureRiderSettings
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
+import org.jetbrains.plugins.azure.orWhenNullOrEmpty
 import java.io.File
 import java.io.IOException
 import java.net.UnknownHostException
@@ -152,9 +153,9 @@ object FunctionsCoreToolsManager {
         val properties = PropertiesComponent.getInstance()
 
         // Ensure download root exists
-        val downloadRoot = File(properties.getValue(
-                AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH,
-                AzureRiderSettings.VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH))
+        val downloadRootProperty = properties.getValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH)
+            .orWhenNullOrEmpty(AzureRiderSettings.VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH)
+        val downloadRoot = File(downloadRootProperty)
 
         try {
             downloadRoot.mkdir()
