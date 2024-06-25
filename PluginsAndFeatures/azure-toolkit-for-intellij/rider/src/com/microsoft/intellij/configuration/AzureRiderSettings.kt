@@ -50,9 +50,6 @@ object AzureRiderSettings {
     val VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH: String = PathUtil.toSystemIndependentName(
             com.microsoft.azuretools.azurecommons.util.FileUtil.getDirectoryWithinUserHome(AZURE_TOOLS_FOLDER).resolve("AzureFunctionsCoreTools").absolutePathString())
 
-    @Deprecated("To be removed with 2022.3")
-    const val PROPERTY_FUNCTIONS_MIGRATE_CORETOOLS_PATH_NOTIFICATION = "AzureFunctionsCoreToolsPath_Migration_Notify"
-
     data class AzureCoreToolsPathEntry(var functionsVersion: String, var coreToolsPath: String) {
 
         fun toStringEntry() = "$functionsVersion|$coreToolsPath"

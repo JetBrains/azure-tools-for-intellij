@@ -29,6 +29,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.registry.Registry
 import com.microsoft.azure.toolkit.intellij.function.runner.core.FunctionCliResolver
 import com.microsoft.intellij.configuration.AzureRiderSettings
+import org.jetbrains.plugins.azure.util.isFunctionCoreToolsExecutable
 import java.io.File
 import java.nio.file.Path
 
@@ -81,14 +82,14 @@ object FunctionsCoreToolsInfoProvider {
         logger.debugValues("Azure Core Tools path entries", coreToolsConfiguration.map { "${it.functionsVersion}: ${it.coreToolsPath}" })
 
         val coreToolsPathFromConfiguration = coreToolsConfiguration
-                .firstOrNull { it.functionsVersion.equals(azureFunctionsVersion, ignoreCase = true) }
-                ?.coreToolsPath ?: return null
+            .firstOrNull { it.functionsVersion.equals(azureFunctionsVersion, ignoreCase = true) }
+            ?.coreToolsPath
+            ?: return null
+
+        if (coreToolsPathFromConfiguration.isEmpty()) return null
 
         // If configuration is func/func.cmd/func.exe, try and determine the full path from the environment
-        if (coreToolsPathFromConfiguration.equals("func", ignoreCase = true) ||
-                coreToolsPathFromConfiguration.equals("func.cmd", ignoreCase = true) ||
-                coreToolsPathFromConfiguration.equals("func.exe", ignoreCase = true)) {
-
+        if (isFunctionCoreToolsExecutable(coreToolsPathFromConfiguration)) {
             val coreToolsInfoFromEnvironment = FunctionCliResolver.resolveFunc()
                     ?.let { resolveFromPath(File(it)) }
 
@@ -164,13 +165,13 @@ object FunctionsCoreToolsInfoProvider {
         // where the func executable is located.
         //
         // Logic is similar to com.microsoft.azure.toolkit.intellij.function.runner.core.FunctionCliResolver.resolveFunc()
-        val chocolateyCoreToolsPath = normalizedFuncCoreToolsPath.resolve("..").resolve("lib").resolve("azure-functions-core-tools").resolve("tools").normalize()
+        val chocolateyCoreToolsPath = normalizedFuncCoreToolsPath.resolve("../lib/azure-functions-core-tools/tools").normalize()
         if (chocolateyCoreToolsPath.exists()) {
             logger.info("Functions core tools path ${normalizedFuncCoreToolsPath.path} is Chocolatey-installed. Rewriting path to ${chocolateyCoreToolsPath.path}")
             return chocolateyCoreToolsPath
         }
 
-        val npmCoreToolsPath = normalizedFuncCoreToolsPath.resolve("..").resolve("node_modules").resolve("azure-functions-core-tools").resolve("bin").normalize()
+        val npmCoreToolsPath = normalizedFuncCoreToolsPath.resolve("../node_modules/azure-functions-core-tools/bin").normalize()
         if (npmCoreToolsPath.exists()) {
             logger.info("Functions core tools path ${normalizedFuncCoreToolsPath.path} is NPM-installed. Rewriting path to ${npmCoreToolsPath.path}")
             return npmCoreToolsPath
