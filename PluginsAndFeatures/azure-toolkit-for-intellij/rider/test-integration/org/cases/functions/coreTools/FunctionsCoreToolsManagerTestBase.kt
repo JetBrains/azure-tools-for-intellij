@@ -105,6 +105,7 @@ abstract class FunctionsCoreToolsManagerTestBase(
 
         val result = FunctionsCoreToolsManager.demandCoreToolsPathForVersion(
                 project, azureFunctionsVersion, releaseFeedUrl, allowDownload = false)
+            ?.absolutePath
 
         result.shouldBeNull("Path should be null when downloading tools is not allowed.")
     }
@@ -116,6 +117,7 @@ abstract class FunctionsCoreToolsManagerTestBase(
 
         val result = FunctionsCoreToolsManager.demandCoreToolsPathForVersion(
                 project, azureFunctionsVersion, releaseFeedUrl, allowDownload = true)
+            ?.absolutePath
 
         result.shouldNotBeNull("Path should not be null when downloading tools is allowed.")
         result!!.shouldContains(File.separator + azureFunctionsVersion + File.separator)
@@ -141,6 +143,7 @@ abstract class FunctionsCoreToolsManagerTestBase(
 
         val result = FunctionsCoreToolsManager.demandCoreToolsPathForVersion(
                 project, azureFunctionsVersion, releaseFeedUrl, allowDownload = false)
+            ?.absolutePath
 
         result.shouldNotBeNull("Path should not be null.")
         result!!.shouldBe(existingDownloadPath.path)

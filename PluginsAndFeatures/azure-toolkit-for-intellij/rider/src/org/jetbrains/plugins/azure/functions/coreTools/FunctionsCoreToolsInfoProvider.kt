@@ -116,7 +116,7 @@ object FunctionsCoreToolsInfoProvider {
                 project, azureFunctionsVersion, Registry.get("azure.function_app.core_tools.feed.url").asString(), allowDownload)
                 ?: return null
 
-        return resolveFromPath(File(coreToolsPathFromFeed))
+        return resolveFromPath(coreToolsPathFromFeed)
     }
 
     private fun resolveFromPath(funcCoreToolsPath: File): FunctionsCoreToolsInfo? {
