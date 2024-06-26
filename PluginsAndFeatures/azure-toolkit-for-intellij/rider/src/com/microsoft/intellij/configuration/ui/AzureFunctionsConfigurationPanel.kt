@@ -45,6 +45,7 @@ import com.microsoft.intellij.configuration.AzureRiderSettings
 import com.microsoft.intellij.ui.extension.getSelectedValue
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
 import org.jetbrains.plugins.azure.orWhenNullOrEmpty
+import org.jetbrains.plugins.azure.util.isFunctionCoreToolsExecutable
 import java.awt.Component
 import java.io.File
 import javax.swing.JTable
@@ -87,19 +88,17 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
 
                             if (isCoreToolsFeedEnabled && item.coreToolsPath.isEmpty()) {
                                 append(message("settings.app_services.function_app.core_tools.configuration.managed_by_ide"), SimpleTextAttributes.GRAY_ATTRIBUTES)
+                            } else if (isFunctionCoreToolsExecutable(item.coreToolsPath)) {
+                                append(message("settings.app_services.function_app.core_tools.configuration.func_from_path"), SimpleTextAttributes.REGULAR_ATTRIBUTES)
                             } else {
                                 val coreToolsFile = File(item.coreToolsPath)
 
-                                if (coreToolsFile.nameWithoutExtension.equals("func", ignoreCase = true)) {
-                                    append(message("settings.app_services.function_app.core_tools.configuration.func_from_path"), SimpleTextAttributes.REGULAR_ATTRIBUTES)
-                                } else {
-                                    val attributes = if (coreToolsFile.exists())
-                                        SimpleTextAttributes.REGULAR_ATTRIBUTES
-                                    else
-                                        SimpleTextAttributes.ERROR_ATTRIBUTES
+                                val attributes = if (coreToolsFile.exists())
+                                    SimpleTextAttributes.REGULAR_ATTRIBUTES
+                                else
+                                    SimpleTextAttributes.ERROR_ATTRIBUTES
 
-                                    append(valueOf(item), attributes)
-                                }
+                                append(valueOf(item), attributes)
                             }
                         }
                     }
@@ -109,8 +108,6 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
                     private val comboBox = AzureFunctionComponentBrowseButton()
 
                     init {
-                        val coreToolsPath = File(item.coreToolsPath)
-
                         // Setup values for editor
                         if (isCoreToolsFeedEnabled) {
                             comboBox.setPath(
@@ -129,22 +126,17 @@ class AzureFunctionsConfigurationPanel(parentDisposable: Disposable)
                                         "func",
                                         true
                                 ),
-                                coreToolsPath.nameWithoutExtension.equals("func", ignoreCase = true)
+                                isFunctionCoreToolsExecutable(item.coreToolsPath)
                         )
 
-                        if (item.coreToolsPath.isNotEmpty() && !coreToolsPath.nameWithoutExtension.equals("func", ignoreCase = true)) {
+                        if (item.coreToolsPath.isNotEmpty() && !isFunctionCoreToolsExecutable(item.coreToolsPath)) {
                             comboBox.setPath(CoreToolsComboBoxItem(item.coreToolsPath, item.coreToolsPath, false), true)
                         }
                     }
 
                     override fun getCellEditorValue(): String? {
                         comboBox.childComponent.editor.item.asSafely<String>()?.let { textEntry ->
-                            if (textEntry.isEmpty()) {
-                                return ""
-                            }
-
-                            val coreToolsPath = File(textEntry)
-                            if (coreToolsPath.exists() || coreToolsPath.nameWithoutExtension.equals("func", ignoreCase = true)) {
+                            if (textEntry.isEmpty() || isFunctionCoreToolsExecutable(textEntry) || File(textEntry).exists()) {
                                 return textEntry
                             }
                         }
@@ -289,7 +281,7 @@ private class AzureFunctionComponentBrowseButton : ComponentWithBrowseButton<Azu
                 null,
                 null,
                 null,
-                FileChooserDescriptorFactory.createSingleFolderDescriptor(),
+                FileChooserDescriptorFactory.createSingleFileDescriptor(),
                 fileBrowserAccessor
         )
     }

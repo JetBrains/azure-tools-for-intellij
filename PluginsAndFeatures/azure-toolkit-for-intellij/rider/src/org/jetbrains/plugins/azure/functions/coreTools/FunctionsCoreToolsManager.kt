@@ -40,6 +40,7 @@ import com.jetbrains.rd.util.concurrentMapOf
 import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.microsoft.intellij.configuration.AzureRiderSettings
 import org.jetbrains.plugins.azure.RiderAzureBundle.message
+import org.jetbrains.plugins.azure.orWhenNullOrEmpty
 import java.io.File
 import java.io.IOException
 import java.net.UnknownHostException
@@ -54,7 +55,7 @@ object FunctionsCoreToolsManager {
     fun demandCoreToolsPathForVersion(project: Project,
                                       azureFunctionsVersion: String,
                                       releaseFeedUrl: String,
-                                      allowDownload: Boolean): String? {
+                                      allowDownload: Boolean): File? {
 
         val downloadRoot = resolveDownloadRoot()
 
@@ -152,9 +153,9 @@ object FunctionsCoreToolsManager {
         val properties = PropertiesComponent.getInstance()
 
         // Ensure download root exists
-        val downloadRoot = File(properties.getValue(
-                AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH,
-                AzureRiderSettings.VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH))
+        val downloadRootProperty = properties.getValue(AzureRiderSettings.PROPERTY_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH)
+            .orWhenNullOrEmpty(AzureRiderSettings.VALUE_FUNCTIONS_CORETOOLS_DOWNLOAD_PATH)
+        val downloadRoot = File(downloadRootProperty)
 
         try {
             downloadRoot.mkdir()
@@ -188,11 +189,11 @@ object FunctionsCoreToolsManager {
         )
     }
 
-    private fun ensureReleaseDownloaded(project: Project, downloadInfo: FunctionsCoreToolsDownloadInfo): String? {
+    private fun ensureReleaseDownloaded(project: Project, downloadInfo: FunctionsCoreToolsDownloadInfo): File? {
 
         // Does the download path exist?
         if (downloadInfo.downloadFolderForTagAndRelease.exists()) {
-            return downloadInfo.downloadFolderForTagAndRelease.path
+            return downloadInfo.downloadFolderForTagAndRelease
         }
 
         // If not, download the release...
@@ -210,7 +211,7 @@ object FunctionsCoreToolsManager {
         pumpMessages(Duration.ofMinutes(15)) { installed }
 
         if (downloadInfo.downloadFolderForTagAndRelease.exists()) {
-            return downloadInfo.downloadFolderForTagAndRelease.path
+            return downloadInfo.downloadFolderForTagAndRelease
         }
 
         return null
@@ -280,7 +281,7 @@ object FunctionsCoreToolsManager {
         onComplete()
     }
 
-    private fun tryResolveExistingCoreToolsPath(azureFunctionsVersion: String, downloadRoot: File): String? {
+    private fun tryResolveExistingCoreToolsPath(azureFunctionsVersion: String, downloadRoot: File): File? {
 
         // Determine target folders for (potentially) cached path
         val downloadFolderForTag = downloadRoot.resolve(azureFunctionsVersion.lowercase())
@@ -297,7 +298,7 @@ object FunctionsCoreToolsManager {
                     "Azure Functions version: '${azureFunctionsVersion.lowercase()}'; " +
                     "Download path: ${downloadFolderForTagRelease.path}")
 
-            return downloadFolderForTagRelease.absolutePath
+            return downloadFolderForTagRelease
         }
 
         logger.warn("Could not determine existing Azure Functions Core Tools path. " +

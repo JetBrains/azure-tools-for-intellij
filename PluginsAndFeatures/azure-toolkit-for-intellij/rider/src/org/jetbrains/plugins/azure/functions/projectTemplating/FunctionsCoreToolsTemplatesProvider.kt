@@ -46,10 +46,10 @@ class FunctionsCoreToolsTemplatesProvider : ProjectTemplateProvider {
 
         if (!FunctionsCoreToolsTemplateManager.areRegistered()) {
             FunctionsCoreToolsTemplateManager.tryReload()
-        }
 
-        if (!FunctionsCoreToolsTemplateManager.areRegistered()) {
-            result.set(setOf(InstallTemplates()))
+            if (!FunctionsCoreToolsTemplateManager.areRegistered()) {
+                result.set(setOf(InstallTemplates()))
+            }
         }
 
         isReady.set(true)
