@@ -12,6 +12,10 @@
           <li>Support for the New Solution dialog (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/793">#793</a>)</li>
           <li>Improve "Trigger HTTP function" action (<a href="https://github.com/JetBrains/azure-tools-for-intellij/pull/831">#831</a>)</li>
         </ul>
+        <h4>Fixed:</h4>
+        <ul>
+          <li>Fix project template removing (<a href="https://github.com/JetBrains/azure-tools-for-intellij/issues/844">#844</a>)</li>
+        </ul>
     </html>
     ]]>
   </change-notes>
