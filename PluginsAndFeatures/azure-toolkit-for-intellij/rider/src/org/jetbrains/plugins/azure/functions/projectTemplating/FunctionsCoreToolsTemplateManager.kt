@@ -100,7 +100,7 @@ object FunctionsCoreToolsTemplateManager {
             ?: return null
 
         if (isFunctionCoreToolsExecutable(toolPathFromConfiguration)) {
-            val toolPathFromEnvironment = FunctionCliResolver.resolveFunc()
+            val toolPathFromEnvironment = FunctionCliResolver.resolveFunc() ?: return null
             return Path(toolPathFromEnvironment).parent
         }
 
