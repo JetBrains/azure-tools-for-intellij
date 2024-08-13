@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Azure.Daemon.Errors.FunctionAppErrors
 
 #region Configurable Severity Registrar
   [RegisterConfigurableSeverity(TimerTriggerCronExpressionError.HIGHLIGHTING_ID, null, null, null, AzureHighlightingGroupIds.FunctionApp, "Invalid Function App Timer Trigger Cron expression", null, null, "Function App Timer Trigger Cron expression is not valid and can not be used.", null, null, Severity.ERROR)]
-  public class RegisterSeverityComponentCAC4631F674C122DAC43AAECF236F252D2734D93052808AE491FDDD72FB80E4C
+  public class RegisterSeverityComponentF2D89CEB237C9F45229FA58A4F70E92782B3BB5A3AB13BBCC1616EB04ACB104F
   {
   }
 #endregion
