@@ -10,7 +10,7 @@ coroutines = "1.8.1"
 ktor = "2.3.12"
 lombok = "1.18.24"
 snakeyaml = "2.2"
-plexusArchiver = "4.2.7"
+plexusArchiver = "4.10.0"
 jedis = "3.6.3"
 
 # plugins
