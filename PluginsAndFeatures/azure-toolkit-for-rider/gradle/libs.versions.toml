@@ -15,7 +15,7 @@ jedis = "3.6.3"
 
 # plugins
 kotlin = "2.0.20"
-serialization = "1.7.2"
+serialization = "1.7.3"
 changelog = "2.2.1"
 intelliJPlatform = "2.0.1"
 qodana = "2024.1.9"
