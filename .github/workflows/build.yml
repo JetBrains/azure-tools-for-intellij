@@ -321,6 +321,7 @@ jobs:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
         with:
           cache-default-branch-only: true
+          args: --source-directory,PluginsAndFeatures/azure-toolkit-for-rider
 
   # Prepare a draft release for GitHub Releases page for the manual verification
   # If accepted and published, release workflow would be triggered

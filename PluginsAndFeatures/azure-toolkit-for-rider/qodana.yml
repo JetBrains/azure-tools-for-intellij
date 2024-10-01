@@ -1,0 +1,14 @@
+# Qodana configuration:
+# https://www.jetbrains.com/help/qodana/qodana-yaml.html
+
+version: 1.0
+linter: jetbrains/qodana-jvm:2024.2
+projectJDK: "17"
+profile:
+  name: qodana.recommended
+exclude:
+  - name: All
+    paths:
+      - .qodana
+      - protocol
+      - azure-intellij-plugin-resharper-host
