@@ -323,7 +323,6 @@ jobs:
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
         with:
-          cache-default-branch-only: true
           args: --source-directory,${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider,--config,${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider/qodana.yaml
 
   # Prepare a draft release for GitHub Releases page for the manual verification
