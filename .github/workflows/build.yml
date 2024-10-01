@@ -314,6 +314,9 @@ jobs:
         with:
           dotnet-version: '8.x'
 
+      - name: Temp
+        run: cat ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider/qodana.yaml
+
       # Run Qodana inspections
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@v2024.2
