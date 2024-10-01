@@ -315,7 +315,7 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Temp
-        run: cat ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider/qodana.yaml
+        run: cat ${{ github.workspace }}/qodana.yaml
 
       # Run Qodana inspections
       - name: Qodana - Code Inspection
@@ -323,7 +323,7 @@ jobs:
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
         with:
-          args: --source-directory,${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider,--config,${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider/qodana.yaml
+          args: --source-directory,${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
 
   # Prepare a draft release for GitHub Releases page for the manual verification
   # If accepted and published, release workflow would be triggered
