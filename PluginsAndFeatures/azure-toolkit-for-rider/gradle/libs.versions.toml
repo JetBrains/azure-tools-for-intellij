@@ -17,7 +17,7 @@ jedis = "3.6.3"
 kotlin = "2.0.20"
 serialization = "1.7.2"
 changelog = "2.2.1"
-intelliJPlatform = "2.0.1"
+intelliJPlatform = "2.1.0"
 qodana = "2024.1.9"
 aspectj = "8.6"
 
