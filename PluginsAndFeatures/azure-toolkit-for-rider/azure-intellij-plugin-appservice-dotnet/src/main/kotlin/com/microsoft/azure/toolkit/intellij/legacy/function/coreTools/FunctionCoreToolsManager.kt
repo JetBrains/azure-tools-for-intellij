@@ -9,18 +9,23 @@ package com.microsoft.azure.toolkit.intellij.legacy.function.coreTools
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.progress.checkCanceled
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.io.HttpRequests
-import com.intellij.util.io.ZipUtil
 import com.intellij.util.system.CpuArch
 import com.intellij.util.text.VersionComparatorUtil
 import com.jetbrains.rd.util.concurrentMapOf
+import com.jetbrains.rider.environmentSetup.RiderEnvironmentSetupBundle
+import com.jetbrains.rider.utils.DownloadStatusHandlerSus
+import com.jetbrains.rider.utils.unarchive
 import com.microsoft.azure.toolkit.intellij.legacy.function.settings.AzureFunctionSettings
+import org.jetbrains.annotations.Nls
 import java.io.File
 import java.io.IOException
 import java.net.UnknownHostException
+import kotlin.coroutines.cancellation.CancellationException
 
 @Service
 class FunctionCoreToolsManager {
@@ -194,7 +199,7 @@ class FunctionCoreToolsManager {
         )
     }
 
-    private fun ensureReleaseDownloaded(downloadInfo: FunctionCoreToolsDownloadInfo): File? {
+    private suspend fun ensureReleaseDownloaded(downloadInfo: FunctionCoreToolsDownloadInfo): File? {
         if (downloadInfo.downloadFolderForTagAndRelease.exists()) {
             return downloadInfo.downloadFolderForTagAndRelease
         }
@@ -207,11 +212,11 @@ class FunctionCoreToolsManager {
         return null
     }
 
-    private fun downloadRelease(downloadInfo: FunctionCoreToolsDownloadInfo) {
+    private suspend fun downloadRelease(downloadInfo: FunctionCoreToolsDownloadInfo) {
         val tempFile = FileUtil.createTempFile(
             File(FileUtil.getTempDirectory()),
             "AzureFunctions-${downloadInfo.release.functionsVersion}-${downloadInfo.release.coreToolsVersion}",
-            "download",
+            ".zip",
             true,
             true
         )
@@ -224,12 +229,33 @@ class FunctionCoreToolsManager {
             if (downloadInfo.downloadFolderForTag.exists()) {
                 downloadInfo.downloadFolderForTag.deleteRecursively()
             }
+            downloadInfo.downloadFolderForTag.mkdir()
         } catch (e: Exception) {
             LOG.error("Error while removing directory ${downloadInfo.downloadFolderForTag.path}", e)
         }
 
         try {
-            ZipUtil.extract(tempFile.toPath(), downloadInfo.downloadFolderForTagAndRelease.toPath(), null)
+            unarchive(tempFile, downloadInfo.downloadFolderForTagAndRelease, emptyList(), object : DownloadStatusHandlerSus {
+                override suspend fun getProgressText(
+                    totalSize: Long,
+                    currentSize: Long
+                ): @Nls String {
+                    return RiderEnvironmentSetupBundle.message(
+                        "EnvironmentSetupUtils.progress.details.extracting.files",
+                        currentSize,
+                        totalSize
+                    )
+                }
+
+                override suspend fun isCancelled(): Boolean {
+                    try {
+                        checkCanceled()
+                    } catch (_: CancellationException) {
+                        return true
+                    }
+                    return false
+                }
+            })
         } catch (e: Exception) {
             LOG.error(
                 "Error while extracting ${tempFile.path} to ${downloadInfo.downloadFolderForTagAndRelease.path}",
