@@ -2,13 +2,13 @@
 
 # Azure Toolkit for Rider Changelog
 
-## [Unreleased]
+## 4.2.4 - 2024-10-28
 
 ### Fixed
 
 - Fix the 4.99.0 release of the core tools ([#944](https://github.com/JetBrains/azure-tools-for-intellij/issues/944), [RIDER-119093](https://youtrack.jetbrains.com/issue/RIDER-119093))
 
-## [4.2.3] - 2024-10-25
+## 4.2.3 - 2024-10-25
 
 ### Fixed
 
