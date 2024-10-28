@@ -9,23 +9,18 @@ package com.microsoft.azure.toolkit.intellij.legacy.function.coreTools
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.progress.checkCanceled
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.io.HttpRequests
+import com.intellij.util.io.ZipUtil
 import com.intellij.util.system.CpuArch
 import com.intellij.util.text.VersionComparatorUtil
 import com.jetbrains.rd.util.concurrentMapOf
-import com.jetbrains.rider.environmentSetup.RiderEnvironmentSetupBundle
-import com.jetbrains.rider.utils.DownloadStatusHandlerSus
-import com.jetbrains.rider.utils.unarchive
 import com.microsoft.azure.toolkit.intellij.legacy.function.settings.AzureFunctionSettings
-import org.jetbrains.annotations.Nls
 import java.io.File
 import java.io.IOException
 import java.net.UnknownHostException
-import kotlin.coroutines.cancellation.CancellationException
 
 @Service
 class FunctionCoreToolsManager {
@@ -34,6 +29,10 @@ class FunctionCoreToolsManager {
 
         private val LOG = logger<FunctionCoreToolsManager>()
     }
+
+    private val fixedReleases = mapOf(
+        "v4" to "4.99.0"
+    )
 
     private val releaseCache = concurrentMapOf<String, FunctionCoreToolsRelease>()
 
@@ -89,7 +88,7 @@ class FunctionCoreToolsManager {
                 .filterValues { !it.releaseQuality.isNullOrEmpty() && !it.release.isNullOrEmpty() }
 
             for ((releaseTagName, releaseTag) in releaseTags) {
-                val releaseFromTag = releaseTag.release ?: continue
+                val releaseFromTag = fixedReleases[releaseTagName] ?: releaseTag.release ?: continue
                 val release = feed.releases[releaseFromTag] ?: continue
 
                 val releaseCoreTools = getReleaseCoreTool(release, releaseFilter) ?: continue
@@ -99,7 +98,7 @@ class FunctionCoreToolsManager {
                 val releaseKey = releaseTagName.lowercase()
                 releaseCache.putIfAbsent(
                     releaseKey,
-                    FunctionCoreToolsRelease(releaseKey, releaseTag.release, releaseCoreTools.downloadLink ?: "")
+                    FunctionCoreToolsRelease(releaseKey, releaseFromTag, releaseCoreTools.downloadLink ?: "")
                 )
             }
         } catch (e: UnknownHostException) {
@@ -235,27 +234,7 @@ class FunctionCoreToolsManager {
         }
 
         try {
-            unarchive(tempFile, downloadInfo.downloadFolderForTagAndRelease, emptyList(), object : DownloadStatusHandlerSus {
-                override suspend fun getProgressText(
-                    totalSize: Long,
-                    currentSize: Long
-                ): @Nls String {
-                    return RiderEnvironmentSetupBundle.message(
-                        "EnvironmentSetupUtils.progress.details.extracting.files",
-                        currentSize,
-                        totalSize
-                    )
-                }
-
-                override suspend fun isCancelled(): Boolean {
-                    try {
-                        checkCanceled()
-                    } catch (_: CancellationException) {
-                        return true
-                    }
-                    return false
-                }
-            })
+            ZipUtil.extract(tempFile.toPath(), downloadInfo.downloadFolderForTagAndRelease.toPath(), null, true)
         } catch (e: Exception) {
             LOG.error(
                 "Error while extracting ${tempFile.path} to ${downloadInfo.downloadFolderForTagAndRelease.path}",
