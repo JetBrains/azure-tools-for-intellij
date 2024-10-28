@@ -6,6 +6,12 @@
 
 ### Fixed
 
+- Fix the 4.99.0 release of the core tools ([#944](https://github.com/JetBrains/azure-tools-for-intellij/issues/944), [RIDER-119093](https://youtrack.jetbrains.com/issue/RIDER-119093))
+
+## [4.2.3] - 2024-10-25
+
+### Fixed
+
 - Cannot find Azure Core Functions Tool ([#944](https://github.com/JetBrains/azure-tools-for-intellij/issues/944), [RIDER-119093](https://youtrack.jetbrains.com/issue/RIDER-119093))
 
 ## [4.2.2] - 2024-10-09
