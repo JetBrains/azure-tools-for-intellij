@@ -149,6 +149,13 @@ jobs:
         run: |
           ./gradlew patchChangelog --release-note="$CHANGELOG"
 
+      # Upload artifact as a release asset
+      - name: Upload Release Asset
+        working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ github.event.release.tag_name }} ./build/distributions/*
+
       # Publish the plugin to JetBrains Marketplace
       - name: Publish Plugin
         working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
@@ -158,13 +165,6 @@ jobs:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
         run: ./gradlew publishPlugin
-
-      # Upload artifact as a release asset
-      - name: Upload Release Asset
-        working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ github.event.release.tag_name }} ./build/distributions/*
 
       # Create a pull request
       - name: Create Pull Request
