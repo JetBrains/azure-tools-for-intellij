@@ -228,7 +228,7 @@ class FunctionCoreToolsManager {
             if (downloadInfo.downloadFolderForTag.exists()) {
                 downloadInfo.downloadFolderForTag.deleteRecursively()
             }
-            downloadInfo.downloadFolderForTag.mkdir()
+            downloadInfo.downloadFolderForTagAndRelease.mkdir()
         } catch (e: Exception) {
             LOG.error("Error while removing directory ${downloadInfo.downloadFolderForTag.path}", e)
         }

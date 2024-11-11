@@ -2,6 +2,12 @@
 
 # Azure Toolkit for Rider Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Fix DEXP-832012: Error while extracting a file
+
 ## 4.2.4 - 2024-10-28
 
 ### Fixed
