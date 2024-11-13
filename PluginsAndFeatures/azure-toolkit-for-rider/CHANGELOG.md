@@ -6,6 +6,12 @@
 
 ### Fixed
 
+- Remove the locked 4.99.0 release of the core tools as the archive can be unzipped without problems
+
+## 4.2.5 - 2024-11-11
+
+### Fixed
+
 - Fix DEXP-832012: Error while extracting a file
 
 ## 4.2.4 - 2024-10-28
