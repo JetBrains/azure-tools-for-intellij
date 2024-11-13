@@ -2,7 +2,7 @@
 
 # Azure Toolkit for Rider Changelog
 
-## [Unreleased]
+## 4.2.6 - 2024-11-13
 
 ### Fixed
 
