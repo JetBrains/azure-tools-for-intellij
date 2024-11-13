@@ -30,8 +30,7 @@ class FunctionCoreToolsManager {
         private val LOG = logger<FunctionCoreToolsManager>()
     }
 
-    private val fixedReleases = mapOf(
-        "v4" to "4.99.0"
+    private val fixedReleases = mapOf<String, String>(
     )
 
     private val releaseCache = concurrentMapOf<String, FunctionCoreToolsRelease>()
