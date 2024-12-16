@@ -18,7 +18,7 @@ kotlin = "2.1.0"
 serialization = "1.7.3"
 changelog = "2.2.1"
 intelliJPlatform = "2.1.0"
-qodana = "2024.2.6"
+qodana = "2024.3.2"
 aspectj = "8.6"
 
 [libraries]
