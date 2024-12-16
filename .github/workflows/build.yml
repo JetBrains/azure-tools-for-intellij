@@ -316,7 +316,7 @@ jobs:
 
       # Run Qodana inspections
       - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@v2024.2
+        uses: JetBrains/qodana-action@v2024.3
         with:
           args: --config,qodana-frontend.yaml,--project-dir,./PluginsAndFeatures/azure-toolkit-for-rider
           artifact-name: qodana-frontend
@@ -385,7 +385,7 @@ jobs:
 
       # Run Qodana inspections
       - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@v2024.2
+        uses: JetBrains/qodana-action@v2024.3
         with:
           args: --config,qodana-backend.yaml,--project-dir,./PluginsAndFeatures/azure-toolkit-for-rider
           artifact-name: qodana-backend
