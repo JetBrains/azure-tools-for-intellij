@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Update domain for Azure Functions CDN
+
 ## [4.3.8] - 2024-12-17
 
 ### Fixed
