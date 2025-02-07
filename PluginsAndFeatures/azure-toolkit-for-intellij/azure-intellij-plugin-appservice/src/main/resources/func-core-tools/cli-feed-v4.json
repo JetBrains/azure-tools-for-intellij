@@ -8,7 +8,7 @@
   },
   "releases": {
     "4.29.0": {
-      "templates": "https://functionscdn.azureedge.net/public/TemplatesApi/3.1.1648.zip",
+      "templates": "https://cdn.functions.azure.com/public/TemplatesApi/3.1.1648.zip",
       "workerRuntimes": {
         "dotnet": {
           "net6": {
@@ -187,7 +187,7 @@
         {
           "OS": "Linux",
           "Architecture": "x64",
-          "downloadLink": "https://functionscdn.azureedge.net/public/4.0.4895/Azure.Functions.Cli.linux-x64.4.0.4895.zip",
+          "downloadLink": "https://cdn.functions.azure.com/public/4.0.4895/Azure.Functions.Cli.linux-x64.4.0.4895.zip",
           "sha2": "a83dd3c1f503e884a12c6155ab4a8e235816b5d986c339a3e235a50e8cb7c078",
           "size": "full",
           "default": "false"
@@ -195,7 +195,7 @@
         {
           "OS": "MacOS",
           "Architecture": "x64",
-          "downloadLink": "https://functionscdn.azureedge.net/public/4.0.4895/Azure.Functions.Cli.osx-x64.4.0.4895.zip",
+          "downloadLink": "https://cdn.functions.azure.com/public/4.0.4895/Azure.Functions.Cli.osx-x64.4.0.4895.zip",
           "sha2": "0633f46623047b611a811aa068b248e15a2da77ca298f1161aa735b55306004d",
           "size": "full",
           "default": "false"
@@ -203,7 +203,7 @@
         {
           "OS": "MacOS",
           "Architecture": "arm64",
-          "downloadLink": "https://functionscdn.azureedge.net/public/4.0.4895/Azure.Functions.Cli.osx-arm64.4.0.4895.zip",
+          "downloadLink": "https://cdn.functions.azure.com/public/4.0.4895/Azure.Functions.Cli.osx-arm64.4.0.4895.zip",
           "sha2": "d180ed7c7e6fe9945fc2881425e5e6ff7944d251d83efe6062ed55b8b3307041",
           "size": "full",
           "default": "false"
@@ -211,7 +211,7 @@
         {
           "OS": "Windows",
           "Architecture": "x64",
-          "downloadLink": "https://functionscdn.azureedge.net/public/4.0.4895/Azure.Functions.Cli.min.win-x64.4.0.4895.zip",
+          "downloadLink": "https://cdn.functions.azure.com/public/4.0.4895/Azure.Functions.Cli.min.win-x64.4.0.4895.zip",
           "sha2": "3b76e58091a3f36733d10d21287d5c99f75586d8a8183a525931562423b8a8c9",
           "size": "minified",
           "default": "false"
@@ -219,7 +219,7 @@
         {
           "OS": "Windows",
           "Architecture": "x64",
-          "downloadLink": "https://functionscdn.azureedge.net/public/4.0.4895/Azure.Functions.Cli.win-x64.4.0.4895.zip",
+          "downloadLink": "https://cdn.functions.azure.com/public/4.0.4895/Azure.Functions.Cli.win-x64.4.0.4895.zip",
           "sha2": "fd85110c173b1bf7099c3a6c6834fb301f88d2f2ef3361a0b1e046ce4ac56477",
           "size": "full",
           "default": "false"
@@ -227,7 +227,7 @@
         {
           "OS": "Windows",
           "Architecture": "x86",
-          "downloadLink": "https://functionscdn.azureedge.net/public/4.0.4895/Azure.Functions.Cli.win-x86.4.0.4895.zip",
+          "downloadLink": "https://cdn.functions.azure.com/public/4.0.4895/Azure.Functions.Cli.win-x86.4.0.4895.zip",
           "sha2": "934c6182ed8888310ec137673b39a33407d1ed2aa94846cba51273fb95ebe280",
           "size": "full",
           "default": "false"
@@ -235,7 +235,7 @@
         {
           "OS": "Windows",
           "Architecture": "x86",
-          "downloadLink": "https://functionscdn.azureedge.net/public/4.0.4895/Azure.Functions.Cli.min.win-x86.4.0.4895.zip",
+          "downloadLink": "https://cdn.functions.azure.com/public/4.0.4895/Azure.Functions.Cli.min.win-x86.4.0.4895.zip",
           "sha2": "2a3e2a3ac8d749e1ebfcac3ba948c96edaf7e3a74d65cfdf7bab8cc29f7f8494",
           "size": "minified",
           "default": "true"
@@ -243,7 +243,7 @@
         {
           "OS": "Windows",
           "Architecture": "arm64",
-          "downloadLink": "https://functionscdn.azureedge.net/public/4.0.4895/Azure.Functions.Cli.min.win-arm64.4.0.4895.zip",
+          "downloadLink": "https://cdn.functions.azure.com/public/4.0.4895/Azure.Functions.Cli.min.win-arm64.4.0.4895.zip",
           "sha2": "ea9b4c527e0856dde837ebb449e6f78186a283c17e8247404cad2d4797f3ad6f",
           "size": "minified",
           "default": "false"
@@ -251,7 +251,7 @@
         {
           "OS": "Windows",
           "Architecture": "arm64",
-          "downloadLink": "https://functionscdn.azureedge.net/public/4.0.4895/Azure.Functions.Cli.win-arm64.4.0.4895.zip",
+          "downloadLink": "https://cdn.functions.azure.com/public/4.0.4895/Azure.Functions.Cli.win-arm64.4.0.4895.zip",
           "sha2": "1d9b044d5287ed31ad5c38a4b52bce72b58219596ea81bf00a1715f63ebe4c19",
           "size": "full",
           "default": "false"
