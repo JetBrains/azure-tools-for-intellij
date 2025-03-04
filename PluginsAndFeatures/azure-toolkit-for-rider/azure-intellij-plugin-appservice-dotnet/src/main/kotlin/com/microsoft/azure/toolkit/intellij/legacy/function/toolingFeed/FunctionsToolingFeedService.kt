@@ -25,26 +25,18 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.utils.io.ByteReadChannel
-import io.ktor.utils.io.core.isEmpty
-import io.ktor.utils.io.core.readBytes
-import io.ktor.utils.io.readRemaining
+import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.io.readByteArray
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.attribute.PosixFilePermission
-import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.Path
-import kotlin.io.path.createDirectories
-import kotlin.io.path.deleteRecursively
-import kotlin.io.path.exists
-import kotlin.io.path.isExecutable
-import kotlin.io.path.setPosixFilePermissions
+import kotlin.io.path.*
 
 @Service(Service.Level.APP)
 class FunctionsToolingFeedService : Disposable {
@@ -172,8 +164,8 @@ class FunctionsToolingFeedService : Disposable {
                         val channel: ByteReadChannel = httpResponse.body()
                         while (!channel.isClosedForRead) {
                             val packet = channel.readRemaining(DEFAULT_BUFFER_SIZE.toLong())
-                            while (!packet.isEmpty) {
-                                val bytes = packet.readBytes()
+                            while (!packet.exhausted()) {
+                                val bytes = packet.readByteArray()
                                 tempFile.appendBytes(bytes)
                             }
                         }
