@@ -15,13 +15,11 @@ import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.project.Project
-import com.intellij.platform.util.coroutines.childScope
 import com.microsoft.azure.toolkit.intellij.common.RiderRunProcessHandlerMessager
 import com.microsoft.azure.toolkit.intellij.common.RunProcessHandler
 import com.microsoft.azure.toolkit.intellij.common.runconfig.RunConfigurationUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
 

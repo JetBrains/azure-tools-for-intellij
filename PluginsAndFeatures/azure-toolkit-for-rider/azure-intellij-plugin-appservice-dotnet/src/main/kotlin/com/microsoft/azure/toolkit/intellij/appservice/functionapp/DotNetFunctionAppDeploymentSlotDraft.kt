@@ -98,7 +98,7 @@ class DotNetFunctionAppDeploymentSlotDraft : FunctionAppDeploymentSlot,
         val messager = AzureMessager.getMessager()
         messager.info("Start creating Function App deployment slot ($name)...")
 
-        var slot = withCreate.create()
+        val slot = withCreate.create()
         if (updateFlexConsumptionConfiguration) {
             updateFlexConsumptionConfiguration(slot, newFlexConsumptionConfiguration)
         }

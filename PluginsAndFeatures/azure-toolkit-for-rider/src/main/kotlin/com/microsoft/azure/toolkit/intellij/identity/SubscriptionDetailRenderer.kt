@@ -38,7 +38,7 @@ class SubscriptionDetailRenderer: ListCellRenderer<Subscription> {
         index: Int,
         isSelected: Boolean,
         cellHasFocus: Boolean
-    ): Component? {
+    ): Component {
         titleLabel.clear()
         subscriptionIdLabel.clear()
         tenantIdLabel.clear()

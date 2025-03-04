@@ -10,9 +10,7 @@ import com.microsoft.azure.toolkit.ide.appservice.webapp.WebAppNodeProvider
 import com.microsoft.azure.toolkit.ide.common.icon.AzureIcon
 import com.microsoft.azure.toolkit.ide.common.icon.AzureIconProvider
 import com.microsoft.azure.toolkit.intellij.common.IntelliJAzureIcons
-import com.microsoft.azure.toolkit.lib.Azure
 import com.microsoft.azure.toolkit.lib.appservice.AppServiceAppBase
-import com.microsoft.azure.toolkit.lib.appservice.function.AzureFunctions
 import com.microsoft.azure.toolkit.lib.appservice.function.FunctionApp
 import com.microsoft.azure.toolkit.lib.appservice.model.OperatingSystem
 import com.microsoft.azure.toolkit.lib.appservice.webapp.WebApp

@@ -2,6 +2,8 @@
  * Copyright 2018-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
  */
 
+@file:Suppress("UnstableApiUsage")
+
 package com.microsoft.azure.toolkit.intellij.debugger.relay
 
 import com.intellij.openapi.components.Service
@@ -13,7 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
 
-@Service(com.intellij.openapi.components.Service.Level.APP)
+@Service(Service.Level.APP)
 class RelayServerProvider(scope: CoroutineScope) {
     private val serversScope = scope.childScope("Relay Servers")
     private val pool = ConcurrentHashMap<String, RelayServer>()

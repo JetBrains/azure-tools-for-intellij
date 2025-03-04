@@ -39,7 +39,7 @@ object AzureAppServiceTunnelSiteExtension {
 
     private fun AppServiceAppBase<*, *, *>.getKuduManagerExt(): AppServiceKuduClientExt? {
         val remote = getRemote() ?: return null
-        return AppServiceKuduClientExt.getClient(remote, this)
+        return AppServiceKuduClientExt.getClient(remote)
     }
 
     private suspend fun restartKuduAndCheckExtensionInstalled(manager: AppServiceKuduClientExt) {

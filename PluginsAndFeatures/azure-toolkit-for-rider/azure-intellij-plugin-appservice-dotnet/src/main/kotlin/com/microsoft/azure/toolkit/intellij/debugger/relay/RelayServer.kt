@@ -2,8 +2,6 @@ package com.microsoft.azure.toolkit.intellij.debugger.relay
 
 import com.azure.core.credential.TokenRequestContext
 import com.azure.identity.implementation.util.ScopeUtil
-import com.intellij.openapi.progress.runBlockingCancellable
-import com.intellij.platform.util.coroutines.childScope
 import com.intellij.remote.RemoteCredentials
 import com.intellij.remote.RemoteCredentialsHolder
 import com.intellij.remote.SshConnectionConfigPatch
@@ -14,7 +12,10 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.supervisorScope
 import okhttp3.internal.closeQuietly
 
 abstract class RelayServer(protected val appServiceApp: AppServiceAppBase<*, *, *>) {

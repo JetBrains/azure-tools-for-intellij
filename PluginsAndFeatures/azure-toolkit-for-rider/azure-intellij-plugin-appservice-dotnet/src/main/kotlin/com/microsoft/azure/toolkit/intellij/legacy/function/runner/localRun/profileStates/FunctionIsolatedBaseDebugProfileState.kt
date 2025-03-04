@@ -55,7 +55,7 @@ abstract class FunctionIsolatedBaseDebugProfileState(
         processListener: ProcessListener? = null,
         modifyProcessMessageLineEndings: Boolean = false
     ): Pair<ExecutionResult, Int>? {
-        val launcher = FunctionHostDebugLauncher.Companion.getInstance(environment.project)
+        val launcher = FunctionHostDebugLauncher.getInstance(environment.project)
         val (executionResult, pid) =
             withBackgroundProgress(environment.project, "Waiting for Azure Functions host to start...") {
                 withContext(Dispatchers.Default) {

@@ -23,7 +23,7 @@ class FunctionRunProfileState(
     private val dotNetRuntime: DotNetRuntime,
     private val environment: ExecutionEnvironment
 ) : RunProfileState {
-    override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult? {
+    override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult {
         dotNetExecutable.validate()
 
         val commandLine = dotNetExecutable.createRunCommandLine(dotNetRuntime)

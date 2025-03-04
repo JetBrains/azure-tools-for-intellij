@@ -6,8 +6,6 @@ package com.microsoft.azure.toolkit.intellij.debugger.attachHosts
 
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.debugger.attach.remoting.RiderSshAttachHostBase
-import com.jetbrains.rider.debugger.attach.remoting.tools.DebuggerTools
-import com.jetbrains.rider.model.RdProcessInfoBase
 import com.microsoft.azure.toolkit.intellij.debugger.AzureAppServiceTunnelSiteExtension.throwIfAppServiceTunnelExtensionNotInstalled
 import com.microsoft.azure.toolkit.intellij.debugger.webSocketsDisabledException
 import com.microsoft.azure.toolkit.lib.appservice.AppServiceAppBase

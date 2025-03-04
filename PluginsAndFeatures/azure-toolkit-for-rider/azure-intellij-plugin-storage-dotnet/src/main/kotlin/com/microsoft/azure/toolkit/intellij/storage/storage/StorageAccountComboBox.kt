@@ -2,6 +2,8 @@
  * Copyright 2018-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
  */
 
+@file:Suppress("InvalidBundleOrProperty")
+
 package com.microsoft.azure.toolkit.intellij.storage.storage
 
 import com.intellij.icons.AllIcons
@@ -46,7 +48,7 @@ class StorageAccountComboBox : AzureComboBox<StorageAccountConfig>() {
         super.setValue(value, fixed)
     }
 
-    override fun getItemText(item: Any?): String? {
+    override fun getItemText(item: Any?): String {
         if (item == null || item !is StorageAccountConfig) return EMPTY_ITEM
 
         val name = item.name

@@ -79,5 +79,3 @@ fun WebAppBase.getDotNetRuntime(): DotNetRuntime {
         }
     }
 }
-
-fun AppServiceAppBase<*, *, *>.getDotNetRuntime() = remote?.getDotNetRuntime()

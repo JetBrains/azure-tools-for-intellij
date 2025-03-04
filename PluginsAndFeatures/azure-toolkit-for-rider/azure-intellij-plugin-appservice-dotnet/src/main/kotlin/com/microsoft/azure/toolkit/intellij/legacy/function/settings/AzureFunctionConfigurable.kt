@@ -2,6 +2,8 @@
  * Copyright 2018-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
  */
 
+@file:Suppress("UnstableApiUsage")
+
 package com.microsoft.azure.toolkit.intellij.legacy.function.settings
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -213,9 +215,7 @@ private class AzureFunctionComponentBrowseButton :
         }
         addBrowseFolderListener(
             null,
-            null,
-            null,
-            FileChooserDescriptorFactory.createSingleFileDescriptor(),
+            FileChooserDescriptorFactory.singleFile(),
             fileBrowserAccessor
         )
     }

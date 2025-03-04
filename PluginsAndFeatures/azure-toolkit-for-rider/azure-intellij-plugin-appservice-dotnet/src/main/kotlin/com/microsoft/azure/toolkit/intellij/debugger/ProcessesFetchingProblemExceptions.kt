@@ -5,7 +5,6 @@
 package com.microsoft.azure.toolkit.intellij.debugger
 
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.util.NlsContexts
 import com.intellij.xdebugger.impl.ui.attach.dialog.diagnostics.ProcessesFetchingProblemException
 import com.microsoft.azure.toolkit.lib.appservice.AppServiceAppBase
 

@@ -21,15 +21,13 @@ public class AppServiceKuduClientExt
 {
     private final String host;
     private final KuduServiceExt kuduService;
-    private final AppServiceAppBase<?, ?, ?> app;
 
-    private AppServiceKuduClientExt(String host, KuduServiceExt kuduService, AppServiceAppBase<?, ?, ?> app) {
+    private AppServiceKuduClientExt(String host, KuduServiceExt kuduService) {
         this.host = host;
-        this.app = app;
         this.kuduService = kuduService;
     }
 
-    public static AppServiceKuduClientExt getClient(@Nonnull WebAppBase webAppBase, @Nonnull AppServiceAppBase<?, ?, ?> appService) {
+    public static AppServiceKuduClientExt getClient(@Nonnull WebAppBase webAppBase) {
         // refers : https://github.com/Azure/azure-sdk-for-java/blob/master/sdk/resourcemanager/azure-resourcemanager-appservice/src/main/java/
         // com/azure/resourcemanager/appservice/implementation/KuduClient.java
         if (webAppBase.defaultHostname() == null) {
@@ -43,7 +41,7 @@ public class AppServiceKuduClientExt
         host = "https://" + host;
 
         final KuduServiceExt kuduService = RestProxy.create(KuduServiceExt.class, webAppBase.manager().httpPipeline());
-        return new AppServiceKuduClientExt(host, kuduService, appService);
+        return new AppServiceKuduClientExt(host, kuduService);
     }
 
     public ExtensionInfo getPackageFromRemoteStore(final @Nonnull String id) {

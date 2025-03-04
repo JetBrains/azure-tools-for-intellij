@@ -87,7 +87,7 @@ class DotNetWebAppDeploymentSlotDraft : WebAppDeploymentSlot, AzResource.Draft<W
         val messager = AzureMessager.getMessager()
         messager.info("Start creating Web App deployment slot ($name)...")
 
-        var slot = withCreate.create()
+        val slot = withCreate.create()
 
         messager.success("Web App deployment slot ($name) is successfully created")
 

@@ -6,7 +6,6 @@ package com.microsoft.azure.toolkit.intellij.appservice.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.microsoft.azure.toolkit.lib.appservice.AppServiceAppBase
-import com.microsoft.azure.toolkit.lib.appservice.function.FunctionAppBase
 import com.microsoft.azure.toolkit.lib.common.task.AzureTaskManager
 import java.util.function.BiConsumer
 

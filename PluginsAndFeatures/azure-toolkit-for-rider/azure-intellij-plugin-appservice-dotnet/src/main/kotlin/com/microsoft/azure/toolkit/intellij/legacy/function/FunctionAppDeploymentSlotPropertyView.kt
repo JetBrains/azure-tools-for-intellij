@@ -31,7 +31,7 @@ class FunctionAppDeploymentSlotPropertyView(virtualFile: VirtualFile) : WebAppBa
 
     override fun getId() = ID
 
-    override fun createPresenter(): WebAppBasePropertyViewPresenter<WebAppBasePropertyMvpView, AppServiceAppBase<*, *, *>>? =
+    override fun createPresenter(): WebAppBasePropertyViewPresenter<WebAppBasePropertyMvpView, AppServiceAppBase<*, *, *>> =
         object : WebAppBasePropertyViewPresenter<WebAppBasePropertyMvpView, AppServiceAppBase<*, *, *>>() {
             override fun getWebAppBase(
                 sid: String,

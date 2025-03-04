@@ -80,7 +80,7 @@ class TriggerAzureFunctionAction(
         val requestMethod = if (httpTriggerAttribute == null || httpTriggerAttribute.methods.isEmpty()) {
             "GET"
         } else {
-            httpTriggerAttribute.methods.first()
+            httpTriggerAttribute.methods.firstOrNull()
         } ?: "GET"
 
         val urlPath = httpTriggerAttribute?.let {

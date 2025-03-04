@@ -2,6 +2,8 @@
  * Copyright 2018-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
  */
 
+@file:Suppress("InvalidBundleOrProperty")
+
 package com.microsoft.azure.toolkit.intellij.appservice
 
 import com.intellij.openapi.actionSystem.AnActionEvent

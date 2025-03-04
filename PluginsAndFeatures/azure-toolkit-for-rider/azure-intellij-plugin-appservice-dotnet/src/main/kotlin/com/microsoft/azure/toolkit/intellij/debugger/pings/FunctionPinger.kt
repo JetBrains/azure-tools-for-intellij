@@ -2,6 +2,8 @@
  * Copyright 2018-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
  */
 
+@file:Suppress("UnstableApiUsage")
+
 package com.microsoft.azure.toolkit.intellij.debugger.pings
 
 import com.intellij.platform.util.coroutines.childScope

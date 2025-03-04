@@ -6,9 +6,7 @@ package com.microsoft.azure.toolkit.intellij.debugger
 
 import com.intellij.execution.configurations.RunProfile
 import com.intellij.execution.process.ProcessInfo
-import com.intellij.openapi.project.Project
 import com.intellij.xdebugger.attach.LocalAttachHost
-import com.intellij.xdebugger.attach.XAttachHost
 import com.jetbrains.rider.debugger.attach.RiderAttachDebuggerBase
 import com.jetbrains.rider.debugger.attach.remoting.RiderSshAttachHostBase
 import com.jetbrains.rider.model.RdProcessInfoBase
