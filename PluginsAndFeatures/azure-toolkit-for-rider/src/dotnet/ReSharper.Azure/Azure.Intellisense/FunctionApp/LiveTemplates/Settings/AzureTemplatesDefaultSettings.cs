@@ -1,11 +1,11 @@
 ﻿// Copyright 2018-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
 
+using System;
 using System.IO;
 using System.Reflection;
 using JetBrains.Application;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Settings;
 
@@ -19,7 +19,7 @@ public class AzureTemplatesDefaultSettings : IHaveDefaultSettingsStream, IDefaul
         var stream = Assembly
             .GetExecutingAssembly()
             .GetManifestResourceStream("JetBrains.ReSharper.Azure.Templates.templates.dotSettings");
-        Assertion.AssertNotNull(stream, "stream should not be null");
+        ArgumentNullException.ThrowIfNull(stream);
         lifetime.AddDispose(stream);
         return stream;
     }

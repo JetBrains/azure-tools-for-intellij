@@ -6,5 +6,5 @@ namespace JetBrains.ReSharper.Azure.Psi.FunctionApp.Routing;
 
 internal class RouteTemplateToHttpClientContext
 {
-    public StringBuilder Builder { get; set; } = new();
+    public StringBuilder Builder { get; } = new();
 }

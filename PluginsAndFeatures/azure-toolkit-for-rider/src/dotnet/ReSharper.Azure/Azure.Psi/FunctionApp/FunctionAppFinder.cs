@@ -61,14 +61,14 @@ public static class FunctionAppFinder
 
         var functionNameParameter = functionParameters.First();
 
-        if (functionNameParameter == null || !functionNameParameter.ConstantValue.IsString())
+        if (functionNameParameter != null && functionNameParameter.ConstantValue.IsString())
         {
-            OurLogger.Error(
-                $"Unable to get a Function name from '{method.ShortName}' method attribute parameter: '{functionNameParameter.PrintToString()}'.");
-            return null;
+            return functionNameParameter.ConstantValue.StringValue;
         }
 
-        return functionNameParameter.ConstantValue.StringValue;
+        OurLogger.Error(
+            $"Unable to get a Function name from '{method.ShortName}' method attribute parameter: '{functionNameParameter.PrintToString()}'.");
+        return null;
     }
 
     /// <summary>

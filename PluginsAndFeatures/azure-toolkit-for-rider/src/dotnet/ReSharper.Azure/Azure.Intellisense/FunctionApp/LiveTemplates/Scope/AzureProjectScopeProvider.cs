@@ -39,19 +39,19 @@ public class AzureProjectScopeProvider : ScopeProvider
     public override IEnumerable<ITemplateScopePoint> ProvideScopePoints(TemplateAcceptanceContext context)
     {
         var project = context.GetProject();
-        if (project == null) yield break;
-        if (project.IsAzureFunctionsProject())
+        if (project == null || !project.IsAzureFunctionsProject()) yield break;
+
+        yield return new InAzureFunctionsProject();
+
+        if (project.HasDefaultWorkerPackageReference(null))
+            yield return new MustUseAzureFunctionsDefaultWorker();
+
+        if (project.HasIsolatedWorkerPackageReference(null))
+            yield return new MustUseAzureFunctionsIsolatedWorker();
+
+        foreach (var scope in GetLanguageSpecificScopePoints(project))
         {
-            yield return new InAzureFunctionsProject();
-
-            if (project.HasDefaultWorkerPackageReference(null))
-                yield return new MustUseAzureFunctionsDefaultWorker();
-
-            if (project.HasIsolatedWorkerPackageReference(null))
-                yield return new MustUseAzureFunctionsIsolatedWorker();
-
-            foreach (var scope in GetLanguageSpecificScopePoints(project))
-                yield return scope;
+            yield return scope;
         }
     }
 

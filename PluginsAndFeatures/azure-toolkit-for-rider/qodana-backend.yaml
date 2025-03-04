@@ -7,3 +7,8 @@ profile:
   name: qodana.recommended
 dotnet:
   solution: ReSharper.Azure.sln
+exclude:
+  - name: All
+    paths:
+      - src/dotnet/ReSharper.Azure/Azure.Intellisense/Templates
+      - src/dotnet/ReSharper.Azure/Azure.Daemon/RunMarkers/FunctionAppRunMarkersThemedIcons.cs

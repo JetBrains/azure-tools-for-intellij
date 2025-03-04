@@ -56,23 +56,24 @@ public class TimerTriggerCronExpressionAnalyzer : ElementProblemAnalyzer<IAttrib
         var expressionArgument = element.Arguments.FirstOrDefault()?.Value;
         if (expressionArgument is null || !expressionArgument.Type().IsString()) return;
 
-        var literal = (expressionArgument as ICSharpLiteralExpression)?.ConstantValue.StringValue;
+        if (expressionArgument is not ICSharpLiteralExpression literalExpression) return;
+
+        var literal = literalExpression.ConstantValue.StringValue;
         if (literal.IsEmpty()) return;
+        if (literal.StartsWith('%') && literal.EndsWith('%') && literal.Length > 2) return;
 
-        if (literal.StartsWith("%") && literal.EndsWith("%") && literal.Length > 2) return;
-
-        var mayBeTimeSpanSchedule = literal.Contains(":");
+        var mayBeTimeSpanSchedule = literal.Contains(':');
         if (mayBeTimeSpanSchedule)
         {
             if (IsValidTimeSpanSchedule(literal, out var errorMessage, out var description) &&
                 !string.IsNullOrEmpty(description))
             {
-                consumer.AddHighlighting(new TimerTriggerCronExpressionHint(description, expressionArgument,
-                    expressionArgument.GetDocumentEndOffset()));
+                consumer.AddHighlighting(new TimerTriggerCronExpressionHint(description, literalExpression,
+                    literalExpression.GetDocumentEndOffset()));
             }
             else
             {
-                consumer.AddHighlighting(new TimerTriggerCronExpressionError(expressionArgument, errorMessage));
+                consumer.AddHighlighting(new TimerTriggerCronExpressionError(literalExpression, errorMessage));
             }
         }
         else
@@ -80,12 +81,12 @@ public class TimerTriggerCronExpressionAnalyzer : ElementProblemAnalyzer<IAttrib
             if (IsValidCrontabSchedule(literal, out var errorMessage, out var description) &&
                 !string.IsNullOrEmpty(description))
             {
-                consumer.AddHighlighting(new TimerTriggerCronExpressionHint(description, expressionArgument,
-                    expressionArgument.GetDocumentEndOffset()));
+                consumer.AddHighlighting(new TimerTriggerCronExpressionHint(description, literalExpression,
+                    literalExpression.GetDocumentEndOffset()));
             }
             else
             {
-                consumer.AddHighlighting(new TimerTriggerCronExpressionError(expressionArgument, errorMessage));
+                consumer.AddHighlighting(new TimerTriggerCronExpressionError(literalExpression, errorMessage));
             }
         }
     }

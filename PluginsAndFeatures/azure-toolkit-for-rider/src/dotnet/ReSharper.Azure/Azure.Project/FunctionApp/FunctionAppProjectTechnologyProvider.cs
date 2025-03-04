@@ -12,7 +12,7 @@ public class FunctionAppProjectTechnologyProvider : IProjectTechnologyProvider
 {
     public IEnumerable<string> GetProjectTechnology(IProject project)
     {
-        if (FunctionAppProjectDetector.IsAzureFunctionsProject(project))
+        if (project.IsAzureFunctionsProject())
         {
             yield return "Azure Function";
         }

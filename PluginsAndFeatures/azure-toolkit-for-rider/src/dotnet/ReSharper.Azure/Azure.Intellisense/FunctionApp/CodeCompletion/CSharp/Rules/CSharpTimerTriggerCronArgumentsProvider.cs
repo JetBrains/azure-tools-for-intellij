@@ -29,7 +29,7 @@ public class CSharpTimerTriggerCronArgumentsProvider : CSharpItemsProviderBase<C
     }
 
     private readonly CronSuggestion[] _cronSuggestions =
-    {
+    [
         new("* * * * * *", "Every second"),
         new("0 * * * * *", "Every minute"),
         new("0 */5 * * * *", "Every 5 minutes"),
@@ -50,7 +50,7 @@ public class CSharpTimerTriggerCronArgumentsProvider : CSharpItemsProviderBase<C
         new("11 5 23 * * *", "At 11:05:11 PM"),
         new("*/15 * * * * *", "Every 15 seconds"),
         new("0 30 9 * Jan Mon", "At 09:30 AM, only on Monday, only in January")
-    };
+    ];
 
     protected override bool IsAvailable(CSharpCodeCompletionContext context)
     {

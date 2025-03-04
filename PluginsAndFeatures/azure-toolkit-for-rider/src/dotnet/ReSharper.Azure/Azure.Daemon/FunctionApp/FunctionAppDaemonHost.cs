@@ -96,7 +96,7 @@ public class FunctionAppDaemonHost
             FunctionProjectWorkerModel.Default => AzureFunctionWorkerModel.Default,
             FunctionProjectWorkerModel.Isolated => AzureFunctionWorkerModel.Isolated,
             FunctionProjectWorkerModel.Unknown => AzureFunctionWorkerModel.Unknown,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException(nameof(request))
         };
     }
 

@@ -30,12 +30,11 @@ internal class RouteTemplateToHttpClientVisitor : RouteTemplateTreeVisitorBase<R
 
     public override RouteTemplateToHttpClientContext Visit(IRouteParameterTreeNode parameter, RouteTemplateToHttpClientContext context)
     {
-        if (parameter.Name != null)
-        {
-            context.Builder.Append("{{");
-            context.Builder.Append(parameter.Name.NameValue);
-            context.Builder.Append("}}");
-        }
+        if (parameter.Name == null) return context;
+
+        context.Builder.Append("{{");
+        context.Builder.Append(parameter.Name.NameValue);
+        context.Builder.Append("}}");
 
         return context;
     }
