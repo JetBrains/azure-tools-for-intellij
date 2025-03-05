@@ -16,7 +16,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.io.systemIndependentPath
 import com.jetbrains.rider.aspire.generated.CreateSessionRequest
 import com.jetbrains.rider.aspire.run.AspireHostConfiguration
-import com.jetbrains.rider.aspire.sessionHost.findBySessionProject
 import com.jetbrains.rider.aspire.sessionHost.getLaunchProfile
 import com.jetbrains.rider.aspire.sessionHost.mergeArguments
 import com.jetbrains.rider.aspire.sessionHost.mergeEnvironmentVariables
@@ -35,7 +34,6 @@ import com.jetbrains.rider.run.environment.ExecutableRunParameters
 import com.jetbrains.rider.run.environment.ProjectProcessOptions
 import com.jetbrains.rider.runtime.DotNetExecutable
 import com.jetbrains.rider.runtime.dotNetCore.DotNetCoreRuntimeType
-import com.microsoft.azure.toolkit.intellij.legacy.function.daemon.AzureRunnableProjectKinds
 import com.microsoft.azure.toolkit.intellij.legacy.function.launchProfiles.getApplicationUrl
 import com.microsoft.azure.toolkit.intellij.legacy.function.launchProfiles.getWorkingDirectory
 import com.microsoft.azure.toolkit.intellij.legacy.function.localsettings.FunctionLocalSettings
@@ -45,9 +43,6 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 
-/**
- * Factory class for creating instances of [DotNetExecutable] from a .NET Azure Function project.
- */
 @Service(Service.Level.PROJECT)
 class FunctionSessionExecutableFactory(private val project: Project) {
     companion object {
@@ -57,24 +52,25 @@ class FunctionSessionExecutableFactory(private val project: Project) {
 
     suspend fun createExecutable(
         sessionModel: CreateSessionRequest,
-        hostRunConfiguration: AspireHostConfiguration?
+        hostRunConfiguration: AspireHostConfiguration?,
+        addBrowserAction: Boolean
     ): DotNetExecutable? {
         val sessionProjectPath = Path(sessionModel.projectPath)
-        val runnableProject = project.solution.runnableProjectsModel.findBySessionProject(sessionProjectPath) {
-            it.kind == AzureRunnableProjectKinds.AzureFunctions
-        }
+        val runnableProject = project.solution.runnableProjectsModel.findBySessionProject(sessionProjectPath)
         return if (runnableProject != null) {
             getExecutableForRunnableProject(
                 sessionProjectPath,
                 runnableProject,
                 sessionModel,
-                hostRunConfiguration
+                hostRunConfiguration,
+                addBrowserAction
             )
         } else {
             getExecutableForExternalProject(
                 sessionProjectPath,
                 sessionModel,
-                hostRunConfiguration
+                hostRunConfiguration,
+                addBrowserAction
             )
         }
     }
@@ -83,7 +79,8 @@ class FunctionSessionExecutableFactory(private val project: Project) {
         sessionProjectPath: Path,
         runnableProject: RunnableProject,
         sessionModel: CreateSessionRequest,
-        hostRunConfiguration: AspireHostConfiguration?
+        hostRunConfiguration: AspireHostConfiguration?,
+        addBrowserAction: Boolean
     ): DotNetExecutable? {
         val output = runnableProject.projectOutputs.firstOrNull()
         if (output == null) {
@@ -117,7 +114,8 @@ class FunctionSessionExecutableFactory(private val project: Project) {
             launchProfile,
             arguments,
             coreToolsExecutable,
-            hostRunConfiguration
+            hostRunConfiguration,
+            addBrowserAction
         )
 
         LOG.trace { "Executable parameters for runnable project (${runnableProject.projectFilePath}): $executableParams" }
@@ -144,7 +142,8 @@ class FunctionSessionExecutableFactory(private val project: Project) {
     private suspend fun getExecutableForExternalProject(
         sessionProjectPath: Path,
         sessionModel: CreateSessionRequest,
-        hostRunConfiguration: AspireHostConfiguration?
+        hostRunConfiguration: AspireHostConfiguration?,
+        addBrowserAction: Boolean
     ): DotNetExecutable? {
         val propertyService = MSBuildPropertyService.getInstance(project)
         val properties = propertyService.getProjectRunProperties(sessionProjectPath)
@@ -179,7 +178,8 @@ class FunctionSessionExecutableFactory(private val project: Project) {
             launchProfile,
             arguments,
             coreToolsExecutable,
-            hostRunConfiguration
+            hostRunConfiguration,
+            addBrowserAction
         )
 
         LOG.trace { "Executable parameters for external project (${sessionProjectPath.absolutePathString()}): $executableParams" }
@@ -239,13 +239,14 @@ class FunctionSessionExecutableFactory(private val project: Project) {
         launchProfile: LaunchSettingsJson.Profile?,
         arguments: String,
         coreToolsExecutable: FunctionCoreToolsExecutableService.FunctionCoreToolsExecutable,
-        hostRunConfiguration: AspireHostConfiguration?
+        hostRunConfiguration: AspireHostConfiguration?,
+        addBrowserAction: Boolean
     ): Pair<StartBrowserSettings, (ExecutionEnvironment, RunProfile, ProcessHandler) -> Unit> {
         val browserSettings =
             getStartBrowserSettings(launchProfile, arguments, coreToolsExecutable.localSettings, hostRunConfiguration)
         val launchBrowser = AspireSettings.getInstance().doNotLaunchBrowserForProjects.not()
         val browserAction =
-            if (launchBrowser && hostRunConfiguration != null) {
+            if (launchBrowser && addBrowserAction && hostRunConfiguration != null) {
                 getStartBrowserAction(hostRunConfiguration, browserSettings)
             } else {
                 { _, _, _ -> }

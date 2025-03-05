@@ -9,7 +9,7 @@ import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.aspire.sessionHost.projectLaunchers.ProjectSessionProfile
-import com.jetbrains.rider.aspire.sessionHost.projectLaunchers.DotNetExecutableSessionRunProfileState
+import com.jetbrains.rider.aspire.sessionHost.projectLaunchers.ProjectSessionRunProfileState
 import com.jetbrains.rider.runtime.DotNetExecutable
 import com.jetbrains.rider.runtime.dotNetCore.DotNetCoreRuntime
 import com.microsoft.azure.toolkit.ide.common.icon.AzureIcons
@@ -32,7 +32,7 @@ class FunctionProjectSessionRunProfile(
     override fun getState(
         executor: Executor,
         environment: ExecutionEnvironment
-    ) = DotNetExecutableSessionRunProfileState(
+    ) = ProjectSessionRunProfileState(
         sessionId,
         dotnetExecutable,
         dotnetRuntime,

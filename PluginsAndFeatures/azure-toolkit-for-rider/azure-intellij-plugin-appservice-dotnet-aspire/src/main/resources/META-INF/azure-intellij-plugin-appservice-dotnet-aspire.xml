@@ -5,6 +5,11 @@
 <idea-plugin>
     <depends>me.rafaelldi.aspire</depends>
 
+    <extensions defaultExtensionNs="com.intellij">
+        <programRunner
+                implementation="com.microsoft.azure.toolkit.intellij.aspire.FunctionProjectSessionDebugProgramRunner"/>
+    </extensions>
+
     <extensions defaultExtensionNs="com.jetbrains.rider.aspire">
         <sessionProcessLauncherExtension
                 implementation="com.microsoft.azure.toolkit.intellij.aspire.FunctionProjectSessionProcessLauncher"/>

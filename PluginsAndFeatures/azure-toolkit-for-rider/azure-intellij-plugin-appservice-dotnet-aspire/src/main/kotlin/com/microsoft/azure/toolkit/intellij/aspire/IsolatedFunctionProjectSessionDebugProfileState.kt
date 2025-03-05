@@ -17,12 +17,6 @@ import com.jetbrains.rider.runtime.DotNetExecutable
 import com.jetbrains.rider.runtime.dotNetCore.DotNetCoreRuntime
 import com.microsoft.azure.toolkit.intellij.legacy.function.runner.localRun.profileStates.FunctionIsolatedBaseDebugProfileState
 
-/**
- * Represents a run profile state for debugging a [DotNetExecutable] created from Azure Function project.
- *
- * Before the execution it launches the Function core tools and waits for the target process id.
- * After that it uses [DotNetCoreAttachProfileState] to attach to the process.
- */
 class IsolatedFunctionProjectSessionDebugProfileState(
     private val sessionId: String,
     private val dotnetExecutable: DotNetExecutable,
