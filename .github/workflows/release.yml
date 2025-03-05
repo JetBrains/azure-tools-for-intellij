@@ -74,8 +74,6 @@ jobs:
       # Free GitHub Actions Environment Disk Space
       - name: Maximize Build Space
         uses: jlumbroso/free-disk-space@v1.3.1
-        with:
-          tool-cache: false
 
       # Download azure artifacts
       - name: Download library artifacts
