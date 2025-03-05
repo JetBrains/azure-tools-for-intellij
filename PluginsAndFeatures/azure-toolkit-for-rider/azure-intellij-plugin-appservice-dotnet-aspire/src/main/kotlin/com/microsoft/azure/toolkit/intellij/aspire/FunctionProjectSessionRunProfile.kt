@@ -18,14 +18,14 @@ import java.nio.file.Path
 import javax.swing.Icon
 
 class FunctionProjectSessionRunProfile(
-    sessionId: String,
+    private val sessionId: String,
     projectPath: Path,
     dotnetExecutable: DotNetExecutable,
     private val dotnetRuntime: DotNetCoreRuntime,
     private val sessionProcessEventListener: ProcessListener,
     private val sessionProcessLifetime: Lifetime,
     aspireHostProjectPath: Path?
-) : ProjectSessionProfile(sessionId, projectPath, dotnetExecutable, aspireHostProjectPath, false) {
+) : ProjectSessionProfile(projectPath, dotnetExecutable, aspireHostProjectPath, false) {
 
     override fun getIcon(): Icon = IntelliJAzureIcons.getIcon(AzureIcons.FunctionApp.RUN)
 
