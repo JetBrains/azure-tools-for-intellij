@@ -168,6 +168,18 @@ jobs:
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Prepare dotnet part
+        working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
+        run: ./gradlew prepareDotNetPart
+
+      - name: Restore dotnet part
+        working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
+        run: dotnet restore ./ReSharper.Azure.sln
+
+      - name: Build dotnet part
+        working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
+        run: dotnet build ./ReSharper.Azure.sln
+
       # Build plugin
       - name: Build plugin
         working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
