@@ -167,6 +167,10 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       # Build plugin
+      - name: Get disk space
+        run: du -sh ~/*
+
+      # Build plugin
       - name: Build plugin
         working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
         run: ./gradlew buildPlugin
