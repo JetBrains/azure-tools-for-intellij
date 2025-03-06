@@ -106,8 +106,6 @@ jobs:
       # Free GitHub Actions Environment Disk Space
       - name: Maximize Build Space
         uses: jlumbroso/free-disk-space@v1.3.1
-        with:
-          tool-cache: false
 
       # Download azure artifacts
       - name: Download library artifacts
@@ -130,6 +128,9 @@ jobs:
           name: azuretools-artifacts
           path: /home/runner/.m2/repository/com/microsoft/azuretools/
 
+      - name: Check disk space
+        run: df -h
+
       # Check out the current repository
       - name: Fetch Sources
         uses: actions/checkout@v4
@@ -151,6 +152,9 @@ jobs:
         with:
           dotnet-version: '8.x'
 
+      - name: Check disk space
+        run: df -h
+
       # Set environment variables
       - name: Export Properties
         id: properties
@@ -167,6 +171,30 @@ jobs:
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Check disk space
+        run: df -h
+
+      - name: Prepare dotnet part
+        working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
+        run: ./gradlew prepareDotNetPart
+
+      - name: Check disk space
+        run: df -h
+
+      - name: Restore dotnet part
+        working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
+        run: dotnet restore ./ReSharper.Azure.sln
+
+      - name: Check disk space
+        run: df -h
+
+      - name: Build dotnet part
+        working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
+        run: dotnet build ./ReSharper.Azure.sln
+
+      - name: Check disk space
+        run: df -h
 
       # Build plugin
       - name: Build plugin
