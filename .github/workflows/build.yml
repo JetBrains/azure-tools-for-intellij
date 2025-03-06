@@ -130,6 +130,9 @@ jobs:
           name: azuretools-artifacts
           path: /home/runner/.m2/repository/com/microsoft/azuretools/
 
+      - name: Check disk space
+        run: df -h
+
       # Check out the current repository
       - name: Fetch Sources
         uses: actions/checkout@v4
@@ -177,14 +180,14 @@ jobs:
         run: dotnet restore ./ReSharper.Azure.sln
 
       - name: Check disk space
-        run: dh -h /
+        run: df -h
 
       - name: Build dotnet part
         working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
         run: dotnet build ./ReSharper.Azure.sln
 
       - name: Check disk space
-        run: dh -h /
+        run: df -h
 
       # Build plugin
       - name: Build plugin
