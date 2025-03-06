@@ -177,14 +177,14 @@ jobs:
         run: dotnet restore ./ReSharper.Azure.sln
 
       - name: Check disk space
-        run: du -sh ~/work/azure-tools-for-intellij/azure-tools-for-intellij/PluginsAndFeatures/*
+        run: du -sh ~/work/azure-tools-for-intellij/azure-tools-for-intellij/PluginsAndFeatures/azure-toolkit-for-rider/*
 
       - name: Build dotnet part
         working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
         run: dotnet build ./ReSharper.Azure.sln
 
       - name: Check disk space
-        run: du -sh ~/work/azure-tools-for-intellij/azure-tools-for-intellij/PluginsAndFeatures/*
+        run: du -sh ~/work/azure-tools-for-intellij/azure-tools-for-intellij/PluginsAndFeatures/azure-toolkit-for-rider/*
 
       # Build plugin
       - name: Build plugin
