@@ -190,7 +190,7 @@ jobs:
         run: dotnet build ./ReSharper.Azure.sln
 
       - name: Check disk space
-        run: du -ch ~/work/
+        run: du -sh ~/work/*
 
       # Build plugin
       - name: Build plugin
