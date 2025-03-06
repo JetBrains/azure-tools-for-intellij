@@ -137,6 +137,9 @@ jobs:
       - name: Fetch Sources
         uses: actions/checkout@v4
 
+      - name: Check disk space
+        run: df -h
+
       # Setup Java environment
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -153,6 +156,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
+
+      - name: Check disk space
+        run: df -h
 
       # Set environment variables
       - name: Export Properties
@@ -171,9 +177,15 @@ jobs:
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Check disk space
+        run: df -h
+
       - name: Prepare dotnet part
         working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
         run: ./gradlew prepareDotNetPart
+
+      - name: Check disk space
+        run: df -h
 
       - name: Restore dotnet part
         working-directory: ${{ github.workspace }}/PluginsAndFeatures/azure-toolkit-for-rider
