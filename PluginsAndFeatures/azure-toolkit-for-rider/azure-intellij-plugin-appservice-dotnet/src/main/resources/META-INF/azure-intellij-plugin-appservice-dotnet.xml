@@ -67,7 +67,7 @@
                      defaultValue="true"
                      description="Enable downloading from Azure Functions Core Tools releases feed URL."/>
         <registryKey key="azure.function_app.core_tools.feed.url"
-                     defaultValue="https://functionscdn.azureedge.net/public/cli-feed-v4.json"
+                     defaultValue="https://cdn.functions.azure.com/public/cli-feed-v4.json"
                      description="Azure Functions Core Tools releases feed URL."/>
 
         <internalFileTemplate name="Trigger Azure HTTP Function"/>

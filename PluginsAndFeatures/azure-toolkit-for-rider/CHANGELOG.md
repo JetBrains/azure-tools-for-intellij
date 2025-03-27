@@ -2,6 +2,16 @@
 
 # Azure Toolkit for Rider Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Unable to download Azure Functions Core Tools because of the `NoTransformationFoundException` ([#1042](https://github.com/JetBrains/azure-tools-for-intellij/issues/1042))
+
+### Changed
+
+- Update domain for Azure Functions CDN
+
 ## 4.2.6 - 2024-11-13
 
 ### Fixed
@@ -187,7 +197,11 @@
 - Reimplement Azure Functions Core Tools integration
 - Reimplement Azure Functions templates
 
-[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.2.2...HEAD
+[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.2.6...HEAD
+[4.2.6]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.2.5...v4.2.6
+[4.2.5]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.2.3...v4.2.5
+[4.2.4]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.2.3...v4.2.4
+[4.2.3]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.2.2...v4.2.3
 [4.2.2]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.2.1...v4.2.2
 [4.2.1]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.2.0...v4.2.1
 [4.2.0]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.1.3...v4.2.0

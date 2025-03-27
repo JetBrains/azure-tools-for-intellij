@@ -81,6 +81,10 @@ class FunctionCoreToolsManager {
 
         try {
             val feed = FunctionCoreToolsReleaseFeedService.getInstance().getReleaseFeed(releaseFeedUrl)
+            if (feed == null) {
+                LOG.warn("Unable to get latest release feed for $releaseFeedUrl")
+                return
+            }
 
             val releaseTags = feed.tags
                 .toSortedMap()
@@ -197,7 +201,7 @@ class FunctionCoreToolsManager {
         )
     }
 
-    private suspend fun ensureReleaseDownloaded(downloadInfo: FunctionCoreToolsDownloadInfo): File? {
+    private fun ensureReleaseDownloaded(downloadInfo: FunctionCoreToolsDownloadInfo): File? {
         if (downloadInfo.downloadFolderForTagAndRelease.exists()) {
             return downloadInfo.downloadFolderForTagAndRelease
         }
