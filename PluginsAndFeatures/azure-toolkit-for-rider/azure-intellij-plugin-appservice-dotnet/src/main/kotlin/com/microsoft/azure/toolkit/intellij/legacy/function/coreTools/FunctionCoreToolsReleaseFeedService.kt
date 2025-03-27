@@ -9,22 +9,33 @@ package com.microsoft.azure.toolkit.intellij.legacy.function.coreTools
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.net.ssl.CertificateManager
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.util.cio.*
+import io.ktor.utils.io.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
+import java.io.File
+import kotlin.io.path.absolutePathString
 
 @Service(Service.Level.APP)
 class FunctionCoreToolsReleaseFeedService : Disposable {
     companion object {
         fun getInstance(): FunctionCoreToolsReleaseFeedService = service()
+        private val LOG = logger<FunctionCoreToolsReleaseFeedService>()
     }
 
     private val client = HttpClient(CIO) {
@@ -33,17 +44,53 @@ class FunctionCoreToolsReleaseFeedService : Disposable {
                 trustManager = CertificateManager.getInstance().trustManager
             }
         }
-        install(ContentNegotiation) {
-            json(Json {
-                explicitNulls = false
-                ignoreUnknownKeys = true
-            })
+        install(HttpTimeout) {
+            requestTimeoutMillis = 300000
         }
     }
 
-    suspend fun getReleaseFeed(feedUrl: String): ReleaseFeed {
-        val response = client.get(feedUrl)
-        return response.body<ReleaseFeed>()
+    @OptIn(ExperimentalSerializationApi::class)
+    private val json = Json {
+        explicitNulls = false
+        ignoreUnknownKeys = true
+        allowTrailingComma = true
+    }
+
+    private val feedMutex = Mutex()
+
+    suspend fun getReleaseFeed(feedUrl: String): ReleaseFeed? {
+        feedMutex.withLock {
+            try {
+                val temporaryFeedFile = FileUtil.createTempFile(
+                    File(FileUtil.getTempDirectory()),
+                    "AzureFunctionsToolingFeed",
+                    ".json",
+                    true,
+                    true
+                )
+                val temporaryFeedPath = temporaryFeedFile.toPath()
+
+                LOG.trace("Created a temporary feed file: ${temporaryFeedPath.absolutePathString()}")
+
+                withContext(Dispatchers.IO) {
+                    client.prepareGet(feedUrl).execute { httpResponse ->
+                        val channel: ByteReadChannel = httpResponse.body()
+                        channel.copyAndClose(temporaryFeedFile.writeChannel())
+                    }
+                }
+
+                LOG.trace("Downloaded Functions tooling feed to the ${temporaryFeedPath.absolutePathString()}")
+
+                val feed = withContext(Dispatchers.IO) {
+                    json.decodeFromStream<ReleaseFeed>(temporaryFeedFile.inputStream())
+                }
+
+                return feed
+            } catch (e: Exception) {
+                LOG.warn("Unable to download the Functions tooling release feed", e)
+                return null
+            }
+        }
     }
 
     override fun dispose() = client.close()
