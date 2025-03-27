@@ -22,28 +22,21 @@ import com.microsoft.azure.toolkit.intellij.legacy.function.settings.AzureFuncti
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.*
-import io.ktor.serialization.kotlinx.json.*
-import io.ktor.utils.io.ByteReadChannel
-import io.ktor.utils.io.core.isEmpty
-import io.ktor.utils.io.core.readBytes
+import io.ktor.util.cio.*
+import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.attribute.PosixFilePermission
-import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.Path
-import kotlin.io.path.createDirectories
-import kotlin.io.path.deleteRecursively
-import kotlin.io.path.exists
-import kotlin.io.path.isExecutable
-import kotlin.io.path.setPosixFilePermissions
+import kotlin.io.path.*
 
 @Service(Service.Level.APP)
 class FunctionsToolingFeedService : Disposable {
@@ -64,13 +57,65 @@ class FunctionsToolingFeedService : Disposable {
                 trustManager = CertificateManager.getInstance().trustManager
             }
         }
-        install(ContentNegotiation) {
-            json(Json {
-                explicitNulls = false
-                ignoreUnknownKeys = true
-                allowTrailingComma = true
-            })
+        install(HttpTimeout) {
+            requestTimeoutMillis = 300000
         }
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    private val json = Json {
+        explicitNulls = false
+        ignoreUnknownKeys = true
+        allowTrailingComma = true
+        allowComments = true
+    }
+
+    /**
+     * Downloads the latest Azure Functions tooling release for the specified Azure Functions runtime version.
+     *
+     * This method fetches the release information, determines if the release has already been downloaded,
+     * and if not, it downloads the release, extracts it to the appropriate directory and cleans up any temporary files.
+     *
+     * @param functionsRuntimeVersion The version of Azure Functions runtime for which to download the latest tooling release.
+     * @return A Result wrapping the path to the latest Azure Functions tooling release.
+     */
+    suspend fun downloadLatestFunctionsToolingRelease(functionsRuntimeVersion: String): Result<Path> {
+        downloadAndSaveReleaseFeed().onFailure { error ->
+            LOG.warn("Unable to download Function tooling release feed", error)
+            return Result.failure(error)
+        }
+
+        val toolingRelease = getLatestFunctionsToolingRelease(functionsRuntimeVersion)
+            ?: return Result.failure(IllegalStateException("Unable to obtain latest function tooling release"))
+        val toolingReleasePath = getPathForLatestFunctionsToolingRelease(toolingRelease)
+            ?: return Result.failure(IllegalStateException("Unable to path to download function tooling release"))
+
+        val coreToolsExecutablePath = toolingReleasePath.resolveFunctionCoreToolsExecutable()
+        if (coreToolsExecutablePath.exists()) {
+            LOG.trace { "The release $toolingRelease is already downloaded" }
+            return Result.success(toolingReleasePath)
+        }
+
+        return downloadAndExtractFunctionsToolingRelease(
+            toolingRelease,
+            toolingReleasePath,
+            coreToolsExecutablePath
+        )
+    }
+
+    /**
+     * Retrieves a list of Azure Functions tooling releases for the specified Azure Functions runtime versions.
+     *
+     * @param functionsRuntimeVersions List of Azure Functions runtime versions.
+     * @return List of tooling releases corresponding to the given versions, or null if the release feed could not be downloaded.
+     */
+    suspend fun getFunctionsToolingReleaseForVersions(functionsRuntimeVersions: List<String>): List<FunctionsToolingRelease>? {
+        downloadAndSaveReleaseFeed().onFailure { exception ->
+            LOG.warn("Unable to download Function tooling release feed", exception)
+            return null
+        }
+
+        return functionsRuntimeVersions.mapNotNull { getLatestFunctionsToolingRelease(it) }
     }
 
     /**
@@ -78,15 +123,20 @@ class FunctionsToolingFeedService : Disposable {
      *
      * @return Result wrapping any exception encountered during the execution.
      */
-    suspend fun downloadAndSaveReleaseFeed() = kotlin.runCatching {
-        if (releaseCache.isNotEmpty()) return@runCatching
+    private suspend fun downloadAndSaveReleaseFeed(): Result<Unit> {
+        if (releaseCache.isNotEmpty()) return Result.success(Unit)
 
         releaseCacheMutex.withLock {
-            if (releaseCache.isNotEmpty()) return@withLock
+            if (releaseCache.isNotEmpty()) return Result.success(Unit)
 
             LOG.trace("Downloading Functions tooling release feed")
 
-            val feed = getReleaseFeed()
+            val feedResult = downloadFunctionsToolingReleaseFeed().onFailure { error ->
+                return Result.failure(error)
+            }
+
+            val feed = feedResult.getOrNull()
+                ?: return Result.failure(IllegalStateException("Unable to download Function tooling release feed"))
             val releaseTags = feed.tags
                 .toSortedMap()
                 .filterValues { !it.releaseQuality.isNullOrEmpty() && !it.release.isNullOrEmpty() && !it.hidden }
@@ -105,50 +155,55 @@ class FunctionsToolingFeedService : Disposable {
                     FunctionsToolingRelease(releaseKey, releaseFromTag, coreToolsRelease.downloadLink ?: "")
                 )
             }
+
+            return Result.success(Unit)
         }
     }
 
-    /**
-     * Downloads the latest Azure Functions tooling release for the specified Azure Functions runtime version.
-     *
-     * This method fetches the release information, determines if the release has already been downloaded,
-     * and if not, it downloads the release, extracts it to the appropriate directory and cleans up any temporary files.
-     *
-     * @param functionsRuntimeVersion The version of Azure Functions runtime for which to download the latest tooling release.
-     * @return A Result wrapping the path to the latest Azure Functions tooling release.
-     */
-    suspend fun downloadLatestFunctionsToolingRelease(functionsRuntimeVersion: String): Result<Path> {
-        downloadAndSaveReleaseFeed().onFailure { exception ->
-            LOG.warn("Unable to download Function tooling release feed", exception)
-            return Result.failure(exception)
-        }
+    private suspend fun downloadFunctionsToolingReleaseFeed(): Result<ReleaseFeed> = runCatching {
+        val feedUrl = Registry.get("azure.function_app.core_tools.feed.url").asString()
+        LOG.trace { "Functions tooling release feed: $feedUrl" }
 
-        val toolingRelease = getLatestFunctionsToolingRelease(functionsRuntimeVersion)
-        if (toolingRelease == null) {
-            return Result.failure(IllegalStateException("Unable to obtain latest function tooling release"))
-        }
-        val toolingReleasePath = getPathForLatestFunctionsToolingRelease(toolingRelease)
-        if (toolingReleasePath == null) {
-            return Result.failure(IllegalStateException("Unable to path to download function tooling release"))
-        }
-        val coreToolsExecutablePath = toolingReleasePath.resolveFunctionCoreToolsExecutable()
-        if (coreToolsExecutablePath.exists()) {
-            LOG.trace { "The release $toolingRelease is already downloaded" }
-            return Result.success(toolingReleasePath)
-        }
-
-        return downloadAndExtractFunctionsToolingRelease(
-            toolingRelease,
-            toolingReleasePath,
-            coreToolsExecutablePath
+        val temporaryFeedFile = FileUtil.createTempFile(
+            File(FileUtil.getTempDirectory()),
+            "AzureFunctionsToolingFeed",
+            ".json",
+            true,
+            false
         )
+        val temporaryFeedPath = temporaryFeedFile.toPath()
+
+        LOG.trace { "Created a temporary feed file: ${temporaryFeedPath.absolutePathString()}" }
+
+        withContext(Dispatchers.IO) {
+            client.prepareGet(feedUrl).execute { httpResponse ->
+                val channel: ByteReadChannel = httpResponse.body()
+                channel.copyAndClose(temporaryFeedFile.writeChannel())
+            }
+        }
+
+        LOG.trace { "Downloaded Functions tooling feed to the ${temporaryFeedPath.absolutePathString()}" }
+
+        val feed = withContext(Dispatchers.IO) {
+            json.decodeFromStream<ReleaseFeed>(temporaryFeedPath.inputStream())
+        }
+
+        temporaryFeedPath.deleteIfExists()
+
+        return Result.success(feed)
     }
+
 
     private suspend fun downloadAndExtractFunctionsToolingRelease(
         toolingRelease: FunctionsToolingRelease,
         toolingReleasePath: Path,
         coreToolsExecutablePath: Path,
     ): Result<Path> {
+        if (coreToolsExecutablePath.exists()) {
+            LOG.trace { "The release $toolingRelease is already downloaded" }
+            return Result.success(toolingReleasePath)
+        }
+
         functionsToolingReleaseMutex.withLock {
             if (coreToolsExecutablePath.exists()) {
                 LOG.trace { "The release $toolingRelease is already downloaded" }
@@ -156,42 +211,18 @@ class FunctionsToolingFeedService : Disposable {
             }
 
             try {
-                val tempFile = FileUtil.createTempFile(
-                    File(FileUtil.getTempDirectory()),
-                    "AzureFunctions-${toolingRelease.functionsVersion}-${toolingRelease.releaseTag}",
-                    ".zip",
-                    true,
-                    true
-                )
+                val temporaryArchive = downloadFunctionsToolingArchive(toolingRelease)
 
-                LOG.trace { "Created a temporary file: ${tempFile.absolutePath}" }
+                if (!toolingReleasePath.exists()) toolingReleasePath.createDirectories()
 
-                withContext(Dispatchers.IO) {
-                    client.prepareGet(toolingRelease.artifactUrl).execute { httpResponse ->
-                        val channel: ByteReadChannel = httpResponse.body()
-                        while (!channel.isClosedForRead) {
-                            val packet = channel.readRemaining(DEFAULT_BUFFER_SIZE.toLong())
-                            while (!packet.isEmpty) {
-                                val bytes = packet.readBytes()
-                                tempFile.appendBytes(bytes)
-                            }
-                        }
-                    }
-                }
+                LOG.trace { "Extracting from ${temporaryArchive.absolutePathString()} to $toolingReleasePath" }
+                ZipUtil.extract(temporaryArchive, toolingReleasePath, null, true)
 
-                LOG.trace { "Downloaded core tooling archive to the ${tempFile.absolutePath}" }
+                temporaryArchive.deleteIfExists()
 
-                if (!toolingReleasePath.exists())
-                    toolingReleasePath.createDirectories()
-
-                LOG.trace { "Extracting from ${tempFile.absolutePath} to $toolingReleasePath" }
-                ZipUtil.extract(tempFile.toPath(), toolingReleasePath, null, true)
-
-                if (tempFile.exists())
-                    tempFile.delete()
-
-                if (!coreToolsExecutablePath.isExecutable() && !SystemInfo.isWindows)
+                if (!coreToolsExecutablePath.isExecutable() && !SystemInfo.isWindows) {
                     setExecutablePermissionsForCoreTools(coreToolsExecutablePath)
+                }
 
                 return Result.success(toolingReleasePath)
             } catch (e: Exception) {
@@ -202,30 +233,28 @@ class FunctionsToolingFeedService : Disposable {
         }
     }
 
-    /**
-     * Retrieves a list of Azure Functions tooling releases for the specified Azure Functions runtime versions.
-     *
-     * @param functionsRuntimeVersions List of Azure Functions runtime versions.
-     * @return List of tooling releases corresponding to the given versions, or null if the release feed could not be downloaded.
-     */
-    suspend fun getFunctionsToolingReleaseForVersions(functionsRuntimeVersions: List<String>): List<FunctionsToolingRelease>? {
-        downloadAndSaveReleaseFeed().onFailure { exception ->
-            LOG.warn("Unable to download Function tooling release feed", exception)
-            return null
+    private suspend fun downloadFunctionsToolingArchive(toolingRelease: FunctionsToolingRelease): Path {
+        val temporaryArchive = FileUtil.createTempFile(
+            File(FileUtil.getTempDirectory()),
+            "AzureFunctions-${toolingRelease.functionsVersion}-${toolingRelease.releaseTag}",
+            ".zip",
+            true,
+            false
+        )
+        val temporaryArchivePath = temporaryArchive.toPath()
+
+        LOG.trace { "Created a temporary file: ${temporaryArchivePath.absolutePathString()}" }
+
+        withContext(Dispatchers.IO) {
+            client.prepareGet(toolingRelease.artifactUrl).execute { httpResponse ->
+                val channel: ByteReadChannel = httpResponse.body()
+                channel.copyAndClose(temporaryArchive.writeChannel())
+            }
         }
 
-        return functionsRuntimeVersions.mapNotNull { getLatestFunctionsToolingRelease(it) }
-    }
+        LOG.trace { "Downloaded Functions tooling archive to the ${temporaryArchivePath.absolutePathString()}" }
 
-    private suspend fun getReleaseFeed(): ReleaseFeed {
-        val feedUrl = Registry.get("azure.function_app.core_tools.feed.url").asString()
-        LOG.trace { "Functions tooling release feed: $feedUrl" }
-
-        val response = withContext(Dispatchers.IO) {
-            client.get(feedUrl)
-        }
-
-        return response.body<ReleaseFeed>()
+        return temporaryArchivePath
     }
 
     private fun getLatestFunctionsToolingRelease(functionsRuntimeVersion: String): FunctionsToolingRelease? {
