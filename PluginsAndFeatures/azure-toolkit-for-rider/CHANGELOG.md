@@ -6,31 +6,37 @@
 
 ### Fixed
 
+- Unable to open the Resource Group and Service Plan dialog ([#1021](https://github.com/JetBrains/azure-tools-for-intellij/issues/1021))
+
+## [4.2.7] - 2025-03-27
+
+### Fixed
+
 - Unable to download Azure Functions Core Tools because of the `NoTransformationFoundException` ([#1042](https://github.com/JetBrains/azure-tools-for-intellij/issues/1042))
 
 ### Changed
 
 - Update domain for Azure Functions CDN
 
-## 4.2.6 - 2024-11-13
+## [4.2.6] - 2024-11-13
 
 ### Fixed
 
 - Remove the locked 4.99.0 release of the core tools as the archive can be unzipped without problems
 
-## 4.2.5 - 2024-11-11
+## [4.2.5] - 2024-11-11
 
 ### Fixed
 
 - Fix DEXP-832012: Error while extracting a file
 
-## 4.2.4 - 2024-10-28
+## [4.2.4] - 2024-10-28
 
 ### Fixed
 
 - Fix the 4.99.0 release of the core tools ([#944](https://github.com/JetBrains/azure-tools-for-intellij/issues/944), [RIDER-119093](https://youtrack.jetbrains.com/issue/RIDER-119093))
 
-## 4.2.3 - 2024-10-25
+## [4.2.3] - 2024-10-25
 
 ### Fixed
 
@@ -197,7 +203,8 @@
 - Reimplement Azure Functions Core Tools integration
 - Reimplement Azure Functions templates
 
-[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.2.6...HEAD
+[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.2.7...HEAD
+[4.2.7]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.2.6...v4.2.7
 [4.2.6]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.2.5...v4.2.6
 [4.2.5]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.2.3...v4.2.5
 [4.2.4]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.2.3...v4.2.4
