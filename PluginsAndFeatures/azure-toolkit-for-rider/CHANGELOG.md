@@ -6,6 +6,12 @@
 
 ### Fixed
 
+- Unable to open the Resource Group and Service Plan dialog ([#1021](https://github.com/JetBrains/azure-tools-for-intellij/issues/1021))
+
+## [4.3.10] - 2025-03-27
+
+### Fixed
+
 - Unable to download Azure Functions Core Tools because of the `NoTransformationFoundException` ([#1042](https://github.com/JetBrains/azure-tools-for-intellij/issues/1042))
 
 ## [4.3.9] - 2025-02-07
@@ -254,7 +260,8 @@
 - Reimplement Azure Functions Core Tools integration
 - Reimplement Azure Functions templates
 
-[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.3.9...HEAD
+[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.3.10...HEAD
+[4.3.10]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.3.8...v4.3.10
 [4.3.9]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.3.8...v4.3.9
 [4.3.8]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.3.7...v4.3.8
 [4.3.7]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.3.6...v4.3.7
