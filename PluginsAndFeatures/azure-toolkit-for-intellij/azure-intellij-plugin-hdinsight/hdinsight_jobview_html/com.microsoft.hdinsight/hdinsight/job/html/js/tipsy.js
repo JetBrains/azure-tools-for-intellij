@@ -4,6 +4,18 @@
 // released under the MIT license
 
 (function($) {
+    function escapeHtml(text) {
+        return text.replace(/[&<>"']/g, function(match) {
+            const escapeMap = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            };
+            return escapeMap[match];
+        });
+    }
 
     function maybeCall(thing, ctx) {
         return (typeof thing == 'function') ? (thing.call(ctx)) : thing;
@@ -115,7 +127,7 @@
             }
             if (typeof $e.context.nearestViewportElement == 'object'){
                 if ($e.children('title').length){
-                    $e.append('<original-title>' + ($e.children('title').text() || '') + '</original-title>')
+                    $e.append('<original-title>' + escapeHtml($e.children('title').text() || '') + '</original-title>')
                         .children('title').remove();
                 }
             }
