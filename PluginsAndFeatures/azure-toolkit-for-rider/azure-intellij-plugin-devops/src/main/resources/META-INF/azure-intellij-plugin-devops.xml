@@ -1,3 +1,15 @@
 <idea-plugin>
     <resource-bundle>messages.AzureToolkitDevOpsBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService
+                serviceImplementation="com.microsoft.azure.toolkit.intellij.devops.auth.accounts.AzureDevOpsPersistentAccounts"/>
+        <applicationService
+                serviceInterface="com.microsoft.azure.toolkit.intellij.devops.auth.accounts.AzureDevOpsAccountManager"
+                serviceImplementation="com.microsoft.azure.toolkit.intellij.devops.auth.accounts.AzureDevOpsPersistentAccountManager"/>
+        <openapi.vcs.ui.cloneDialog.VcsCloneDialogExtension
+                implementation="com.microsoft.azure.toolkit.intellij.devops.ui.clone.AzureDevOpsCloneDialogExtension"
+                id="com.microsoft.azure.toolkit.intellij.devops.ui.clone.AzureDevOpsCloneDialogExtension"
+                order="after com.intellij.util.ui.cloneDialog.RepositoryUrlCloneDialogExtension"/>
+    </extensions>
 </idea-plugin>

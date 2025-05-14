@@ -19,6 +19,6 @@ dependencies {
     intellijPlatform {
         rider(platformVersion, false)
         jetbrainsRuntime()
-        bundledPlugins()
+        bundledPlugins("Git4Idea")
     }
 }
