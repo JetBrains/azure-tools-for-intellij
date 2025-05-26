@@ -6,11 +6,12 @@ import com.intellij.collaboration.api.httpclient.HttpClientUtil
 import com.intellij.collaboration.api.httpclient.HttpRequestConfigurer
 import com.intellij.collaboration.api.httpclient.RequestTimeoutConfigurer
 import com.intellij.openapi.diagnostic.logger
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
+import com.microsoft.azure.toolkit.intellij.devops.api.data.deserializeAzureDevOpsWrapped
 import org.jetbrains.annotations.ApiStatus
 import java.net.http.HttpRequest
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.intellij.collaboration.auth.AccountDetails
 
 class AzureDevOpsApiException(message: String, cause: Throwable? = null) : Exception(message, cause)
 
@@ -21,25 +22,27 @@ private object AzureDevOpsApiVersions {
 val AzureDevOpsServerPath.apiBaseUrl: String
     get() = uri
 
-@Serializable
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class AzureDevOpsRepository(
-    @SerialName("id") val id: String = "",
-    @SerialName("name") val name: String = "",
-    @SerialName("defaultBranch") val mainBranch: String = "",
-    @SerialName("remoteUrl") val url: String = "",
+    @JsonProperty("id") val id: String = "",
+    @JsonProperty("name") val name: String = "",
+    @JsonProperty("defaultBranch") val defaultBranch: String = "",
+    @JsonProperty("remoteUrl") val remoteUrl: String = "",
 )
 
-@Serializable
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class AzureDevOpsUser(
-    @SerialName("accountName") val accountName: String = "",
-    @SerialName("accountId") val id: String = ""
-)
+    @JsonProperty("accountName") val accountName: String = "",
+) : AccountDetails {
+    override val name: String get() = accountName
+    override val avatarUrl: String? get() = null
+}
 
 @ApiStatus.Experimental
 sealed interface AzureDevOpsApi : HttpApiHelper {
     val server: AzureDevOpsServerPath
 
-    fun checkToken(): AzureDevOpsUser
+    fun getCurrentUser(): AzureDevOpsUser
 
     fun getRepositories(): List<AzureDevOpsRepository>
 }
@@ -57,7 +60,7 @@ internal class AzureDevOpsApiImpl(
         tokenSupplier?.let { httpHelper(it) } ?: httpHelper()
     )
 
-    override fun checkToken(): AzureDevOpsUser {
+    override fun getCurrentUser(): AzureDevOpsUser {
         val organization = server.uri.substringAfterLast("/")
         val uri = "${server.uri}/_apis/projects?api-version=${AzureDevOpsApiVersions.CORE_API_VERSION}"
         logger<AzureDevOpsApi>().info("Validating token for organization by querying projects from $uri")
@@ -74,7 +77,6 @@ internal class AzureDevOpsApiImpl(
             // !!! Temporary: as we don't have user info from this API call, create a user with organization name
             return AzureDevOpsUser(
                 accountName = organization,
-                id = organization
             )
         } catch (e: Exception) {
             if (e is AzureDevOpsApiException) throw e
@@ -102,9 +104,7 @@ internal class AzureDevOpsApiImpl(
             }
 
             return try {
-                val json = Json { ignoreUnknownKeys = true }
-                val projectsResponse = json.decodeFromString<ProjectsResponse>(responseBody)
-                projectsResponse.value
+                responseBody.deserializeAzureDevOpsWrapped<List<AzureDevOpsRepository>, AzureDevOpsRepository>()
             } catch (e: Exception) {
                 logger<AzureDevOpsApi>().warn("Failed to parse response: ${e.message}")
                 throw AzureDevOpsApiException("Failed to parse response: ${e.message}", e)
@@ -117,11 +117,6 @@ internal class AzureDevOpsApiImpl(
     }
 
 }
-
-@Serializable
-private data class ProjectsResponse(
-    @SerialName("value") val value: List<AzureDevOpsRepository>
-)
 
 private fun httpHelper(tokenSupplier: () -> String): HttpApiHelper {
     val requestConfigurer = CompoundRequestConfigurer(
