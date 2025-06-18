@@ -6,6 +6,7 @@
 
 package com.microsoft.azure.toolkit.intellij.legacy.webapp.runner.webApp
 
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.dsl.builder.Cell
@@ -24,6 +25,10 @@ import java.util.function.Supplier
 import java.util.stream.Collectors
 
 open class WebAppComboBox(project: Project) : AppServiceComboBox<AppServiceConfig>(project) {
+    companion object {
+        private val LOG = logger<WebAppComboBox>()
+    }
+
     var targetProjectOnNetFramework: Boolean = false
 
     init {
@@ -31,32 +36,47 @@ open class WebAppComboBox(project: Project) : AppServiceComboBox<AppServiceConfi
     }
 
     override fun refreshItems() {
+        LOG.info("Before refreshing AzureWebApp")
         Azure.az(AzureWebApp::class.java).refresh()
+        LOG.info("After refreshing AzureWebApp")
         super.refreshItems()
+        LOG.info("After refreshing items")
     }
 
     override fun loadAppServiceModels(): MutableList<AppServiceConfig> {
+        LOG.info("Before getting the Azure account")
         val account = Azure.az(AzureAccount::class.java).account()
+        LOG.info("After getting the Azure account")
         if (!account.isLoggedIn) {
             return mutableListOf()
         }
 
-        return Azure.az(AzureWebApp::class.java)
+        LOG.info("Before getting WebApps")
+        val webApps = Azure.az(AzureWebApp::class.java)
             .webApps()
+
+        LOG.info("After getting web apps (size: ${webApps.size})")
+
+        val modifiedWebApps = webApps
             .parallelStream()
             .map { webApp -> convertAppServiceToConfig({ AppServiceConfig() }, webApp) }
             .filter { a -> a.subscriptionId != null }
             .sorted { a, b -> a.appName.compareTo(b.appName, true) }
             .collect(Collectors.toList())
+        LOG.info("After modifying web apps (size: ${modifiedWebApps.size})")
+
+        return modifiedWebApps
     }
 
     override fun convertAppServiceToConfig(
         supplier: Supplier<AppServiceConfig>,
         appService: AppServiceAppBase<*, *, *>?
     ): AppServiceConfig {
+        LOG.info("Before converting app service config")
         val config = supplier.get()
         if (appService == null) return config
 
+        LOG.info("Applying AppService to a config")
         config.apply {
             subscriptionId = appService.subscriptionId
             resourceGroup = appService.resourceGroupName
@@ -72,6 +92,7 @@ open class WebAppComboBox(project: Project) : AppServiceComboBox<AppServiceConfi
                 servicePlanResourceGroup = it.resourceGroupName
             }
         }
+        LOG.info("After converting app service config")
 
         return config
     }
