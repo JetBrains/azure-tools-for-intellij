@@ -29,16 +29,21 @@ class AppServiceComboBoxDotNetRender : SimpleListCellRenderer<AppServiceConfig>(
         isSelected: Boolean,
         cellHasFocus: Boolean
     ) {
-        if (config == null) return
+        try {
+            if (config == null) return
 
-        LOG.info("Customizing label")
-        text = if (index >= 0) {
-            getAppServiceLabel(config)
-        } else {
-            config.appName
+            LOG.info("Customizing label")
+            text = if (index >= 0) {
+                getAppServiceLabel(config)
+            } else {
+                config.appName
+            }
+            LOG.info("After customizing label")
+            accessibleContext?.accessibleDescription = config.appName
+        } catch (e: Exception) {
+            LOG.error("Error while customizing label", e)
+            throw e
         }
-        LOG.info("After customizing label")
-        accessibleContext?.accessibleDescription = config.appName
     }
 
     private fun getAppServiceLabel(config: AppServiceConfig): String {
