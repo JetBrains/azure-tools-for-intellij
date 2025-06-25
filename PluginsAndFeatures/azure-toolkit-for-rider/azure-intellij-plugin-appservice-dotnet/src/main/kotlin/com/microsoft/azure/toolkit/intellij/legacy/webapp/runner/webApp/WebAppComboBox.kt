@@ -62,12 +62,12 @@ open class WebAppComboBox(project: Project) : AppServiceComboBox<AppServiceConfi
 
             LOG.info("After getting web apps (size: ${webApps.size})")
 
-            val modifiedWebApps = webApps
-                .parallelStream()
-                .map { webApp -> convertAppServiceToConfig({ AppServiceConfig() }, webApp) }
-                .filter { a -> a.subscriptionId != null }
-                .sorted { a, b -> a.appName.compareTo(b.appName, true) }
-                .collect(Collectors.toList())
+            val modifiedWebApps = mutableListOf<AppServiceConfig>()
+            for (webApp in webApps.sortedBy { it.name }) {
+                val config = convertAppServiceToConfig({ AppServiceConfig() }, webApp)
+                modifiedWebApps.add(config)
+            }
+
             LOG.info("After modifying web apps (size: ${modifiedWebApps.size})")
 
             return modifiedWebApps
@@ -84,6 +84,8 @@ open class WebAppComboBox(project: Project) : AppServiceComboBox<AppServiceConfi
         LOG.info("Before converting app service config")
         val config = supplier.get()
         if (appService == null) return config
+
+        LOG.info("Handling ${appService.name}")
 
         LOG.info("Applying AppService to a config")
         config.apply {
