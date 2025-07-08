@@ -32,13 +32,11 @@ class AppServiceComboBoxDotNetRender : SimpleListCellRenderer<AppServiceConfig>(
         try {
             if (config == null) return
 
-            LOG.info("Customizing label")
             text = if (index >= 0) {
                 getAppServiceLabel(config)
             } else {
                 config.appName
             }
-            LOG.info("After customizing label")
             accessibleContext?.accessibleDescription = config.appName
         } catch (e: Exception) {
             LOG.error("Error while customizing label", e)
@@ -47,7 +45,6 @@ class AppServiceComboBoxDotNetRender : SimpleListCellRenderer<AppServiceConfig>(
     }
 
     private fun getAppServiceLabel(config: AppServiceConfig): String {
-        LOG.info("Before creating label")
         val module = getModule(config)
         val isDraft = module?.exists(config.appName, config.resourceGroup) == false
         val appName = config.appName
@@ -56,7 +53,7 @@ class AppServiceComboBoxDotNetRender : SimpleListCellRenderer<AppServiceConfig>(
         val linuxFxVersion = app?.linuxFxVersion
         val os = config.runtime?.os ?: "unknown"
 
-        val label = buildString {
+        return buildString {
             append("<html><div>")
             if (isDraft) {
                 append("(New) ")
@@ -76,9 +73,6 @@ class AppServiceComboBoxDotNetRender : SimpleListCellRenderer<AppServiceConfig>(
             }
             append("</small></html>")
         }
-        LOG.info("After creating label")
-
-        return label
     }
 
     private fun getModule(config: AppServiceConfig): AppServiceResourceModule<out AppServiceAppBase<*, AppServiceServiceSubscription?, *>?, AppServiceServiceSubscription?, *>? {
