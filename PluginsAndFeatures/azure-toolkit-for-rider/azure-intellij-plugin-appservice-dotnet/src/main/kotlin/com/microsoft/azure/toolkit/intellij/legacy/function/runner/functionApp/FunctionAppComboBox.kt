@@ -52,8 +52,7 @@ open class FunctionAppComboBox(project: Project) : AppServiceComboBox<FunctionAp
                 return mutableListOf()
             }
 
-            val functionApps = Azure.az(AzureFunctions::class.java)
-                .functionApps()
+            val functionApps = Azure.az(AzureFunctions::class.java).functionApps()
 
             val modifiedFunctionApps = buildList {
                 for (functionApp in functionApps.sortedBy { it.name }) {

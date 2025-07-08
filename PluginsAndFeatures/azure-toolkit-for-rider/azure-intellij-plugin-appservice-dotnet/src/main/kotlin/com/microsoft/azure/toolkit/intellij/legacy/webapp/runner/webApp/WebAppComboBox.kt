@@ -51,8 +51,7 @@ open class WebAppComboBox(project: Project) : AppServiceComboBox<AppServiceConfi
                 return mutableListOf()
             }
 
-            val webApps = Azure.az(AzureWebApp::class.java)
-                .webApps()
+            val webApps = Azure.az(AzureWebApp::class.java).webApps()
 
             val modifiedWebApps = buildList {
                 for (webApp in webApps.sortedBy { it.name }) {
