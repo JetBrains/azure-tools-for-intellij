@@ -8,7 +8,7 @@
 
 - Endless loading in the Web App and Function App publish dialogs ([#1066](https://github.com/JetBrains/azure-tools-for-intellij/issues/1066))
 
-## [v4.4.8] - 2025-04-16
+## [4.4.8] - 2025-04-16
 
 ### Added
 
