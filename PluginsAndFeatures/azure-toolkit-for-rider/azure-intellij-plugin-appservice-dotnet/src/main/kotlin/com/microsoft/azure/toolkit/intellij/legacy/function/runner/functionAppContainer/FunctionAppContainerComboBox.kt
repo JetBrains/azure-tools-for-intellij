@@ -6,6 +6,7 @@
 
 package com.microsoft.azure.toolkit.intellij.legacy.function.runner.functionAppContainer
 
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.dsl.builder.Cell
@@ -16,42 +17,45 @@ import com.microsoft.azure.toolkit.lib.Azure
 import com.microsoft.azure.toolkit.lib.appservice.config.FunctionAppConfig
 import com.microsoft.azure.toolkit.lib.appservice.function.AzureFunctions
 import com.microsoft.azure.toolkit.lib.auth.AzureAccount
-import com.microsoft.azure.toolkit.lib.common.action.Action
-import java.util.stream.Collectors
 
 class FunctionAppContainerComboBox(project: Project) : FunctionAppComboBox(project) {
+    companion object {
+        private val LOG = logger<FunctionAppContainerComboBox>()
+    }
+
     init {
         setRenderer(AppServiceComboBoxDotNetRender())
     }
 
     override fun loadAppServiceModels(): MutableList<FunctionAppConfig> {
-        val account = Azure.az(AzureAccount::class.java).account()
-        if (!account.isLoggedIn) {
-            return mutableListOf()
-        }
+        try {
+            val account = Azure.az(AzureAccount::class.java).account()
+            if (!account.isLoggedIn) {
+                return mutableListOf()
+            }
 
-        return Azure.az(AzureFunctions::class.java)
-            .functionApps()
-            .parallelStream()
-            .filter { a -> a.runtime != null && a.runtime?.isWindows == false }
-            .map { functionApp -> convertAppServiceToConfig({ FunctionAppConfig() }, functionApp) }
-            .filter { a -> a.subscriptionId != null }
-            .sorted { a, b -> a.appName().compareTo(b.appName(), true) }
-            .collect(Collectors.toList())
+            val functionApps = Azure.az(AzureFunctions::class.java).functionApps()
+
+            val modifiedFunctionApps = buildList {
+                for (functionApp in functionApps.sortedBy { it.name }) {
+                    if (functionApp.runtime == null || functionApp.runtime?.isWindows == true) continue
+
+                    val config = convertAppServiceToConfig({ FunctionAppConfig() }, functionApp)
+                    add(config)
+                }
+            }
+
+            return modifiedFunctionApps.toMutableList()
+        } catch (e: Exception) {
+            LOG.error("Unable to load models", e)
+            throw e
+        }
     }
 
     override fun createResource() {
         val dialog = FunctionAppContainerCreationDialog(project)
         Disposer.register(this, dialog)
-        val actionId: Action.Id<FunctionAppConfig> = Action.Id.of("user/function.create_app.app")
-        dialog.setOkAction(Action(actionId)
-            .withLabel("Create")
-            .withIdParam(FunctionAppConfig::appName)
-            .withSource { it }
-            .withAuthRequired(false)
-            .withHandler(this::setValue)
-        )
-        dialog.show()
+        setOkActionAndShowDialog(dialog)
     }
 }
 

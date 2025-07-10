@@ -6,6 +6,7 @@
 
 package com.microsoft.azure.toolkit.intellij.legacy.webapp.runner.webAppContainer
 
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.dsl.builder.Cell
@@ -16,41 +17,45 @@ import com.microsoft.azure.toolkit.lib.Azure
 import com.microsoft.azure.toolkit.lib.appservice.config.AppServiceConfig
 import com.microsoft.azure.toolkit.lib.appservice.webapp.AzureWebApp
 import com.microsoft.azure.toolkit.lib.auth.AzureAccount
-import com.microsoft.azure.toolkit.lib.common.action.Action
-import java.util.stream.Collectors
 
 class WebAppContainerComboBox(project: Project) : WebAppComboBox(project) {
+    companion object {
+        private val LOG = logger<WebAppContainerComboBox>()
+    }
+
     init {
         setRenderer(AppServiceComboBoxDotNetRender())
     }
 
     override fun loadAppServiceModels(): MutableList<AppServiceConfig> {
-        val account = Azure.az(AzureAccount::class.java).account()
-        if (!account.isLoggedIn) {
-            return mutableListOf()
-        }
+        try {
+            val account = Azure.az(AzureAccount::class.java).account()
+            if (!account.isLoggedIn) {
+                return mutableListOf()
+            }
 
-        return Azure.az(AzureWebApp::class.java)
-            .webApps()
-            .parallelStream()
-            .filter { a -> a.runtime != null && a.runtime?.isWindows == false }
-            .map { webApp -> convertAppServiceToConfig({ AppServiceConfig() }, webApp) }
-            .sorted { a, b -> a.appName.compareTo(b.appName, true) }
-            .collect(Collectors.toList())
+            val webApps = Azure.az(AzureWebApp::class.java).webApps()
+
+            val modifiedWebApps = buildList {
+                for (webApp in webApps.sortedBy { it.name }) {
+                    if (webApp.runtime == null || webApp.runtime?.isWindows == true) continue
+
+                    val config = convertAppServiceToConfig({ AppServiceConfig() }, webApp)
+                    add(config)
+                }
+            }
+
+            return modifiedWebApps.toMutableList()
+        } catch (e: Exception) {
+            LOG.error("Unable to load models", e)
+            throw e
+        }
     }
 
     override fun createResource() {
         val dialog = WebAppContainerCreationDialog(project)
         Disposer.register(this, dialog)
-        val actionId: Action.Id<AppServiceConfig> = Action.Id.of("user/webapp.create_app.app")
-        dialog.setOkAction(Action(actionId)
-            .withLabel("Create")
-            .withIdParam(AppServiceConfig::appName)
-            .withSource { it }
-            .withAuthRequired(false)
-            .withHandler(this::setValue)
-        )
-        dialog.show()
+        setOkActionAndShowDialog(dialog)
     }
 }
 

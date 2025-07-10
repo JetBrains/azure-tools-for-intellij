@@ -6,11 +6,13 @@
 
 package com.microsoft.azure.toolkit.intellij.legacy.webapp.runner.webApp
 
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.Row
 import com.microsoft.azure.toolkit.intellij.appservice.components.AppServiceComboBoxDotNetRender
+import com.microsoft.azure.toolkit.intellij.common.ConfigDialog
 import com.microsoft.azure.toolkit.intellij.legacy.appservice.AppServiceComboBox
 import com.microsoft.azure.toolkit.lib.Azure
 import com.microsoft.azure.toolkit.lib.appservice.AppServiceAppBase
@@ -21,9 +23,12 @@ import com.microsoft.azure.toolkit.lib.appservice.webapp.AzureWebApp
 import com.microsoft.azure.toolkit.lib.auth.AzureAccount
 import com.microsoft.azure.toolkit.lib.common.action.Action
 import java.util.function.Supplier
-import java.util.stream.Collectors
 
 open class WebAppComboBox(project: Project) : AppServiceComboBox<AppServiceConfig>(project) {
+    companion object {
+        private val LOG = logger<WebAppComboBox>()
+    }
+
     var targetProjectOnNetFramework: Boolean = false
 
     init {
@@ -31,25 +36,38 @@ open class WebAppComboBox(project: Project) : AppServiceComboBox<AppServiceConfi
     }
 
     override fun refreshItems() {
-        Azure.az(AzureWebApp::class.java).refresh()
-        super.refreshItems()
+        try {
+            Azure.az(AzureWebApp::class.java).refresh()
+            super.refreshItems()
+        } catch (e: Exception) {
+            LOG.error("Error while refreshing items", e)
+        }
     }
 
     override fun loadAppServiceModels(): MutableList<AppServiceConfig> {
-        val account = Azure.az(AzureAccount::class.java).account()
-        if (!account.isLoggedIn) {
-            return mutableListOf()
-        }
+        try {
+            val account = Azure.az(AzureAccount::class.java).account()
+            if (!account.isLoggedIn) {
+                return mutableListOf()
+            }
 
-        return Azure.az(AzureWebApp::class.java)
-            .webApps()
-            .parallelStream()
-            .map { webApp -> convertAppServiceToConfig({ AppServiceConfig() }, webApp) }
-            .filter { a -> a.subscriptionId != null }
-            .sorted { a, b -> a.appName.compareTo(b.appName, true) }
-            .collect(Collectors.toList())
+            val webApps = Azure.az(AzureWebApp::class.java).webApps()
+
+            val modifiedWebApps = buildList {
+                for (webApp in webApps.sortedBy { it.name }) {
+                    val config = convertAppServiceToConfig({ AppServiceConfig() }, webApp)
+                    add(config)
+                }
+            }
+
+            return modifiedWebApps.toMutableList()
+        } catch (e: Exception) {
+            LOG.error("Unable to load models", e)
+            throw e
+        }
     }
 
+    @Suppress("DuplicatedCode")
     override fun convertAppServiceToConfig(
         supplier: Supplier<AppServiceConfig>,
         appService: AppServiceAppBase<*, *, *>?
@@ -79,6 +97,10 @@ open class WebAppComboBox(project: Project) : AppServiceComboBox<AppServiceConfi
     override fun createResource() {
         val dialog = WebAppCreationDialog(project, targetProjectOnNetFramework)
         Disposer.register(this, dialog)
+        setOkActionAndShowDialog(dialog)
+    }
+
+    protected fun setOkActionAndShowDialog(dialog: ConfigDialog<AppServiceConfig>) {
         val actionId: Action.Id<AppServiceConfig> = Action.Id.of("user/webapp.create_app.app")
         dialog.setOkAction(
             Action(actionId)

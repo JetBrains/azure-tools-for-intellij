@@ -4,6 +4,7 @@
 
 package com.microsoft.azure.toolkit.intellij.appservice.components
 
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.ui.SimpleListCellRenderer
 import com.microsoft.azure.toolkit.lib.Azure
 import com.microsoft.azure.toolkit.lib.appservice.AppServiceAppBase
@@ -17,6 +18,10 @@ import com.microsoft.azure.toolkit.lib.auth.AzureAccount
 import javax.swing.JList
 
 class AppServiceComboBoxDotNetRender : SimpleListCellRenderer<AppServiceConfig>() {
+    companion object {
+        private val LOG = logger<AppServiceComboBoxDotNetRender>()
+    }
+
     override fun customize(
         list: JList<out AppServiceConfig>,
         config: AppServiceConfig?,
@@ -24,14 +29,19 @@ class AppServiceComboBoxDotNetRender : SimpleListCellRenderer<AppServiceConfig>(
         isSelected: Boolean,
         cellHasFocus: Boolean
     ) {
-        if (config == null) return
+        try {
+            if (config == null) return
 
-        text = if (index >= 0) {
-            getAppServiceLabel(config)
-        } else {
-            config.appName
+            text = if (index >= 0) {
+                getAppServiceLabel(config)
+            } else {
+                config.appName
+            }
+            accessibleContext?.accessibleDescription = config.appName
+        } catch (e: Exception) {
+            LOG.error("Error while customizing label", e)
+            throw e
         }
-        accessibleContext?.accessibleDescription = config.appName
     }
 
     private fun getAppServiceLabel(config: AppServiceConfig): String {
