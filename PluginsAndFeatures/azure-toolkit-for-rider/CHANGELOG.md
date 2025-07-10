@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Endless loading in the Web App and Function App publish dialogs ([#1066](https://github.com/JetBrains/azure-tools-for-intellij/issues/1066))
+
+## [v4.4.8] - 2025-04-16
+
 ### Added
 
 - Support for Flex Consumption service plans ([RIDER-117297](https://youtrack.jetbrains.com/issue/RIDER-117297))
@@ -320,7 +326,8 @@
 - Reimplement Azure Functions Core Tools integration
 - Reimplement Azure Functions templates
 
-[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.4.7...HEAD
+[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.4.8...HEAD
+[4.4.8]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.4.7...v4.4.8
 [4.4.7]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.4.6...v4.4.7
 [4.4.6]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.4.5...v4.4.6
 [4.4.5]: https://github.com/JetBrains/azure-tools-for-intellij/compare/v4.4.4...v4.4.5
