@@ -5,6 +5,7 @@
 <!--suppress PluginXmlValidity -->
 <idea-plugin>
     <depends>Docker</depends>
+    <depends>rider.intellij.plugin.appender</depends>
 
     <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
         <actions implementation="com.microsoft.azure.toolkit.intellij.appservice.AppServiceRiderActionsContributor"/>
@@ -109,6 +110,9 @@
 
         <xdebugger.dialog.process.view.provider implementation="com.microsoft.azure.toolkit.intellij.debugger.view.AttachToAzureAppServiceProcessViewProvider" />
         <xdebugger.attachDebuggerProvider implementation="com.microsoft.azure.toolkit.intellij.debugger.RiderAzureAttachDebuggerProvider" />
+
+        <rider.dockerDeploymentTransformer
+                implementation="com.microsoft.azure.toolkit.intellij.appservice.docker.fastMode.DockerFastModeAzureTransformer"/>
     </extensions>
 
     <actions>
