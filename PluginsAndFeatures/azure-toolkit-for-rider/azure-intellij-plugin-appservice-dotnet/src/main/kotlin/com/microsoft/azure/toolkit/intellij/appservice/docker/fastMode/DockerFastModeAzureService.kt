@@ -58,7 +58,6 @@ internal class DockerFastModeAzureService(private val project: Project) : Lifeti
         private const val APP_NUGET_PACKAGES_PATH = "/home/app/.nuget/packages"
         private const val AZURE_WEBJOBS_SCRIPT_ROOT = "AzureWebJobsScriptRoot"
         private const val DOTNET_USE_POLLING_FILE_WATCHER = "DOTNET_USE_POLLING_FILE_WATCHER"
-        private const val FUNCTIONS_DEBUGGING_CLI = "functions_debugging_cli"
         private const val AZURE_FUNCTIONS_JOB_HOST_LOGGING = "AzureFunctionsJobHost__Logging__Console__IsEnabled"
 
         private val LOG = logger<DockerFastModeAzureService>()
