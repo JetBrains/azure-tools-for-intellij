@@ -41,7 +41,7 @@ jobs:
 
       # Check out the current repository
       - name: Fetch Sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: azure-tools-for-intellij
 
@@ -128,7 +128,7 @@ jobs:
 
       # Check out the current repository
       - name: Fetch Sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       # Set up the Java environment
       - name: Setup Java
@@ -203,7 +203,7 @@ jobs:
   #
   #      # Check out the current repository
   #      - name: Fetch Sources
-  #        uses: actions/checkout@v5
+  #        uses: actions/checkout@v6
   #
   #      # Set up the Java environment
   #      - name: Setup Java
@@ -271,7 +271,7 @@ jobs:
 
       # Check out the current repository
       - name: Fetch Sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       # Set up the Java environment
       - name: Setup Java
@@ -318,7 +318,7 @@ jobs:
 
       # Check out the current repository
       - name: Fetch Sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       # Remove old release drafts by using the curl request for the available releases with a draft flag
       - name: Remove Old Release Drafts
