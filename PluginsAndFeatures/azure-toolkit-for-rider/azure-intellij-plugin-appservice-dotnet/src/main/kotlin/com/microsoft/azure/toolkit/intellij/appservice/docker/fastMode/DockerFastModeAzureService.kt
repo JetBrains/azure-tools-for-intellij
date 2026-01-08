@@ -13,8 +13,6 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.debug
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.wm.ToolWindowId
-import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.platform.util.progress.forEachWithProgress
 import com.intellij.util.concurrency.ThreadingAssertions
 import com.jetbrains.rd.platform.util.idea.LifetimedService
@@ -43,7 +41,7 @@ import kotlin.io.path.absolutePathString
 /**
  * Prepares Fast-mode info for Azure Functions projects.
  *
- * Visual Studio-like behavior:
+ * Fast-mode behavior:
  * - build on host
  * - run only base stage (no publish/final)
  * - mount sources/output into /home/site/wwwroot
@@ -71,17 +69,7 @@ internal class DockerFastModeAzureService(private val project: Project) : Lifeti
         LOG.trace("Preparing Azure Functions Fast mode for Dockerfile deployment")
 
         val fastModeInfo = getFastModeInfo(deploymentParams) ?: return null
-
-        val serviceToolWindow = ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.SERVICES)
-        val isServiceToolWindowActivated = serviceToolWindow?.isActive
-
         buildProject(fastModeInfo.projectFilePath)
-
-        if (isServiceToolWindowActivated == true) {
-            withContext(Dispatchers.EDT) {
-                serviceToolWindow.activate {}
-            }
-        }
 
         return fastModeInfo
     }
@@ -100,16 +88,7 @@ internal class DockerFastModeAzureService(private val project: Project) : Lifeti
 
         if (fastModeInfos.isEmpty()) return fastModeInfos
 
-        val serviceToolWindow = ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.SERVICES)
-        val isServiceToolWindowActivated = serviceToolWindow?.isActive
-
         buildProjects(fastModeInfos.values.map { it.projectFilePath }.distinct())
-
-        if (isServiceToolWindowActivated == true) {
-            withContext(Dispatchers.EDT) {
-                serviceToolWindow.activate {}
-            }
-        }
 
         return fastModeInfos
     }
@@ -216,9 +195,7 @@ internal class DockerFastModeAzureService(private val project: Project) : Lifeti
     ): DockerFastModeAzureEnvironmentVariables {
         val existingVariableKeys = deploymentModel.getEnvironmentVariables(targetStage).keys
 
-        val scriptRootVar = if (!existingVariableKeys.contains(AZURE_WEBJOBS_SCRIPT_ROOT)) {
-            TransformedDeploymentEnvironmentVariable(AZURE_WEBJOBS_SCRIPT_ROOT, FUNCTIONS_SCRIPT_ROOT)
-        } else null
+        val scriptRootVar = TransformedDeploymentEnvironmentVariable(AZURE_WEBJOBS_SCRIPT_ROOT, FUNCTIONS_SCRIPT_ROOT)
 
         val consoleLoggingVar = if (!existingVariableKeys.contains(AZURE_FUNCTIONS_JOB_HOST_LOGGING)) {
             TransformedDeploymentEnvironmentVariable(AZURE_FUNCTIONS_JOB_HOST_LOGGING, "true")
@@ -253,6 +230,7 @@ internal class DockerFastModeAzureService(private val project: Project) : Lifeti
         return dockerfileStages.firstOrNull { it.isNotEmpty() }
     }
 
+    @Suppress("SameParameterValue")
     private fun findAvailablePathInsideContainer(existingVolumes: Set<String>, defaultPath: String): String {
         var path = defaultPath
         var suffix = 1
