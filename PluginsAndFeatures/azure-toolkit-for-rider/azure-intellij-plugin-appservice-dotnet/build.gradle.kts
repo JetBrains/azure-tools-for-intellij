@@ -24,7 +24,7 @@ dependencies {
             useCache = true
         }
         jetbrainsRuntime()
-        bundledPlugins("com.jetbrains.restClient")
+        bundledPlugins("com.jetbrains.restClient", "Docker", "rider.intellij.plugin.appender")
     }
 
     implementation(libs.azureToolkitAuthLib)
