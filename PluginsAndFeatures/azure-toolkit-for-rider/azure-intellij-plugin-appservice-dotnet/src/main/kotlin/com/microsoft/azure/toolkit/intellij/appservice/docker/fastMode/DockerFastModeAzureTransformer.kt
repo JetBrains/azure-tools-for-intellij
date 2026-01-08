@@ -82,8 +82,6 @@ internal class DockerFastModeAzureTransformer : RiderDockerDeploymentTransformer
             containerName = containerName,
             imageTag = imageTag,
             workingDir = workingDir,
-            cmd = transformedParams.cmd,
-            entrypoint = transformedParams.entrypoint
         )
 
         LOG.debug { "Transformed Azure Functions configuration: $transformedConfig" }
@@ -213,8 +211,6 @@ internal class DockerFastModeAzureTransformer : RiderDockerDeploymentTransformer
 
         val imageName = fastModeInfo.getImageTag(serviceInstance.image)
         val workingDir = fastModeInfo.getFastModeWorkingDir()
-        val cmd = fastModeInfo.getFastModeCmd()
-        val entrypoint = fastModeInfo.getFastModeEntrypoint()
 
         val patchedParameters = servicePatchedParams.copy(
             volumeBindings = volumes,
@@ -222,8 +218,6 @@ internal class DockerFastModeAzureTransformer : RiderDockerDeploymentTransformer
             build = build,
             imageName = imageName,
             workingDir = workingDir,
-            cmd = cmd,
-            entrypoint = entrypoint
         )
 
         LOG.debug { "Patched parameters for service ${serviceName}: $patchedParameters" }
