@@ -216,9 +216,7 @@ internal class DockerFastModeAzureService(private val project: Project) : Lifeti
     ): DockerFastModeAzureEnvironmentVariables {
         val existingVariableKeys = deploymentModel.getEnvironmentVariables(targetStage).keys
 
-        val scriptRootVar = if (!existingVariableKeys.contains(AZURE_WEBJOBS_SCRIPT_ROOT)) {
-            TransformedDeploymentEnvironmentVariable(AZURE_WEBJOBS_SCRIPT_ROOT, FUNCTIONS_SCRIPT_ROOT)
-        } else null
+        val scriptRootVar = TransformedDeploymentEnvironmentVariable(AZURE_WEBJOBS_SCRIPT_ROOT, FUNCTIONS_SCRIPT_ROOT)
 
         val consoleLoggingVar = if (!existingVariableKeys.contains(AZURE_FUNCTIONS_JOB_HOST_LOGGING)) {
             TransformedDeploymentEnvironmentVariable(AZURE_FUNCTIONS_JOB_HOST_LOGGING, "true")

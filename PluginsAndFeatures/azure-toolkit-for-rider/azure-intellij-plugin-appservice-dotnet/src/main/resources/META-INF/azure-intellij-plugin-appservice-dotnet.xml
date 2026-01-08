@@ -113,6 +113,8 @@
 
         <rider.dockerDeploymentTransformer
                 implementation="com.microsoft.azure.toolkit.intellij.appservice.docker.fastMode.DockerFastModeAzureTransformer"/>
+        <rider.dockerDeploymentTransformer
+                implementation="com.microsoft.azure.toolkit.intellij.appservice.docker.debug.DockerDebugModeAzureTransformer"/>
     </extensions>
 
     <actions>
