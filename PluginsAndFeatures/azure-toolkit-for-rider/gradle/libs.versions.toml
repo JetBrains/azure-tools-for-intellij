@@ -18,7 +18,7 @@ junit = "4.13.2"
 # plugins
 kotlin = "2.2.21"
 changelog = "2.4.0"
-intelliJPlatform = "2.10.4"
+intelliJPlatform = "2.11.0"
 aspectj = "8.6"
 
 [libraries]
