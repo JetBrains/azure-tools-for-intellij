@@ -16,7 +16,7 @@ jedis = "3.6.3"
 junit = "4.13.2"
 
 # plugins
-kotlin = "2.2.21"
+kotlin = "2.3.0"
 changelog = "2.4.0"
 intelliJPlatform = "2.10.4"
 aspectj = "8.6"
