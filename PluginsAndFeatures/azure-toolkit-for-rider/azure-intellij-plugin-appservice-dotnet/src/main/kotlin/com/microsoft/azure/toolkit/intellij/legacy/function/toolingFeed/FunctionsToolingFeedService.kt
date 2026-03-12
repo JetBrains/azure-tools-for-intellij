@@ -17,6 +17,7 @@ import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.io.ZipUtil
 import com.intellij.util.net.ssl.CertificateManager
 import com.jetbrains.rd.util.concurrentMapOf
+import com.jetbrains.rider.CPUKind
 import com.microsoft.azure.toolkit.intellij.legacy.function.coreTools.resolveFunctionCoreToolsExecutable
 import com.microsoft.azure.toolkit.intellij.legacy.function.settings.AzureFunctionSettings
 import io.ktor.client.*
@@ -47,7 +48,7 @@ class FunctionsToolingFeedService : Disposable {
 
     private val fixedReleases = mapOf<String, String>()
 
-    private val releaseCache = concurrentMapOf<String, FunctionsToolingRelease>()
+    private val releaseCache = concurrentMapOf<Pair<String, FunctionToolingFeedFilter>, FunctionsToolingRelease>()
     private val releaseCacheMutex = Mutex()
     private val functionsToolingReleaseMutex = Mutex()
 
@@ -79,15 +80,16 @@ class FunctionsToolingFeedService : Disposable {
      * @param functionsRuntimeVersion The version of Azure Functions runtime for which to download the latest tooling release.
      * @return A Result wrapping the path to the latest Azure Functions tooling release.
      */
-    suspend fun downloadLatestFunctionsToolingRelease(functionsRuntimeVersion: String): Result<Path> {
-        downloadAndSaveReleaseFeed().onFailure { error ->
+    suspend fun downloadLatestFunctionsToolingRelease(functionsRuntimeVersion: String, cpuKind: CPUKind? = null): Result<Path> {
+        downloadAndSaveReleaseFeed(cpuKind).onFailure { error ->
             LOG.warn("Unable to download Function tooling release feed", error)
             return Result.failure(error)
         }
 
-        val toolingRelease = getLatestFunctionsToolingRelease(functionsRuntimeVersion)
+        val releaseFilter = getReleaseFilterForCurrentSystem(cpuKind)
+        val toolingRelease = getLatestFunctionsToolingRelease(functionsRuntimeVersion, releaseFilter)
             ?: return Result.failure(IllegalStateException("Unable to obtain latest function tooling release"))
-        val toolingReleasePath = getPathForLatestFunctionsToolingRelease(toolingRelease)
+        val toolingReleasePath = getPathForLatestFunctionsToolingRelease(toolingRelease, releaseFilter)
             ?: return Result.failure(IllegalStateException("Unable to path to download function tooling release"))
 
         val coreToolsExecutablePath = toolingReleasePath.resolveFunctionCoreToolsExecutable()
@@ -115,7 +117,8 @@ class FunctionsToolingFeedService : Disposable {
             return null
         }
 
-        return functionsRuntimeVersions.mapNotNull { getLatestFunctionsToolingRelease(it) }
+        val releaseFilter = getReleaseFilterForCurrentSystem()
+        return functionsRuntimeVersions.mapNotNull { getLatestFunctionsToolingRelease(it, releaseFilter) }
     }
 
     /**
@@ -123,11 +126,13 @@ class FunctionsToolingFeedService : Disposable {
      *
      * @return Result wrapping any exception encountered during the execution.
      */
-    private suspend fun downloadAndSaveReleaseFeed(): Result<Unit> {
-        if (releaseCache.isNotEmpty()) return Result.success(Unit)
+    private suspend fun downloadAndSaveReleaseFeed(cpuKind: CPUKind? = null): Result<Unit> {
+        val releaseFilter = getReleaseFilterForCurrentSystem(cpuKind)
+
+        if (releaseCache.keys.any { it.second == releaseFilter }) return Result.success(Unit)
 
         releaseCacheMutex.withLock {
-            if (releaseCache.isNotEmpty()) return Result.success(Unit)
+            if (releaseCache.keys.any { it.second == releaseFilter }) return Result.success(Unit)
 
             LOG.trace("Downloading Functions tooling release feed")
 
@@ -140,7 +145,6 @@ class FunctionsToolingFeedService : Disposable {
             val releaseTags = feed.tags
                 .toSortedMap()
                 .filterValues { !it.releaseQuality.isNullOrEmpty() && !it.release.isNullOrEmpty() && !it.hidden }
-            val releaseFilter = getReleaseFilterForCurrentSystem()
 
             for ((releaseTagName, releaseTag) in releaseTags) {
                 val releaseFromTag = fixedReleases[releaseTagName] ?: releaseTag.release ?: continue
@@ -148,10 +152,14 @@ class FunctionsToolingFeedService : Disposable {
                 val coreToolsRelease = release.findCoreToolsRelease(releaseFilter) ?: continue
 
                 val releaseKey = releaseTagName.lowercase()
-                LOG.trace { "Release for Azure core tools version ${releaseKey}: ${releaseFromTag}; ${coreToolsRelease.downloadLink}" }
+                val cacheKey = releaseKey to releaseFilter
+
+                LOG.trace {
+                    "Release for Azure core tools version $releaseKey (${releaseFilter.os}): $releaseFromTag; ${coreToolsRelease.downloadLink}"
+                }
 
                 releaseCache.putIfAbsent(
-                    releaseKey,
+                    cacheKey,
                     FunctionsToolingRelease(releaseKey, releaseFromTag, coreToolsRelease.downloadLink ?: "")
                 )
             }
@@ -257,26 +265,38 @@ class FunctionsToolingFeedService : Disposable {
         return temporaryArchivePath
     }
 
-    private fun getLatestFunctionsToolingRelease(functionsRuntimeVersion: String): FunctionsToolingRelease? {
-        val toolingRelease = releaseCache[functionsRuntimeVersion.lowercase()]
+    private fun getLatestFunctionsToolingRelease(
+        functionsRuntimeVersion: String,
+        releaseFilter: FunctionToolingFeedFilter
+    ): FunctionsToolingRelease? {
+        val toolingRelease = releaseCache[functionsRuntimeVersion.lowercase() to releaseFilter]
+
         if (toolingRelease == null) {
             LOG.warn("Could not determine Functions tooling release for version: '$functionsRuntimeVersion'")
             return null
         }
 
-        LOG.trace { "Latest Functions tooling release for version '$functionsRuntimeVersion' is '$toolingRelease'" }
+        LOG.trace { "Latest Functions tooling release for version '$functionsRuntimeVersion' (${releaseFilter.os}) is '$toolingRelease'" }
 
         return toolingRelease
     }
 
-    private fun getPathForLatestFunctionsToolingRelease(toolingRelease: FunctionsToolingRelease): Path? {
+    private fun getPathForLatestFunctionsToolingRelease(
+        toolingRelease: FunctionsToolingRelease,
+        releaseFilter: FunctionToolingFeedFilter
+    ): Path? {
         val settings = AzureFunctionSettings.getInstance()
         val coreToolsDownloadFolder = settings.functionDownloadPath
         val downloadRoot =
             if (coreToolsDownloadFolder.isNotEmpty()) Path(coreToolsDownloadFolder)
             else null
 
-        val path = downloadRoot?.resolve(toolingRelease.functionsVersion)?.resolve(toolingRelease.releaseTag)
+        val osFolder = releaseFilter.os.lowercase()
+
+        val path = downloadRoot
+            ?.resolve(osFolder)
+            ?.resolve(toolingRelease.functionsVersion)
+            ?.resolve(toolingRelease.releaseTag)
 
         LOG.trace { "Path for the Latest Functions tooling release is $path" }
 
