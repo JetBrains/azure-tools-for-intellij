@@ -12,6 +12,7 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.diagnostic.trace
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.text.VersionComparatorUtil
+import com.jetbrains.rider.CPUKind
 import com.microsoft.azure.toolkit.intellij.legacy.function.isFunctionCoreToolsExecutable
 import com.microsoft.azure.toolkit.intellij.legacy.function.settings.AzureFunctionSettings
 import com.microsoft.azure.toolkit.intellij.legacy.function.toolingFeed.FunctionsToolingFeedService
@@ -102,10 +103,10 @@ class FunctionCoreToolsManager {
      * @param functionsRuntimeVersion The version of Azure Functions runtime for which to download the latest core tools release.
      * @return The path to the downloaded Azure Function core tools, or null if the download was unsuccessful.
      */
-    suspend fun downloadLatestFunctionCoreToolsForVersion(functionsRuntimeVersion: String): Path? {
+    suspend fun downloadLatestFunctionCoreToolsForVersion(functionsRuntimeVersion: String, cpuKind: CPUKind? = null): Path? {
         val downloadLatestReleaseResult = FunctionsToolingFeedService
             .getInstance()
-            .downloadLatestFunctionsToolingRelease(functionsRuntimeVersion)
+            .downloadLatestFunctionsToolingRelease(functionsRuntimeVersion, cpuKind)
 
         val latestReleasePath = downloadLatestReleaseResult.getOrNull()
         if (latestReleasePath == null) {
