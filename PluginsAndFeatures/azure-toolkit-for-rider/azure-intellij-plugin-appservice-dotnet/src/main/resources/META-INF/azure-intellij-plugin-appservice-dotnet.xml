@@ -110,6 +110,8 @@
         <xdebugger.attachDebuggerProvider implementation="com.microsoft.azure.toolkit.intellij.debugger.RiderAzureAttachDebuggerProvider" />
         <rider.dockerDeploymentTransformer
                 implementation="com.microsoft.azure.toolkit.intellij.appservice.docker.fastMode.DockerFastModeAzureTransformer"/>
+        <rider.dockerDeploymentTransformer
+                implementation="com.microsoft.azure.toolkit.intellij.appservice.docker.debug.DockerDebugModeAzureTransformer"/>
 
         <iconMapper mappingFile="AppServiceIconMappings.json"/>
     </extensions>
