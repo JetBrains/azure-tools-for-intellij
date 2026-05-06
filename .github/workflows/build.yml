@@ -47,7 +47,7 @@ jobs:
 
       # Set up the Java environment
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: zulu
           java-version: 21
@@ -132,7 +132,7 @@ jobs:
 
       # Set up the Java environment
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: zulu
           java-version: 25
@@ -207,7 +207,7 @@ jobs:
   #
   #      # Set up the Java environment
   #      - name: Setup Java
-  #        uses: actions/setup-java@v4
+  #        uses: actions/setup-java@v5
   #        with:
   #          distribution: zulu
   #          java-version: 21
@@ -275,7 +275,7 @@ jobs:
 
       # Set up the Java environment
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: zulu
           java-version: 25
