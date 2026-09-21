@@ -77,21 +77,21 @@ jobs:
 
       # Download azure artifacts
       - name: Download library artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: azure-artifacts
           path: /home/runner/.m2/repository/com/microsoft/azure/
 
       # Download hdinsight artifacts
       - name: Download library artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: hdinsight-artifacts
           path: /home/runner/.m2/repository/com/microsoft/hdinsight/
 
       # Download azuretools artifacts
       - name: Download library artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: azuretools-artifacts
           path: /home/runner/.m2/repository/com/microsoft/azuretools/
