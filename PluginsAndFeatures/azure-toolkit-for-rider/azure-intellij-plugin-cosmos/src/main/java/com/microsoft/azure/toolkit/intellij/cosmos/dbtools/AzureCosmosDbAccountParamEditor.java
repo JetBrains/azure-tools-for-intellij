@@ -209,9 +209,9 @@ public class AzureCosmosDbAccountParamEditor extends ParamEditorBase<AzureCosmos
     @SneakyThrows
     private void setUseSsl(boolean useSsl) {
         final DataSourceConfigurable configurable = this.getDataSourceConfigurable();
-//        TODO: `getSshSslPanel` was removed from public API
-//        final JBCheckBox useSSLCheckBox = (JBCheckBox) FieldUtils.readField(configurable.getSshSslPanel(), "myUseSSLJBCheckBox", true);
-//        useSSLCheckBox.setSelected(useSsl);
+        final Object sshSslPanel = FieldUtils.readField(configurable, "mySshSslPanel", true);
+        final JBCheckBox useSSLCheckBox = (JBCheckBox) FieldUtils.readField(sshSslPanel, "myUseSSLJBCheckBox", true);
+        useSSLCheckBox.setSelected(useSsl);
     }
 
     @SneakyThrows
