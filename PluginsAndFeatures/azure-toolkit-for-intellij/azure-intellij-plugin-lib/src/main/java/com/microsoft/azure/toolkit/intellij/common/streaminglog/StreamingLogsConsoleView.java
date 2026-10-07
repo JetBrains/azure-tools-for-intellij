@@ -43,6 +43,15 @@ public class StreamingLogsConsoleView extends ConsoleViewImpl {
         return subscription != null && !subscription.isDisposed();
     }
 
+    /**
+     * Returns whether this console view has been disposed.
+     * Note: In IntelliJ 261+, ConsoleViewImpl.isDisposed() is private final,
+     * so this is NOT an override but a new public method for callers.
+     */
+    public boolean isConsoleDisposed() {
+        return this.isDisposed;
+    }
+
     private void printlnToConsole(String message, ConsoleViewContentType consoleViewContentType) {
         this.print(message + SEPARATOR, consoleViewContentType);
     }

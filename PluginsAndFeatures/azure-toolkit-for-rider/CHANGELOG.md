@@ -6,6 +6,7 @@
 
 ### Changed
 
+- Sync plugin with upstream `release-3.97.7`.
 - Sync plugin with upstream `release-3.97.6`.
 - Sync plugin with upstream `release-v3.97.5`.
 - Sync plugin with upstream `release-v3.97.4`.
