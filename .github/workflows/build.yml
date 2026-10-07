@@ -28,7 +28,7 @@ concurrency:
 
 env:
   # Branches from the https://github.com/microsoft/azure-maven-plugins and https://github.com/microsoft/azure-tools-for-java repositories
-  UPSTREAM_RELEASE_VERSION: release-3-97-6
+  UPSTREAM_RELEASE_VERSION: release-3-97-7
 
 jobs:
 
