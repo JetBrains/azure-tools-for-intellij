@@ -1,0 +1,25 @@
+# Dependabot configuration:
+# https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  # Maintain dependencies for Gradle dependencies
+  - package-ecosystem: "gradle"
+    directory: "/PluginsAndFeatures/azure-toolkit-for-rider/"
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-name: "org.jetbrains.changelog"
+      - dependency-name: "org.jetbrains.intellij.platform"
+      - dependency-name: "org.jetbrains.kotlin.jvm"
+      - dependency-name: "org.jetbrains.kotlin.plugin.serialization"
+      - dependency-name: "org.jetbrains.qodana"
+      - dependency-name: "com.jetbrains.rd:rd-gen"
+      - dependency-name: "org.jetbrains.kotlinx:kotlinx-serialization-json"
+      - dependency-name: "io.ktor:kotlinx-serialization-json"
+      - dependency-name: "io.ktor:*"
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

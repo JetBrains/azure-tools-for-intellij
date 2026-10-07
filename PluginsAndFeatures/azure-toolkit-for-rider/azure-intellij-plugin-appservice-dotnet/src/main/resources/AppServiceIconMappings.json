@@ -1,0 +1,12 @@
+{
+  "icons": {
+    "expui": {
+        "deployment-slot.svg": "icons/deployment-slot.svg",
+        "function-app.svg": "icons/function-app.svg",
+        "linux-function-app.svg": "icons/linux-function-app.svg",
+        "web-app.svg": "icons/web-app.svg",
+        "linux-web-app.svg": "icons/linux-web-app.svg",
+        "resource-group.svg": "icons/resource-group.svg"
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "icons": {
+    "expui": {
+      "Microsoft.Web": {
+        "sites": {
+          "slots": {
+            "default.svg": "icons/Microsoft.Web/sites/slots/default.svg",
+            "failed.svg": "icons/Microsoft.Web/sites/slots/failed.svg",
+            "failed-linux.svg": "icons/Microsoft.Web/sites/slots/failed-linux.svg",
+            "linux.svg": "icons/Microsoft.Web/sites/slots/linux.svg",
+            "running.svg": "icons/Microsoft.Web/sites/slots/running.svg",
+            "running-linux.svg": "icons/Microsoft.Web/sites/slots/running-linux.svg",
+            "stopped.svg": "icons/Microsoft.Web/sites/slots/stopped.svg",
+            "unknown.svg": "icons/Microsoft.Web/sites/slots/unknown.svg"
+          },
+          "container-functionapp.svg": "icons/Microsoft.Web/sites/container-functionapp.svg",
+          "docker-functionapp.svg": "icons/Microsoft.Web/sites/docker-functionapp.svg",
+          "docker-webapp.svg": "icons/Microsoft.Web/sites/docker-webapp.svg",
+          "failed-container-functionapp.svg": "icons/Microsoft.Web/sites/failed-container-functionapp.svg",
+          "failed-docker-functionapp.svg": "icons/Microsoft.Web/sites/failed-docker-functionapp.svg",
+          "failed-docker-webapp.svg": "icons/Microsoft.Web/sites/failed-docker-webapp.svg",
+          "failed-functionapp.svg": "icons/Microsoft.Web/sites/failed-functionapp.svg",
+          "failed-linux-functionapp.svg": "icons/Microsoft.Web/sites/failed-linux-functionapp.svg",
+          "failed-linux-webapp.svg": "icons/Microsoft.Web/sites/failed-linux-webapp.svg",
+          "failed-webapp.svg": "icons/Microsoft.Web/sites/failed-webapp.svg",
+          "functionapp.svg": "icons/Microsoft.Web/sites/functionapp.svg",
+          "linux-functionapp.svg": "icons/Microsoft.Web/sites/linux-functionapp.svg",
+          "linux-webapp.svg": "icons/Microsoft.Web/sites/linux-webapp.svg",
+          "running-container-functionapp.svg": "icons/Microsoft.Web/sites/running-container-functionapp.svg",
+          "running-docker-functionapp.svg": "icons/Microsoft.Web/sites/running-docker-functionapp.svg",
+          "running-docker-webapp.svg": "icons/Microsoft.Web/sites/running-docker-webapp.svg",
+          "running-functionapp.svg": "icons/Microsoft.Web/sites/running-functionapp.svg",
+          "running-linux-functionapp.svg": "icons/Microsoft.Web/sites/running-linux-functionapp.svg",
+          "running-linux-webapp.svg": "icons/Microsoft.Web/sites/running-linux-webapp.svg",
+          "running-webapp.svg": "icons/Microsoft.Web/sites/running-webapp.svg",
+          "stopped-container-functionapp.svg": "icons/Microsoft.Web/sites/stopped-container-functionapp.svg",
+          "stopped-docker-functionapp.svg": "icons/Microsoft.Web/sites/stopped-docker-functionapp.svg",
+          "stopped-docker-webapp.svg": "icons/Microsoft.Web/sites/stopped-docker-webapp.svg",
+          "stopped-functionapp.svg": "icons/Microsoft.Web/sites/stopped-functionapp.svg",
+          "stopped-linux-functionapp.svg": "icons/Microsoft.Web/sites/stopped-linux-functionapp.svg",
+          "stopped-linux-webapp.svg": "icons/Microsoft.Web/sites/stopped-linux-webapp.svg",
+          "stopped-webapp.svg": "icons/Microsoft.Web/sites/stopped-webapp.svg",
+          "unknown-container-functionapp.svg": "icons/Microsoft.Web/sites/unknown-container-functionapp.svg",
+          "unknown-docker-functionapp.svg": "icons/Microsoft.Web/sites/unknown-docker-functionapp.svg",
+          "unknown-docker-webapp.svg": "icons/Microsoft.Web/sites/unknown-docker-webapp.svg",
+          "unknown-functionapp.svg": "icons/Microsoft.Web/sites/unknown-functionapp.svg",
+          "unknown-linux-functionapp.svg": "icons/Microsoft.Web/sites/unknown-linux-functionapp.svg",
+          "unknown-linux-webapp.svg": "icons/Microsoft.Web/sites/unknown-linux-webapp.svg",
+          "unknown-webapp.svg": "icons/Microsoft.Web/sites/unknown-webapp.svg",
+          "webapp.svg": "icons/Microsoft.Web/sites/webapp.svg"
+        },
+        "functions.svg": "icons/Microsoft.Web/functions.svg",
+        "webapps.svg": "icons/Microsoft.Web/webapps.svg"
+      },
+      "function-trigger.svg": "icons/function-trigger.png"
+    }
+  }
+}
+

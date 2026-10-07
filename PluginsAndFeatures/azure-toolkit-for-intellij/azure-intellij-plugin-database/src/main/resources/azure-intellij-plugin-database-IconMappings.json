@@ -1,0 +1,51 @@
+{
+  "icons": {
+    "expui": {
+      "action": {
+        "open_database_tool.svg": "icons/action/open_database_tool.svg"
+      },
+      "Microsoft.DBforMySQL": {
+        "flexibleServers": {
+          "default.svg": "icons/Microsoft.DBforMySQL/flexibleServers/default.svg",
+          "failed.svg": "icons/Microsoft.DBforMySQL/flexibleServers/failed.svg",
+          "running.svg": "icons/Microsoft.DBforMySQL/flexibleServers/running.svg",
+          "stopped.svg": "icons/Microsoft.DBforMySQL/flexibleServers/stopped.svg",
+          "unknown.svg": "icons/Microsoft.DBforMySQL/flexibleServers/unknown.svg"
+        },
+        "servers": {
+          "default.svg": "icons/Microsoft.DBforMySQL/servers/default.svg",
+          "failed.svg": "icons/Microsoft.DBforMySQL/servers/failed.svg",
+          "running.svg": "icons/Microsoft.DBforMySQL/servers/running.svg",
+          "stopped.svg": "icons/Microsoft.DBforMySQL/servers/stopped.svg",
+          "unknown.svg": "icons/Microsoft.DBforMySQL/servers/unknown.svg"
+        },
+        "default.svg": "icons/Microsoft.DBforMySQL/default.svg"
+      },
+      "Microsoft.DBforPostgreSQL": {
+        "flexibleServers": {
+          "default.svg": "icons/Microsoft.DBforPostgreSQL/flexibleServers/default.svg",
+          "failed.svg": "icons/Microsoft.DBforPostgreSQL/flexibleServers/failed.svg",
+          "running.svg": "icons/Microsoft.DBforPostgreSQL/flexibleServers/running.svg",
+          "unknown.svg": "icons/Microsoft.DBforPostgreSQL/flexibleServers/unknown.svg"
+        },
+        "servers": {
+          "default.svg": "icons/Microsoft.DBforPostgreSQL/servers/default.svg",
+          "failed.svg": "icons/Microsoft.DBforPostgreSQL/servers/failed.svg",
+          "running.svg": "icons/Microsoft.DBforPostgreSQL/servers/running.svg",
+          "unknown.svg": "icons/Microsoft.DBforPostgreSQL/servers/unknown.svg"
+        },
+        "default.svg": "icons/Microsoft.DBforPostgreSQL/default.svg"
+      },
+      "Microsoft.Sql": {
+        "servers": {
+          "default.svg": "icons/Microsoft.Sql/servers/default.svg",
+          "failed.svg": "icons/Microsoft.Sql/servers/failed.svg",
+          "running.svg": "icons/Microsoft.Sql/servers/running.svg",
+          "stopped.svg": "icons/Microsoft.Sql/servers/stopped.svg",
+          "unknown.svg": "icons/Microsoft.Sql/servers/unknown.svg"
+        },
+        "default.svg": "icons/Microsoft.Sql/default.svg"
+      }
+    }
+  }
+}

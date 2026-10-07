@@ -1,0 +1,26 @@
+{
+  "icons": {
+    "expui": {
+      "CloudShell": {
+        "CloudShell.svg": "icons/CloudShell/CloudShell.svg"
+      },
+      "Common": {
+        "Azure.svg": "icons/Common/Azure.svg",
+        "event_hubs.svg": "icons/Common/event_hubs.svg",
+        "OpenInPortal.svg": "icons/Common/OpenInPortal.svg",
+        "service_bus.svg": "icons/Common/service_bus.svg"
+      },
+      "FunctionApp": {
+        "Deploy.svg": "icons/FunctionApp/Deploy.svg",
+        "Run.svg": "icons/FunctionApp/Run.svg",
+        "TemplateAzureFunc.svg": "icons/FunctionApp/TemplateAzureFunc.svg"
+      },
+      "Toolwindows": {
+        "AzureToolWindow.svg": "icons/Toolwindows/AzureToolWindow.svg"
+      },
+      "WebApp": {
+        "Deploy.svg": "icons/WebApp/Deploy.svg"
+      }
+    }
+  }
+}

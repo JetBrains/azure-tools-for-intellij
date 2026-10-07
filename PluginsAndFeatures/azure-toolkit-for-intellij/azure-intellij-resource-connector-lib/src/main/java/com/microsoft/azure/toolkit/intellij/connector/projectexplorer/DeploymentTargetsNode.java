@@ -130,7 +130,7 @@ public class DeploymentTargetsNode extends AbstractAzureFacetNode<DeploymentTarg
 
     @Override
     public int getWeight() {
-        return DEFAULT_WEIGHT - 1;
+        return getDefaultWeight() - 1;
     }
 
     @Override

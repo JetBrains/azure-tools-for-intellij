@@ -1,0 +1,14 @@
+<idea-plugin>
+    <depends optional="true" config-file="azure-intellij-plugin-cosmos-dbtools.xml">com.intellij.database</depends>
+    <extensions defaultExtensionNs="com.intellij">
+        <registryKey key="azure.toolkit.cosmos_cassandra.dbtools.enabled"
+                     description="Enable DB Tools related features of Azure cosmos DB API for Cassandra"
+                     restartRequired="true" defaultValue="false"/>
+        <iconMapper mappingFile="azure-intellij-plugin-cosmos-IconMappings.json"/>
+    </extensions>
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.cosmos.CosmosNodeProvider"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.cosmos.CosmosActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.cosmos.IntelliJCosmosActionsContributor"/>
+    </extensions>
+</idea-plugin>

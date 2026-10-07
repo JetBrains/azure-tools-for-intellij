@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static com.jetbrains.plugins.remotesdk.target.ssh.target.SshTargetTypeKt.handleSshTargetTypeBrowsing;
+
 @Getter
 public class AzureVmTargetType extends TargetEnvironmentType<AzureVmTargetEnvironmentConfiguration> implements BrowsableTargetEnvironmentType {
     public static final String TYPE_ID = "Microsoft.Compute/virtualMachines";
@@ -117,7 +119,7 @@ public class AzureVmTargetType extends TargetEnvironmentType<AzureVmTargetEnviro
                 if (configuration instanceof SshTargetEnvironmentConfiguration) {
                     final SshConfig sshConfig = ((SshTargetEnvironmentConfiguration) configuration).findSshConfig(project);
                     final SshUiData uiData = sshConfig != null ? new SshUiData(sshConfig, true) : null;
-//                    SshTargetType.Companion.handleBrowsing$intellij_remoteRun(uiData, project, title, component, textComponentAccessor);
+                    handleSshTargetTypeBrowsing(uiData, project, title, component, textComponentAccessor);
                 } else {
                     Messages.showWarningDialog(component, RemoteSdkBundle.message("dialog.message.got.unexpected.settings.for.browsing", new Object[0]), title);
                 }

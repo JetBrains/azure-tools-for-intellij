@@ -1,0 +1,64 @@
+<!--
+  ~ Copyright 2018-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
+  -->
+
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" url="https://github.com/JetBrains/azure-tools-for-intellij">
+    <id>com.intellij.resharper.azure</id>
+    <name>Azure Toolkit for Rider</name>
+    <vendor url="https://www.jetbrains.com">JetBrains</vendor>
+    <description><![CDATA[
+<p><b>This is the JetBrains Rider Plugin for Azure Cloud Services Integration.</b></p>
+<p>The plugin streamlines the development, deployment, and management of .NET applications on Azure, directly from Rider and across all supported platforms.</p>
+<p>Key features:</p>
+<ul>
+    <li><b>Azure Explorer</b>: View and manage your Azure resources, including Web Apps, Function Apps, databases, Redis caches, virtual machines, storage accounts, and more.</li>
+    <li><b>Azure App Services</b>: Easily create, deploy, and manage .NET Web Apps and Function Apps on any platform.</li>
+    <li><b>Databases</b>: Create and manage SQL Server, PostgreSQL, and MySQL databases.</li>
+    <li><b>Azure Cloud Shell</b>: Use the built-in Cloud Shell terminal to run commands in your Azure subscription, upload files, intercept downloads, and open files from Cloud Shell in a browser.</li>
+    <li><b>Bicep support</b>: Automatically download and connect to the Bicep language server.</li>
+</ul>
+    ]]></description>
+
+    <xi:include href="/META-INF/azure-intellij-plugin-lib.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-core.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-lib-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-resource-connector-lib.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-service-explorer.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-appservice.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-appservice-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-arm.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-database.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-database-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-cloud-shell.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-keyvault.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-keyvault-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-redis.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-redis-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-storage.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-storage-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-servicebus.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-eventhubs.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-vm.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-cosmos.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-cosmos-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/azure-intellij-plugin-bicep.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
+    <resource-bundle>messages.RiderAzureMessages</resource-bundle>
+
+    <depends>com.intellij.modules.rider</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <dependencySupport kind="dotnet" coordinate="Microsoft.NET.Sdk.Functions" displayName="Azure Toolkit"/>
+        <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.Common" displayName="Azure Toolkit"/>
+        <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.Functions.Worker" displayName="Azure Toolkit"/>
+        <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.Storage.Common" displayName="Azure Toolkit"/>
+        <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.Storage.Blob" displayName="Azure Toolkit"/>
+        <dependencySupport kind="dotnet" coordinate="Microsoft.Azure.WebJobs" displayName="Azure Toolkit"/>
+        <dependencySupport kind="dotnet" coordinate="Microsoft.Identity.Client" displayName="Azure Toolkit"/>
+        <dependencySupport kind="dotnet" coordinate="Microsoft.Identity.Web" displayName="Azure Toolkit"/>
+        <dependencySupport kind="executable" coordinate="az"/>
+
+        <iconMapper mappingFile="azure-toolkit-for-rider-IconMappings.json"/>
+    </extensions>
+
+</idea-plugin>

@@ -1,0 +1,82 @@
+<!--
+  ~ Copyright 2018-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
+  -->
+
+<!--suppress PluginXmlValidity -->
+<idea-plugin>
+    <dependencies>
+        <plugin id="com.intellij.modules.rider"/>
+        <plugin id="com.jetbrains.restClient"/>
+        <plugin id="Docker"/>
+        <plugin id="rider.intellij.plugin.appender"/>
+        <module name="intellij.rider.ssh"/>
+    </dependencies>
+
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <actions implementation="com.microsoft.azure.toolkit.intellij.appservice.AppServiceRiderActionsContributor"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <backgroundPostStartupActivity
+                implementation="com.microsoft.azure.toolkit.intellij.RemoveAzureFunctionTemplatesActivity"/>
+        <backgroundPostStartupActivity
+                implementation="com.microsoft.azure.toolkit.intellij.FunctionSettingsMigrationStartupActivity"/>
+        <backgroundPostStartupActivity
+                implementation="com.microsoft.azure.toolkit.intellij.appservice.LoadAppServicesActivity"/>
+
+        <configurationType
+                implementation="com.microsoft.azure.toolkit.intellij.legacy.webapp.runner.webApp.WebAppConfigurationType"/>
+        <configurationType
+                implementation="com.microsoft.azure.toolkit.intellij.legacy.webapp.runner.webAppContainer.WebAppContainerConfigurationType"/>
+        <configurationType
+                implementation="com.microsoft.azure.toolkit.intellij.legacy.function.runner.functionApp.FunctionDeploymentConfigurationType"/>
+        <configurationType
+                implementation="com.microsoft.azure.toolkit.intellij.legacy.function.runner.functionAppContainer.FunctionAppContainerConfigurationType"/>
+
+        <rider.publishConfigurationProvider
+                implementation="com.microsoft.azure.toolkit.intellij.legacy.webapp.WebAppContextPublishProvider"/>
+        <rider.publishConfigurationProvider
+                implementation="com.microsoft.azure.toolkit.intellij.legacy.function.FunctionAppContextPublishProvider"/>
+
+        <fileEditorProvider
+                implementation="com.microsoft.azure.toolkit.intellij.legacy.webapp.WebAppPropertyViewProvider"/>
+        <fileEditorProvider
+                implementation="com.microsoft.azure.toolkit.intellij.legacy.webapp.WebAppDeploymentSlotPropertyViewProvider"/>
+        <fileEditorProvider
+                implementation="com.microsoft.azure.toolkit.intellij.legacy.function.FunctionAppPropertyViewProvider"/>
+        <fileEditorProvider
+                implementation="com.microsoft.azure.toolkit.intellij.legacy.function.FunctionAppDeploymentSlotPropertyViewProvider"/>
+
+        <notificationGroup id="Azure AppServices" displayType="BALLOON" isLogByDefault="true"/>
+
+        <xdebugger.dialog.process.view.provider
+                implementation="com.microsoft.azure.toolkit.intellij.debugger.view.AttachToAzureAppServiceProcessViewProvider"/>
+        <xdebugger.attachDebuggerProvider
+                implementation="com.microsoft.azure.toolkit.intellij.debugger.RiderAzureAttachDebuggerProvider"/>
+
+        <iconMapper mappingFile="AppServiceIconMappings.json"/>
+    </extensions>
+
+    <actions>
+        <action id="Actions.WebAppDeployAction"
+                class="com.microsoft.azure.toolkit.intellij.legacy.webapp.action.DeployWebAppAction"
+                text="Deploy to Azure Web Apps..." description="Deploy selected module to Azure WebApp"
+                icon="/icons/WebApp/Deploy.svg">
+        </action>
+        <action id="Actions.WebAppContainersDeployAction"
+                class="com.microsoft.azure.toolkit.intellij.legacy.webapp.action.DeployWebAppContainerAction"
+                text="Deploy to Azure Web Apps for Containers..." description="Deploy image to Azure WebApp"
+                icon="/icons/WebApp/Deploy.svg">
+        </action>
+        <action id="Actions.FunctionAppDeployAction"
+                class="com.microsoft.azure.toolkit.intellij.legacy.function.actions.DeployFunctionAppAction"
+                text="Deploy to Azure Functions..." description="Deploy selected module to Azure Functions"
+                icon="/icons/FunctionApp/Deploy.svg">
+        </action>
+    </actions>
+
+    <projectListeners>
+        <listener topic="com.intellij.xdebugger.XDebuggerManagerListener"
+                  class="com.microsoft.azure.toolkit.intellij.debugger.pings.AzureAppServiceDebugSessionsListener"/>
+    </projectListeners>
+</idea-plugin>

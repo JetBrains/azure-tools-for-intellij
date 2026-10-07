@@ -258,6 +258,7 @@ public class IntellijAzureActionManager extends AzureActionManager {
             return group.getActions();
         }
 
+        // TODO: Move changes to the base plugin (https://github.com/microsoft/azure-tools-for-java/pull/9706)
         @Override
         public void addAction(Object raw) {
             this.group.addAction(raw);

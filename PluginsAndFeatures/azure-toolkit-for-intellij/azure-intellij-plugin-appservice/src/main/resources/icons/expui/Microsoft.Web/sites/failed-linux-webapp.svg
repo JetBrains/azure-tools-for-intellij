@@ -1,0 +1,11 @@
+<!-- Copyright © 2000–2024 JetBrains s.r.o. -->
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <path fill="#EBECF0" d="M9 13c0-1.82 1.23-3.35 2.91-3.83-.32-1.21-1.42-2.76-1.43-3.39-.01-.73.23-1.02.23-2.29 0-1.44-1.76-2-2.7-2s-2.7.56-2.7 2c0 1.26.24 1.55.23 2.29-.01.63-1.11 2.17-1.43 3.39 1.67.48 2.91 2 2.91 3.83 0 .15-.03.29-.04.43.32.04.67.07 1.04.07s.72-.03 1.04-.07c-.02-.14-.04-.28-.04-.43z"/>
+  <path fill="none" stroke="#6C707E" stroke-linecap="round" stroke-linejoin="round" d="M11.75 8.68c-.43-1.11-1.27-2.35-1.28-2.89-.01-.73.23-1.02.23-2.29 0-1.44-1.76-2-2.7-2s-2.7.56-2.7 2c0 1.26.24 1.55.23 2.29 0 .54-.84 1.78-1.28 2.89m3.22 4.81c.17 0 .34.01.53.01s.36 0 .53-.01"/>
+  <path fill="none" stroke="#6C707E" stroke-linejoin="round" d="M8 4.79c-.22 0-.65.17-.65.26 0 .14.48.61.65.61s.65-.48.65-.61c0-.1-.43-.26-.65-.26Z" clip-rule="evenodd"/>
+  <path fill="none" stroke="#6C707E" stroke-linejoin="round" d="M7.19 1.61 8 2.7l.81-1.09"/>
+  <path fill="#FFF7F7" stroke="#DB3B4B" stroke-miterlimit="10" d="M13 15.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+  <path fill="#EDF3FF" d="M3 15.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
+  <path fill="none" stroke="#3574F0" stroke-miterlimit="10" d="M3 15.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+  <path fill="none" stroke="#3574F0" stroke-linecap="round" stroke-miterlimit="10" d="M3 10.5v5M5.5 13h-5"/>
+</svg>

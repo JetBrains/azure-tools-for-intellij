@@ -1,0 +1,5 @@
+<!-- Copyright © 2000–2024 JetBrains s.r.o. -->
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <path fill="#EBECF0" stroke="#6C707E" stroke-linejoin="round" d="M14.5 3.5h-13v9h13z"/>
+  <path fill="none" stroke="#6C707E" stroke-linecap="round" stroke-linejoin="round" d="M1.5 5 8 8.5 14.5 5"/>
+</svg>

@@ -1,49 +1,55 @@
-# Azure Toolkits for Java 
-[![Build Status](https://dev.azure.com/mseng/VSJava/_apis/build/status/Azure-Toolkits-For-Java/Azure-Toolkits-for-Java-CI-IntelliJ-Java11?branchName=develop)](https://dev.azure.com/mseng/VSJava/_build/latest?definitionId=10753&branchName=develop)
-[![Gitter](https://badges.gitter.im/Microsoft/azure-tools-for-java.svg)](https://gitter.im/Microsoft/azure-tools-for-java?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+<div align="center">
+  <img alt="Logo" src="./PluginsAndFeatures/azure-toolkit-for-rider/src/main/resources/META-INF/pluginIcon.svg#gh-light-mode-only" width="100">
+  <img alt="Logo" src="./PluginsAndFeatures/azure-toolkit-for-rider/src/main/resources/META-INF/pluginIcon_dark.svg#gh-dark-mode-only" width="100">
+  <h2>Azure Toolkit for Rider</h2>
 
-Azure Toolkits for Java is an open-source project that helps Java developers easily create, develop, configure, test, and deploy highly available and scalable Java web apps to Azure from [Eclipse](https://docs.microsoft.com/en-us/java/azure/eclipse/azure-toolkit-for-eclipse) and [IntelliJ IDEA](https://docs.microsoft.com/en-us/java/azure/intellij/azure-toolkit-for-intellij) on all supported platforms. 
-* [Azure Toolkit for IntelliJ IDEA](https://docs.microsoft.com/en-us/java/azure/intellij/azure-toolkit-for-intellij)
-* [Azure Toolkit for Eclipse](https://docs.microsoft.com/en-us/java/azure/eclipse/azure-toolkit-for-eclipse)
-* [Release Notes](https://github.com/Microsoft/azure-tools-for-java/releases)
-* [Issues](https://github.com/Microsoft/azure-tools-for-java/issues)
+**This is the JetBrains Rider Plugin for Azure Cloud Services Integration.**
 
-## Azure Toolkit for IntelliJ IDEA
+The plugin streamlines the development, deployment, and management of .NET applications on Azure, directly from Rider and across all supported platforms.
 
-### Installation
-* [Set up the toolkits for IntelliJ](https://docs.microsoft.com/en-us/java/azure/intellij/azure-toolkit-for-intellij-installation)
-* [IntelliJ IDEA Plugin Repository](https://plugins.jetbrains.com/plugin/8053?pr=idea)
+  <a href="https://github.com/JetBrains"><img src="http://jb.gg/badges/official-flat-square.svg" alt="JetBrains Official"></a>
+  <a href="https://plugins.jetbrains.com/plugin/11220-azure-toolkit-for-rider"><img src="https://img.shields.io/jetbrains/plugin/v/11220-azure-toolkit-for-rider.svg?label=plugin&logo=rider" alt="Version"></a>
+  <a href="https://plugins.jetbrains.com/plugin/11220-azure-toolkit-for-rider"><img src="https://img.shields.io/jetbrains/plugin/d/11220-azure-toolkit-for-rider.svg" alt="Downloads"></a>
+</div>
 
-### Documentation 
-* [Get Started Tutorial](https://docs.microsoft.com/en-us/azure/app-service-web/app-service-web-intellij-create-hello-world-web-app)
-* [Home Page of Azure Toolkit for IntelliJ](https://docs.microsoft.com/en-us/java/azure/intellij/azure-toolkit-for-intellij)
-* [Java Developer Center on Azure](https://docs.microsoft.com/en-us/java/azure/)
-* [Get Started for HDInsight](https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-apache-spark-intellij-tool-plugin)
+---
 
-## Azure Toolkit for Eclipse
+## Key features
 
-### Installation
+- **Azure Explorer**: View and manage your Azure resources, including Web Apps, Function Apps, databases, Redis caches, virtual machines, storage accounts, and more.
+- **Azure App Services**: Easily create, deploy, and manage .NET Web Apps and Function Apps on any platform.
+- **Databases**: Create and manage SQL Server, PostgreSQL, and MySQL databases.
+- **Azure Cloud Shell**: Use the built-in Cloud Shell terminal to run commands in your Azure subscription, upload files, intercept downloads, and open files from Cloud Shell in a browser.
+- **Bicep support**: Automatically download and connect to the Bicep language server.
 
-* [Set up the toolkits for Eclipse](https://docs.microsoft.com/en-us/java/azure/eclipse/azure-toolkit-for-eclipse-installation)  
-* [Eclipse Marketplace](http://marketplace.eclipse.org/content/azure-toolkit-eclipse)
-* Update site: `http://dl.microsoft.com/eclipse/` 
+The plugin can be downloaded and installed in JetBrains Rider and is
+available [from the JetBrains plugins repository](https://plugins.jetbrains.com/plugin/11220-azure-toolkit-for-rider).
 
-### Documentation
-* [Get Started Tutorial](https://docs.microsoft.com/azure/app-service-web/app-service-web-eclipse-create-hello-world-web-app)
-* [Home Page of Azure Toolkit for Eclipse](https://docs.microsoft.com/en-us/java/azure/eclipse/azure-toolkit-for-eclipse)
-* [Java Developer Center on Azure](https://docs.microsoft.com/en-us/java/azure/)
-* [Get Started for HDInsight](https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-apache-spark-eclipse-tool-plugin)
+Feature requests can be logged in our [issue tracker](https://github.com/JetBrains/azure-tools-for-intellij/issues), we
+also welcome contributions.
 
-## Known issues
-Follow this [link](https://github.com/Microsoft/azure-tools-for-java/issues?q=is%3Aissue+label%3Aknown-issue) to track the known issues.
+## Resources
 
-## Data/Telemetry
-Azure Toolkits for Java collects usage data and sends it to Microsoft to help improve our products and services. Read our [privacy statement](https://go.microsoft.com/fwlink/?LinkID=620956) to learn more. If you don't wish to send usage data to Microsoft, you can turn off it in the following places:
-* For **Eclipse**: Open `Window > Preferences > Azure`, and uncheck the checkbox.
-* For **IntelliJ IDEA**: Open `Settings/Preferences > Microsoft Tools > Azure`, and uncheck the checkbox.
+* [Issue tracker](https://github.com/JetBrains/azure-tools-for-intellij/issues)
+* [Plugin page](https://plugins.jetbrains.com/plugin/11220-azure-toolkit-for-rider)
 
-## Contribution
-Please see the [contribution instructions](CONTRIBUTING.md) if you wish to build the plugins from source.
+## History and differences with Microsoft Azure Toolkit for IntelliJ
 
-## Disclaimer
-*azure-tools-for-java uses JxBrowser http://www.teamdev.com/jxbrowser, which is a proprietary software. The use of JxBrowser is governed by JxBrowser Product Licence Agreement http://www.teamdev.com/jxbrowser-licence-agreement. If you would like to use JxBrowser in your development, please contact TeamDev.*
+The Azure Toolkit for [JetBrains Rider](https://www.jetbrains.com/rider) is a fork of
+the [Azure Toolkit for IntelliJ](https://docs.microsoft.com/en-us/java/azure/intellij/azure-toolkit-for-intellij-installation),
+available [on GitHub](https://github.com/Microsoft/azure-tools-for-java).
+
+Microsoft's Azure Toolkit for IntelliJ provides similar functionality to the Azure plugin
+for [JetBrains Rider](https://www.jetbrains.com/rider), however, focus on the Java/JVM ecosystem and development flows.
+JetBrains decided to fork the original plugin, and split base functionality (such as browsing Azure resources) from
+Java/JVM-specific features (such as deploying a `.war` file to the HDInsight service).
+
+The Azure Toolkit for [JetBrains Rider](https://www.jetbrains.com/rider) is released with several notable differences:
+
+* No telemetry or usage data is collected and sent to Microsoft
+* Java/JVM-specific functionality was removed
+* .NET-specific functionalities, such as deploying an ASP.NET web application and more, have been added
+
+## Contributing
+
+Please see the [contribution instructions](CONTRIBUTING.md) if you wish to build the plugin from source.

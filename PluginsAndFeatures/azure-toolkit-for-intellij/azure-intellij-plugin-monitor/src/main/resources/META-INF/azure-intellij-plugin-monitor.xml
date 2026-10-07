@@ -1,16 +1,18 @@
 <idea-plugin>
+    <depends>com.intellij.modules.json</depends>
+
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow anchor="bottom"
-                    icon="/icons/Common/log_analytics_workspace.svg"
-                    factoryClass="com.microsoft.azure.toolkit.intellij.monitor.AzureMonitorManager$AzureMonitorFactory"
-                    id="Azure Monitor" canCloseContents="true"/>
+<!--        <toolWindow anchor="bottom"-->
+<!--                    icon="/icons/Common/log_analytics_workspace.svg"-->
+<!--                    factoryClass="com.microsoft.azure.toolkit.intellij.monitor.AzureMonitorManager$AzureMonitorFactory"-->
+<!--                    id="Azure Monitor" canCloseContents="true"/>-->
     </extensions>
     <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
         <actions implementation="com.microsoft.azure.toolkit.intellij.monitor.IntelliJMonitorActionsContributor"/>
     </extensions>
     <projectListeners>
-        <listener
-                class="com.microsoft.azure.toolkit.intellij.monitor.AzureMonitorToolWindowListener"
-                topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener"/>
+<!--        <listener-->
+<!--                class="com.microsoft.azure.toolkit.intellij.monitor.AzureMonitorToolWindowListener"-->
+<!--                topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener"/>-->
     </projectListeners>
 </idea-plugin>

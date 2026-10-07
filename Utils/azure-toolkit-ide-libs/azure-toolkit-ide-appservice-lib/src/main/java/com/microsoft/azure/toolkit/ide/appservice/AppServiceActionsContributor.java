@@ -19,7 +19,6 @@ import com.microsoft.azure.toolkit.lib.common.event.AzureEventBus;
 import com.microsoft.azure.toolkit.lib.common.messager.AzureMessager;
 import com.microsoft.azure.toolkit.lib.common.model.AbstractAzResource;
 import com.microsoft.azure.toolkit.lib.common.model.AzResource;
-import com.microsoft.azure.toolkit.lib.containerapps.containerapp.ContainerApp;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -60,7 +59,7 @@ public class AppServiceActionsContributor implements IActionsContributor {
             .withLabel("Start Streaming Logs")
             .withIcon(AzureIcons.Action.LOG.getIconPath())
             .withIdParam(AzResource::getName)
-            .visibleWhen(s -> s instanceof AppServiceAppBase && !(s instanceof FunctionApp app && (app.isContainerHostingFunctionApp() || app.isFlexConsumptionApp())))
+            .visibleWhen(s -> false)
             .enableWhen(s -> s.getFormalStatus().isRunning())
             .register(am);
 
@@ -68,21 +67,21 @@ public class AppServiceActionsContributor implements IActionsContributor {
             .withLabel("Stop Streaming Logs")
             .withIcon(AzureIcons.Action.LOG.getIconPath())
             .withIdParam(AzResource::getName)
-            .visibleWhen(s -> s instanceof AppServiceAppBase && !(s instanceof FunctionApp app && (app.isContainerHostingFunctionApp() || app.isFlexConsumptionApp())))
+            .visibleWhen(s -> false)
             .enableWhen(s -> s.getFormalStatus().isRunning())
             .register(am);
 
         new Action<>(PROFILE_FLIGHT_RECORD)
             .withLabel("Profile Flight Recorder")
             .withIdParam(AzResource::getName)
-            .visibleWhen(s -> s instanceof AppServiceAppBase)
+            .visibleWhen(s -> false)
             .enableWhen(s -> s.getFormalStatus().isRunning())
             .register(am);
 
         new Action<>(SSH_INTO_WEBAPP)
             .withLabel("SSH into Web App")
             .withIdParam(AzResource::getName)
-            .visibleWhen(s -> s instanceof AppServiceAppBase)
+            .visibleWhen(s -> false)
             .enableWhen(s -> s.getFormalStatus().isRunning())
             .register(am);
 
@@ -99,8 +98,8 @@ public class AppServiceActionsContributor implements IActionsContributor {
             .withLabel("Open Logs with Azure Monitor")
             .withIcon(AzureIcons.Common.AZURE_MONITOR.getIconPath())
             .withIdParam(AzResource::getName)
-            .visibleWhen(s -> s instanceof AppServiceAppBase)
-            .visibleWhen(s -> s instanceof AppServiceAppBase && !(s instanceof FunctionApp app && (app.isContainerHostingFunctionApp() || app.isFlexConsumptionApp())))
+            .visibleWhen(s -> false)
+            .enableWhen(s -> s.getFormalStatus().isRunning() || (s instanceof FunctionApp function && StringUtils.isNotBlank(function.getEnvironmentId())))
             .register(am);
 
         new Action<>(COPY_FULL_APP_SETTINGS)

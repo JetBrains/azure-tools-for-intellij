@@ -41,11 +41,13 @@ public class ServicePlanCreationDialog extends AzureDialog<AppServicePlanDraft>
 
     public ServicePlanCreationDialog(final Subscription subscription,
                                      final ResourceGroup resourceGroup,
+                                     final String name,
                                      final List<PricingTier> pricingTierList, final PricingTier defaultPricingTier) {
         super();
         this.subscription = subscription;
         this.resourceGroup = resourceGroup;
         this.init();
+        this.textName.setValue(name);
         this.textName.addValidator(this::validateName);
         this.comboBoxPricingTier.setPricingTierList(pricingTierList);
         this.comboBoxPricingTier.setDefaultPricingTier(defaultPricingTier);

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/../../Utils/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-appservice" />
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-arm" />
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-cloud-shell" />
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-database" />
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-eventhubs" />
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-guidance" />
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-keyvault" />
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-lib" />
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-monitor" />
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-redis" />
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-service-explorer" />
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-servicebus" />
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-storage" />
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-vm" />
+    <file type="web" url="file://$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-resource-connector-lib" />
+    <file type="web" url="file://$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_25" default="true" project-jdk-name="jbr-25" project-jdk-type="JavaSDK" />
+</project>

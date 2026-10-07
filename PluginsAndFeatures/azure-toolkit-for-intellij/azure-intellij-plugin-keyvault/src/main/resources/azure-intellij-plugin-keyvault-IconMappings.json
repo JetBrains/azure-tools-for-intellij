@@ -1,0 +1,53 @@
+{
+  "icons": {
+    "expui": {
+      "Microsoft.KeyVault": {
+        "vaults": {
+          "certificates": {
+            "versions": {
+              "default.svg": "icons/Microsoft.KeyVault/vaults/certificates/versions/default.svg",
+              "failed.svg": "icons/Microsoft.KeyVault/vaults/certificates/versions/failed.svg",
+              "running.svg": "icons/Microsoft.KeyVault/vaults/certificates/versions/running.svg",
+              "stopped.svg": "icons/Microsoft.KeyVault/vaults/certificates/versions/stopped.svg",
+              "unknown.svg": "icons/Microsoft.KeyVault/vaults/certificates/versions/unknown.svg"
+            },
+            "default.svg": "icons/Microsoft.KeyVault/vaults/certificates/default.svg",
+            "failed.svg": "icons/Microsoft.KeyVault/vaults/certificates/failed.svg",
+            "running.svg": "icons/Microsoft.KeyVault/vaults/certificates/running.svg",
+            "stopped.svg": "icons/Microsoft.KeyVault/vaults/certificates/stopped.svg",
+            "unknown.svg": "icons/Microsoft.KeyVault/vaults/certificates/unknown.svg"
+          },
+          "keys": {
+            "versions": {
+              "default.svg": "icons/Microsoft.KeyVault/vaults/keys/versions/default.svg",
+              "failed.svg": "icons/Microsoft.KeyVault/vaults/keys/versions/failed.svg",
+              "running.svg": "icons/Microsoft.KeyVault/vaults/keys/versions/running.svg",
+              "stopped.svg": "icons/Microsoft.KeyVault/vaults/keys/versions/stopped.svg",
+              "unknown.svg": "icons/Microsoft.KeyVault/vaults/keys/versions/unknown.svg"
+            },
+            "default.svg": "icons/Microsoft.KeyVault/vaults/keys/default.svg",
+            "failed.svg": "icons/Microsoft.KeyVault/vaults/keys/failed.svg",
+            "running.svg": "icons/Microsoft.KeyVault/vaults/keys/running.svg",
+            "stopped.svg": "icons/Microsoft.KeyVault/vaults/keys/stopped.svg",
+            "unknown.svg": "icons/Microsoft.KeyVault/vaults/keys/unknown.svg"
+          },
+          "secrets": {
+            "versions": {
+              "default.svg": "icons/Microsoft.KeyVault/vaults/secrets/versions/default.svg",
+              "failed.svg": "icons/Microsoft.KeyVault/vaults/secrets/versions/failed.svg",
+              "running.svg": "icons/Microsoft.KeyVault/vaults/secrets/versions/running.svg",
+              "stopped.svg": "icons/Microsoft.KeyVault/vaults/secrets/versions/stopped.svg",
+              "unknown.svg": "icons/Microsoft.KeyVault/vaults/secrets/versions/unknown.svg"
+            },
+            "default.svg": "icons/Microsoft.KeyVault/vaults/secrets/default.svg",
+            "failed.svg": "icons/Microsoft.KeyVault/vaults/secrets/failed.svg",
+            "running.svg": "icons/Microsoft.KeyVault/vaults/secrets/running.svg",
+            "stopped.svg": "icons/Microsoft.KeyVault/vaults/secrets/stopped.svg",
+            "unknown.svg": "icons/Microsoft.KeyVault/vaults/secrets/unknown.svg"
+          },
+          "default.svg": "icons/Microsoft.KeyVault/vaults/default.svg"
+        }
+      }
+    }
+  }
+}

@@ -14,9 +14,9 @@
         <guidancePhaseProvider implementation="com.microsoft.azure.toolkit.ide.guidance.phase.SummaryPhaseProvider"/>
     </extensions>
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow anchor="right"
-                    icon="/icons/Common/get_start.svg"
-                    factoryClass="com.microsoft.azure.toolkit.ide.guidance.GuidanceViewManager$GuidanceViewFactory"
-                    id="Getting Started with Azure" canCloseContents="false"/>
+<!--        <toolWindow anchor="right"-->
+<!--                    icon="/icons/Common/get_start.svg"-->
+<!--                    factoryClass="com.microsoft.azure.toolkit.ide.guidance.GuidanceViewManager$GuidanceViewFactory"-->
+<!--                    id="Getting Started with Azure" canCloseContents="false"/>-->
     </extensions>
 </idea-plugin>

@@ -1,0 +1,33 @@
+{
+  "icons": {
+    "expui": {
+      "Microsoft.ServiceBus": {
+        "namespaces": {
+          "queues": {
+            "default.svg": "icons/Microsoft.ServiceBus/namespaces/queues/default.svg",
+            "module.svg": "icons/Microsoft.ServiceBus/namespaces/queues/module.svg",
+            "running.svg": "icons/Microsoft.ServiceBus/namespaces/queues/running.svg",
+            "stopped.svg": "icons/Microsoft.ServiceBus/namespaces/queues/stopped.svg",
+            "unknown.svg": "icons/Microsoft.ServiceBus/namespaces/queues/unknown.svg",
+            "unknown-receivedisabled.svg": "icons/Microsoft.ServiceBus/namespaces/queues/unknown-receivedisabled.svg",
+            "unknown-senddisabled.svg": "icons/Microsoft.ServiceBus/namespaces/queues/unknown-senddisabled.svg"
+          },
+          "topics": {
+            "default.svg": "icons/Microsoft.ServiceBus/namespaces/topics/default.svg",
+            "module.svg": "icons/Microsoft.ServiceBus/namespaces/topics/module.svg",
+            "running.svg": "icons/Microsoft.ServiceBus/namespaces/topics/running.svg",
+            "stopped.svg": "icons/Microsoft.ServiceBus/namespaces/topics/stopped.svg",
+            "unknown.svg": "icons/Microsoft.ServiceBus/namespaces/topics/unknown.svg",
+            "unknown-receivedisabled.svg": "icons/Microsoft.ServiceBus/namespaces/topics/unknown-receivedisabled.svg",
+            "unknown-senddisabled.svg": "icons/Microsoft.ServiceBus/namespaces/topics/unknown-senddisabled.svg"
+          },
+          "default.svg": "icons/Microsoft.ServiceBus/namespaces/default.svg",
+          "running.svg": "icons/Microsoft.ServiceBus/namespaces/running.svg",
+          "stopped.svg": "icons/Microsoft.ServiceBus/namespaces/stopped.svg",
+          "unknown.svg": "icons/Microsoft.ServiceBus/namespaces/unknown.svg"
+        },
+        "default.svg": "icons/Microsoft.ServiceBus/default.svg"
+      }
+    }
+  }
+}

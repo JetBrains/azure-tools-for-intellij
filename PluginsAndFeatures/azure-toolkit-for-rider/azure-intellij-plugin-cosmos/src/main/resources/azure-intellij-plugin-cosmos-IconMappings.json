@@ -1,0 +1,40 @@
+{
+  "icons": {
+    "expui": {
+      "Microsoft.DocumentDB": {
+        "databaseAccounts": {
+          "cassandra.svg": "icons/Microsoft.DocumentDB/databaseAccounts/cassandra.svg",
+          "default.svg": "icons/Microsoft.DocumentDB/databaseAccounts/default.svg",
+          "failed.svg": "icons/Microsoft.DocumentDB/databaseAccounts/failed.svg",
+          "failed-cassandra.svg": "icons/Microsoft.DocumentDB/databaseAccounts/failed-cassandra.svg",
+          "failed-germlin.svg": "icons/Microsoft.DocumentDB/databaseAccounts/failed-germlin.svg",
+          "failed-mongodb.svg": "icons/Microsoft.DocumentDB/databaseAccounts/failed-mongodb.svg",
+          "failed-sql.svg": "icons/Microsoft.DocumentDB/databaseAccounts/failed-sql.svg",
+          "failed-table.svg": "icons/Microsoft.DocumentDB/databaseAccounts/failed-table.svg",
+          "germlin.svg": "icons/Microsoft.DocumentDB/databaseAccounts/germlin.svg",
+          "running.svg": "icons/Microsoft.DocumentDB/databaseAccounts/running.svg",
+          "running-cassandra.svg": "icons/Microsoft.DocumentDB/databaseAccounts/running-cassandra.svg",
+          "running-germlin.svg": "icons/Microsoft.DocumentDB/databaseAccounts/running-germlin.svg",
+          "running-mongodb.svg": "icons/Microsoft.DocumentDB/databaseAccounts/running-mongodb.svg",
+          "running-sql.svg": "icons/Microsoft.DocumentDB/databaseAccounts/running-sql.svg",
+          "running-table.svg": "icons/Microsoft.DocumentDB/databaseAccounts/running-table.svg",
+          "sql.svg": "icons/Microsoft.DocumentDB/databaseAccounts/sql.svg",
+          "stopped.svg": "icons/Microsoft.DocumentDB/databaseAccounts/stopped.svg",
+          "stopped-cassandra.svg": "icons/Microsoft.DocumentDB/databaseAccounts/stopped-cassandra.svg",
+          "stopped-germlin.svg": "icons/Microsoft.DocumentDB/databaseAccounts/stopped-germlin.svg",
+          "stopped-mongodb.svg": "icons/Microsoft.DocumentDB/databaseAccounts/stopped-mongodb.svg",
+          "stopped-sql.svg": "icons/Microsoft.DocumentDB/databaseAccounts/stopped-sql.svg",
+          "stopped-table.svg": "icons/Microsoft.DocumentDB/databaseAccounts/stopped-table.svg",
+          "table.svg": "icons/Microsoft.DocumentDB/databaseAccounts/table.svg",
+          "unknown.svg": "icons/Microsoft.DocumentDB/databaseAccounts/unknown.svg",
+          "unknown-cassandra.svg": "icons/Microsoft.DocumentDB/databaseAccounts/unknown-cassandra.svg",
+          "unknown-germlin.svg": "icons/Microsoft.DocumentDB/databaseAccounts/unknown-germlin.svg",
+          "unknown-mongodb.svg": "icons/Microsoft.DocumentDB/databaseAccounts/unknown-mongodb.svg",
+          "unknown-sql.svg": "icons/Microsoft.DocumentDB/databaseAccounts/unknown-sql.svg",
+          "unknown-table.svg": "icons/Microsoft.DocumentDB/databaseAccounts/unknown-table.svg"
+        },
+        "default.svg": "icons/Microsoft.DocumentDB/default.svg"
+      }
+    }
+  }
+}

@@ -32,7 +32,6 @@ import com.microsoft.azure.toolkit.ide.common.icon.AzureIcons;
 import com.microsoft.azure.toolkit.intellij.common.component.Tree;
 import com.microsoft.azure.toolkit.intellij.common.component.TreeUtils;
 import com.microsoft.azure.toolkit.intellij.explorer.azd.AzdNode;
-import com.microsoft.azure.toolkit.intellij.appmod.javamigration.MigrateToAzureNode;
 import com.microsoft.azure.toolkit.lib.Azure;
 import com.microsoft.azure.toolkit.lib.auth.AzureAccount;
 import com.microsoft.azure.toolkit.lib.auth.IAccountActions;
@@ -70,22 +69,23 @@ public class AzureExplorer extends Tree {
     @Getter
     public static final AzureExplorerNodeProviderManager manager = new AzureExplorerNodeProviderManager();
     public static final String AZURE_ICON = AzureIcons.Common.AZURE.getIconPath();
-    private final AzdNode azdNode;
-    private final MigrateToAzureNode migrateToAzureNode;
+//    private final AzdNode azdNode;
+//    private final MigrateToAzureNode migrateToAzureNode;
 
     private AzureExplorer(Project project) {
         super();
         this.putClientProperty(PLACE, ResourceCommonActionsContributor.AZURE_EXPLORER);
-        this.azdNode = new AzdNode(project);
-        this.migrateToAzureNode = new MigrateToAzureNode(project);
+//        this.azdNode = new AzdNode(project);
+//        this.migrateToAzureNode = new MigrateToAzureNode(project);
         this.root = new Node<>("Azure")
             .withChildrenLoadLazily(false)
             .addChild(buildFavoriteRoot())
             .addChild(buildAppGroupedResourcesRoot())
             .addChild(buildTypeGroupedResourcesRoot())
             .addChildren(buildNonAzServiceNodes())
-            .addChild(migrateToAzureNode)
-            .addChild(azdNode);
+//            .addChild(migrateToAzureNode)
+//            .addChild(azdNode)
+        ;
 
         this.init(this.root);
         this.setRootVisible(false);
@@ -111,27 +111,27 @@ public class AzureExplorer extends Tree {
             typeGroupedResourcesRoot.clearChildren();
         }));
 
-        AzureEventBus.on("azd.installed", new AzureEventBus.EventListener(e -> {
-            final DefaultTreeModel model = (DefaultTreeModel) this.getModel();
-            final TreeNode<?> root = (TreeNode<?>) model.getRoot();
-            if (root != null && root.children() != null) {
-                Iterator<javax.swing.tree.TreeNode> iterator = root.children().asIterator();
-                while (iterator.hasNext()) {
-                    final TreeNode<?> childNode = (TreeNode<?>) iterator.next();
-                    final Node<?> childInnerNode = childNode.getInner();
-                    if (childInnerNode instanceof AzdNode) {
-                        final AzdNode azdNode = (AzdNode) childInnerNode;
-                        childNode.setAllowsChildren(true);
-                        azdNode.clearClickHandlers();
-                        azdNode.withDescription("");
-                        azdNode.showAzdActions();
-                        azdNode.refreshView();
-                        childNode.updateChildren(true);
-                        break;
-                    }
-                }
-            }
-        }));
+//        AzureEventBus.on("azd.installed", new AzureEventBus.EventListener(e -> {
+//            final DefaultTreeModel model = (DefaultTreeModel) this.getModel();
+//            final TreeNode<?> root = (TreeNode<?>) model.getRoot();
+//            if (root != null && root.children() != null) {
+//                Iterator<javax.swing.tree.TreeNode> iterator = root.children().asIterator();
+//                while (iterator.hasNext()) {
+//                    final TreeNode<?> childNode = (TreeNode<?>) iterator.next();
+//                    final Node<?> childInnerNode = childNode.getInner();
+//                    if (childInnerNode instanceof AzdNode) {
+//                        final AzdNode azdNode = (AzdNode) childInnerNode;
+//                        childNode.setAllowsChildren(true);
+//                        azdNode.clearClickHandlers();
+//                        azdNode.withDescription("");
+//                        azdNode.showAzdActions();
+//                        azdNode.refreshView();
+//                        childNode.updateChildren(true);
+//                        break;
+//                    }
+//                }
+//            }
+//        }));
     }
 
     @Override
@@ -232,23 +232,23 @@ public class AzureExplorer extends Tree {
                     return ActionUpdateThread.BGT;
                 }
             };
-            final AnAction feedbackAction = ActionManager.getInstance().getAction("Actions.ProvideFeedback");
-            final AnAction getStartAction = ActionManager.getInstance().getAction("Actions.GettingStart");
+//            final AnAction feedbackAction = ActionManager.getInstance().getAction("Actions.ProvideFeedback");
+//            final AnAction getStartAction = ActionManager.getInstance().getAction("Actions.GettingStart");
             final AnAction startCloudShellAction = ActionManager.getInstance().getAction("AzureToolkit.CloudShell.Start");
             final AnAction signInAction = ActionManager.getInstance().getAction("AzureToolkit.AzureSignIn");
             final AnAction selectSubscriptionsAction = ActionManager.getInstance().getAction("AzureToolkit.SelectSubscriptions");
-            toolWindow.setTitleActions(Arrays.asList(getStartAction, refreshAction, selectSubscriptionsAction, startCloudShellAction, signInAction, Separator.create(), feedbackAction));
+            toolWindow.setTitleActions(Arrays.asList(/*getStartAction, */refreshAction, selectSubscriptionsAction, startCloudShellAction, signInAction, Separator.create()/*, feedbackAction*/));
             if (toolWindow instanceof ToolWindowEx) {
-                final AnAction devBlogsAction = ActionManager.getInstance().getAction("AzureToolkit.ViewDevBlogs");
-                final AnAction documentAction = ActionManager.getInstance().getAction("AzureToolkit.ViewToolingDocument");
-                final AnAction whatsNewAction = ActionManager.getInstance().getAction("Actions.WhatsNew");
-                final AnAction reportIssueAction = ActionManager.getInstance().getAction("AzureToolkit.GithubIssue");
-                final AnAction featureRequestAction = ActionManager.getInstance().getAction("AzureToolkit.FeatureRequest");
-                final AnAction openSdkReferenceBookAction = ActionManager.getInstance().getAction("user/sdk.OpenSdkReferenceBook");
-                final AnAction openResourceConnectionExplorerAction = ActionManager.getInstance().getAction("AzureToolkit.OpenResourceConnectionExplorerAction");
-                final AnAction openAzureSettingsAction = ActionManager.getInstance().getAction(OPEN_AZURE_SETTINGS.getId());
-                (toolWindow).setAdditionalGearActions(new DefaultActionGroup(openSdkReferenceBookAction, openAzureSettingsAction, openResourceConnectionExplorerAction,
-                    Separator.create(), reportIssueAction, featureRequestAction, feedbackAction, Separator.create(), devBlogsAction, documentAction));
+//                final AnAction devBlogsAction = ActionManager.getInstance().getAction("AzureToolkit.ViewDevBlogs");
+//                final AnAction documentAction = ActionManager.getInstance().getAction("AzureToolkit.ViewToolingDocument");
+//                final AnAction whatsNewAction = ActionManager.getInstance().getAction("Actions.WhatsNew");
+//                final AnAction reportIssueAction = ActionManager.getInstance().getAction("AzureToolkit.GithubIssue");
+//                final AnAction featureRequestAction = ActionManager.getInstance().getAction("AzureToolkit.FeatureRequest");
+//                final AnAction openSdkReferenceBookAction = ActionManager.getInstance().getAction("user/sdk.OpenSdkReferenceBook");
+//                final AnAction openResourceConnectionExplorerAction = ActionManager.getInstance().getAction("AzureToolkit.OpenResourceConnectionExplorerAction");
+//                final AnAction openAzureSettingsAction = ActionManager.getInstance().getAction(OPEN_AZURE_SETTINGS.getId());
+//                (toolWindow).setAdditionalGearActions(new DefaultActionGroup(openSdkReferenceBookAction, openAzureSettingsAction, openResourceConnectionExplorerAction,
+//                    Separator.create(), reportIssueAction, featureRequestAction, /*feedbackAction,*/ Separator.create(), devBlogsAction, documentAction));
             }
         }
     }

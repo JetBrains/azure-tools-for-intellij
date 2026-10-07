@@ -1,0 +1,25 @@
+{
+  "icons": {
+    "expui": {
+      "Microsoft.Resources": {
+        "resourceGroups": {
+          "deployments": {
+            "default.svg": "icons/Microsoft.Resources/resourceGroups/deployments/default.svg",
+            "failed.svg": "icons/Microsoft.Resources/resourceGroups/deployments/failed.svg",
+            "folder.svg": "icons/Microsoft.Resources/resourceGroups/deployments/folder.svg",
+            "running.svg": "icons/Microsoft.Resources/resourceGroups/deployments/running.svg",
+            "stopped.svg": "icons/Microsoft.Resources/resourceGroups/deployments/stopped.svg",
+            "unknown.svg": "icons/Microsoft.Resources/resourceGroups/deployments/unknown.svg"
+          },
+          "genericResources": {
+            "default.svg": "icons/Microsoft.Resources/resourceGroups/genericResources/default.svg"
+          },
+          "default.svg": "icons/Microsoft.Resources/resourceGroups/default.svg",
+          "unknown.svg": "icons/Microsoft.Resources/resourceGroups/unknown.svg"
+        },
+        "default.svg": "icons/Microsoft.Resources/default.svg",
+        "unknown.svg": "icons/Microsoft.Resources/unknown.svg"
+      }
+    }
+  }
+}

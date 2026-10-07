@@ -5,9 +5,10 @@
         <actions implementation="com.microsoft.azure.toolkit.intellij.eventhubs.IntellijEventHubsActionsContributor"/>
     </extensions>
     <extensions defaultExtensionNs="com.intellij">
-    <toolWindow anchor="bottom"
+        <toolWindow anchor="bottom"
                 icon="/icons/Common/event_hubs.svg"
                 factoryClass="com.microsoft.azure.toolkit.intellij.eventhubs.view.EventHubsToolWindowManager$EventHubsToolWindowFactory"
                 id="Azure Event Hubs" canCloseContents="true"/>
+        <iconMapper mappingFile="azure-intellij-plugin-eventhubs-IconMappings.json"/>
     </extensions>
 </idea-plugin>

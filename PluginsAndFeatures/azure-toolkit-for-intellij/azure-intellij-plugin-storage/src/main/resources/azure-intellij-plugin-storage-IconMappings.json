@@ -1,0 +1,42 @@
+{
+  "icons": {
+    "expui": {
+      "Microsoft.Storage": {
+        "azurite": {
+          "default.svg": "icons/Microsoft.Storage/azurite/default.svg",
+          "running.svg": "icons/Microsoft.Storage/azurite/running.svg",
+          "stopped.svg": "icons/Microsoft.Storage/azurite/stopped.svg"
+        },
+        "storageAccounts": {
+          "Azure.BlobContainer": {
+            "default.svg": "icons/Microsoft.Storage/storageAccounts/Azure.BlobContainer/default.svg",
+            "module.svg": "icons/Microsoft.Storage/storageAccounts/Azure.BlobContainer/module.svg"
+          },
+          "Azure.FileShare": {
+            "default.svg": "icons/Microsoft.Storage/storageAccounts/Azure.FileShare/default.svg",
+            "module.svg": "icons/Microsoft.Storage/storageAccounts/Azure.FileShare/module.svg"
+          },
+          "Azure.Queue": {
+            "default.svg": "icons/Microsoft.Storage/storageAccounts/Azure.Queue/default.svg",
+            "module.svg": "icons/Microsoft.Storage/storageAccounts/Azure.Queue/module.svg"
+          },
+          "Azure.Table": {
+            "default.svg": "icons/Microsoft.Storage/storageAccounts/Azure.Table/default.svg",
+            "module.svg": "icons/Microsoft.Storage/storageAccounts/Azure.Table/module.svg"
+          },
+          "default.svg": "icons/Microsoft.Storage/storageAccounts/default.svg",
+          "default-connectionstring.svg": "icons/Microsoft.Storage/storageAccounts/default-connectionstring.svg",
+          "failed.svg": "icons/Microsoft.Storage/storageAccounts/failed.svg",
+          "failed-connectionstring.svg": "icons/Microsoft.Storage/storageAccounts/failed-connectionstring.svg",
+          "running.svg": "icons/Microsoft.Storage/storageAccounts/running.svg",
+          "running-connectionstring.svg": "icons/Microsoft.Storage/storageAccounts/running-connectionstring.svg",
+          "stopped.svg": "icons/Microsoft.Storage/storageAccounts/stopped.svg",
+          "stopped-connectionstring.svg": "icons/Microsoft.Storage/storageAccounts/stopped-connectionstring.svg",
+          "unknown.svg": "icons/Microsoft.Storage/storageAccounts/unknown.svg",
+          "unknown-connectionstring.svg": "icons/Microsoft.Storage/storageAccounts/unknown-connectionstring.svg"
+        },
+        "default.svg": "icons/Microsoft.Storage/default.svg"
+      }
+    }
+  }
+}

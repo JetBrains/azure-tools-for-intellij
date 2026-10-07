@@ -1,0 +1,12 @@
+<!--
+  ~ Copyright 2018-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
+  -->
+
+<idea-plugin>
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <connectorResourceType implementation="com.microsoft.azure.toolkit.intellij.cosmos.connection.CassandraCosmosDBAccountResourceDefinition"/>
+        <connectorResourceType implementation="com.microsoft.azure.toolkit.intellij.cosmos.connection.MongoCosmosDBAccountResourceDefinition"/>
+        <connectorResourceType implementation="com.microsoft.azure.toolkit.intellij.cosmos.connection.SqlCosmosDBAccountResourceDefinition"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.cosmos.IntellijDotnetCosmosActionsContributor"/>
+    </extensions>
+</idea-plugin>

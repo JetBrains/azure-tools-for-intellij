@@ -1,4 +1,6 @@
 <idea-plugin>
+    <depends>com.intellij.modules.json</depends>
+
     <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
         <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.arm.ResourceGroupNodeProvider"/>
         <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.arm.DeploymentNodeProvider"/>
@@ -17,5 +19,6 @@
                                implementationClass="com.microsoft.azure.toolkit.intellij.arm.language.ARMTemplateParserDefinition"/>
         <completion.contributor language="JSON" order="first"
                                 implementationClass="com.microsoft.azure.toolkit.intellij.arm.language.ARMTemplateCompletionContributor"/>
+        <iconMapper mappingFile="azure-intellij-plugin-arm-IconMappings.json"/>
     </extensions>
 </idea-plugin>

@@ -1,15 +1,74 @@
-dependencies {
-    implementation(project(":azure-intellij-plugin-lib"))
-    // runtimeOnly project(path: ":azure-intellij-plugin-lib", configuration: "instrumentedJar")
-    implementation(project(":azure-intellij-resource-connector-lib"))
-    // runtimeOnly project(path: ":azure-intellij-resource-connector-lib", configuration: "instrumentedJar")
-    implementation("com.microsoft.azure:azure-toolkit-keyvault-lib")
-    implementation("com.microsoft.azure:azure-toolkit-ide-common-lib")
-    implementation("com.microsoft.azure:azure-toolkit-ide-keyvault-lib")
-    implementation("com.microsoft.azure:azure-toolkit-identity-lib")
+plugins {
+    id("java")
+    id("org.jetbrains.intellij.platform.module")
+    alias(libs.plugins.aspectj)
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+
     intellijPlatform {
-        // Plugin Dependencies. Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
-        bundledPlugin("org.jetbrains.plugins.yaml")
-        bundledPlugin("com.intellij.properties")
+        defaultRepositories()
+        jetbrainsRuntime()
+    }
+}
+
+val platformVersion: String by extra
+
+dependencies {
+    intellijPlatform {
+        rider(platformVersion) {
+            useInstaller = false
+            useCache = true
+        }
+        jetbrainsRuntime()
+        bundledPlugins("com.intellij.properties", "org.jetbrains.plugins.yaml")
+    }
+
+    implementation(libs.azureToolkitLibs)
+    implementation(libs.azureToolkitIdeLibs)
+    implementation(libs.azureToolkitHdinsightLibs)
+
+    implementation(project(path = ":azure-intellij-plugin-lib"))
+    implementation(project(path = ":azure-intellij-resource-connector-lib"))
+    implementation(libs.azureToolkitKeyvaultLib)
+    implementation(libs.azureToolkitIdeCommonLib)
+    implementation(libs.azureToolkitIdeKeyvaultLib)
+    implementation(libs.azureToolkitIdentityLib)
+
+    compileOnly(libs.lombok)
+    compileOnly("org.jetbrains:annotations:24.0.0")
+    annotationProcessor(libs.lombok)
+    implementation(libs.azureToolkitCommonLib)
+    aspect(libs.azureToolkitCommonLib)
+    implementation("org.aspectj:aspectjrt:1.9.25")
+}
+
+configurations {
+    implementation { exclude(module = "slf4j-api") }
+    implementation { exclude(module = "log4j") }
+    implementation { exclude(module = "stax-api") }
+    implementation { exclude(module = "groovy-xml") }
+    implementation { exclude(module = "groovy-templates") }
+    implementation { exclude(module = "jna") }
+    implementation { exclude(module = "xpp3") }
+    implementation { exclude(module = "pull-parser") }
+    implementation { exclude(module = "xsdlib") }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+tasks {
+    compileJava {
+        options.release.set(25)
+    }
+
+    processResources {
+        duplicatesStrategy = DuplicatesStrategy.WARN
     }
 }

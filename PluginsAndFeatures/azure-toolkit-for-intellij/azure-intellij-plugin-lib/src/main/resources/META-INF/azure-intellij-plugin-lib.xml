@@ -17,16 +17,17 @@
                             serviceImplementation="com.microsoft.azure.toolkit.intellij.common.task.IntellijAzureTaskManager"/>
         <applicationService serviceInterface="com.microsoft.azure.toolkit.lib.common.action.AzureActionManager"
                             serviceImplementation="com.microsoft.azure.toolkit.intellij.common.action.IntellijAzureActionManager"/>
-        <toolWindow anchor="bottom"
-                    factoryClass="com.microsoft.azure.toolkit.intellij.common.streaminglog.StreamingLogsToolWindowFactory"
-                    icon="AllIcons.Nodes.LogFolder"
-                    id="Azure Streaming Log" canCloseContents="true"/>
+<!--        <toolWindow anchor="bottom"-->
+<!--                    factoryClass="com.microsoft.azure.toolkit.intellij.common.streaminglog.StreamingLogsToolWindowFactory"-->
+<!--                    icon="AllIcons.Nodes.LogFolder"-->
+<!--                    id="Azure Streaming Log" canCloseContents="true"/>-->
         <webHelpProvider implementation="com.microsoft.azure.toolkit.intellij.common.help.AzureWebHelpProvider"/>
         <applicationService serviceImplementation="com.microsoft.azure.toolkit.intellij.common.settings.IntellijStore"/>
         <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.common.feedback.MonkeySurveyEditorProvider"/>
         <postStartupActivity implementation="com.microsoft.azure.toolkit.intellij.common.feedback.RateManager$WhenToPopup"/>
         <registryKey key="azure.toolkit.test.mode.enabled" description="Test mode" restartRequired="true" defaultValue="false"/>
         <registryKey key="azure.toolkit.feedback.score.threshold" description="Score threshold to popup for rating" restartRequired="false" defaultValue="20"/>
+        <iconMapper mappingFile="azure-intellij-plugin-lib-IconMappings.json"/>
     </extensions>
     <actions>
         <action id="AzureToolkit.AzureSignIn" class="com.microsoft.azure.toolkit.intellij.common.auth.SignInAction" text="Azure Sign In..." />
@@ -38,7 +39,7 @@
                 text="View Documentation"/>
         <action id="AzureToolkit.ViewDevBlogs" class="com.microsoft.azure.toolkit.intellij.common.action.ViewDevBlogsAction"
                 text="View Dev Blogs"/>
-        <group id="AzureToolkit.ServiceView.AddAzureService" text="Azure" description="Add Microsoft Azure services" icon="/icons/Common/Azure.svg" popup="true">
+        <group id="AzureToolkit.ServiceView.AddAzureService" text="Azure" description="Add Microsoft Azure services" icon="/icons/Common/Azure.svg" popup="true" searchable="false">
             <add-to-group group-id="ServiceView.AddService" anchor="last"/>
         </group>
     </actions>

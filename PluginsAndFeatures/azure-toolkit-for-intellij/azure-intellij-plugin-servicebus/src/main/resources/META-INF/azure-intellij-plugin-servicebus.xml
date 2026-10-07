@@ -5,9 +5,10 @@
         <actions implementation="com.microsoft.azure.toolkit.intellij.servicebus.IntelliJServiceBusActionsContributor"/>
     </extensions>
     <extensions defaultExtensionNs="com.intellij">
-    <toolWindow anchor="bottom"
+        <toolWindow anchor="bottom"
                 icon="/icons/Common/service_bus.svg"
                 factoryClass="com.microsoft.azure.toolkit.intellij.servicebus.view.ServiceBusToolWindowManager$ServiceBusToolWindowFactory"
                 id="Azure Service Bus" canCloseContents="true"/>
+        <iconMapper mappingFile="azure-intellij-plugin-servicebus-IconMappings.json"/>
     </extensions>
 </idea-plugin>

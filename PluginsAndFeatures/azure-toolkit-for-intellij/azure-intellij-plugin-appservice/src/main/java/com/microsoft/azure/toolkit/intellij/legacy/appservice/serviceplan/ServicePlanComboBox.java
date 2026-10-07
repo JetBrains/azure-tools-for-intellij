@@ -185,7 +185,8 @@ public class ServicePlanComboBox extends AzureComboBox<AppServicePlan> {
     }
 
     private void showServicePlanCreationPopup() {
-        final ServicePlanCreationDialog dialog = new ServicePlanCreationDialog(this.subscription, this.resourceGroup, pricingTierList, defaultPricingTier);
+        final String name = this.getValue() != null ? getValue().getName() : "";
+        final ServicePlanCreationDialog dialog = new ServicePlanCreationDialog(this.subscription, this.resourceGroup, name, pricingTierList, defaultPricingTier);
         final Action.Id<AppServicePlanDraft> actionId = Action.Id.of("user/$appservice.create_service_plan.plan");
         dialog.setOkAction(new Action<>(actionId)
             .withLabel("Create")

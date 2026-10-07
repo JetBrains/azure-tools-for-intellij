@@ -12,5 +12,6 @@
     </extensions>
     <extensions defaultExtensionNs="com.intellij">
         <facetType implementation="com.microsoft.azure.toolkit.intellij.legacy.function.wizard.facet.FunctionsFacetType"/>
+        <iconMapper mappingFile="azure-intellij-plugin-appservice-IconMappings.json"/>
     </extensions>
 </idea-plugin>

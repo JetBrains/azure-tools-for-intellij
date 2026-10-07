@@ -1,0 +1,21 @@
+{
+  "icons": {
+    "expui": {
+      "Microsoft.Compute": {
+        "virtualMachines": {
+          "default.svg": "icons/Microsoft.Compute/virtualMachines/default.svg",
+          "failed.svg": "icons/Microsoft.Compute/virtualMachines/failed.svg",
+          "failed-linux.svg": "icons/Microsoft.Compute/virtualMachines/failed-linux.svg",
+          "linux.svg": "icons/Microsoft.Compute/virtualMachines/linux.svg",
+          "running.svg": "icons/Microsoft.Compute/virtualMachines/running.svg",
+          "running-linux.svg": "icons/Microsoft.Compute/virtualMachines/running-linux.svg",
+          "stopped.svg": "icons/Microsoft.Compute/virtualMachines/stopped.svg",
+          "stopped-linux.svg": "icons/Microsoft.Compute/virtualMachines/stopped-linux.svg",
+          "unknown.svg": "icons/Microsoft.Compute/virtualMachines/unknown.svg",
+          "unknown-linux.svg": "icons/Microsoft.Compute/virtualMachines/unknown-linux.svg"
+        },
+        "default.svg": "icons/Microsoft.Compute/default.svg"
+      }
+    }
+  }
+}

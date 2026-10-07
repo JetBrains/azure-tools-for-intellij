@@ -79,7 +79,7 @@ public class EnvironmentVariablesNode extends AbstractAzureFacetNode<Connection<
      */
     @Override
     public int getWeight() {
-        return DEFAULT_WEIGHT + 1;
+        return getDefaultWeight() + 1;
     }
 
     @Override

@@ -1,0 +1,19 @@
+<!--
+  ~ Copyright 2018-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
+  -->
+
+<idea-plugin>
+    <depends>com.intellij.database</depends>
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <connectorResourceType implementation="com.microsoft.azure.toolkit.intellij.database.mysql.connection.DotnetMySqlDatabaseResourceDefinition"/>
+        <connectorResourceType implementation="com.microsoft.azure.toolkit.intellij.database.postgre.connection.DotnetPostgreSqlDatabaseResourceDefinition"/>
+        <connectorResourceType implementation="com.microsoft.azure.toolkit.intellij.database.sqlserver.connection.DotnetSqlServerDatabaseResourceDefinition"/>
+    </extensions>
+    <extensions defaultExtensionNs="com.intellij.database">
+        <urlParamEditorProvider implementation="com.microsoft.azure.toolkit.intellij.database.dbtools.DatabaseServerTypeFactory"/>
+        <urlParamEditorUiProvider implementation="com.microsoft.azure.toolkit.intellij.database.dbtools.DatabaseServerTypeUIFactory"/>
+    </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="com.microsoft.azure.toolkit.intellij.database.activity.LoadTemplatesActivity"/>
+    </extensions>
+</idea-plugin>

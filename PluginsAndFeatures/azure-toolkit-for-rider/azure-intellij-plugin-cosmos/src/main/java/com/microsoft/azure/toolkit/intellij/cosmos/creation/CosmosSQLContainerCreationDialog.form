@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.microsoft.azure.toolkit.intellij.cosmos.creation.CosmosSQLContainerCreationDialog">
+  <grid id="27dc6" binding="pnlRoot" layout-manager="GridLayoutManager" row-count="5" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="446" height="241"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <component id="e3218" class="javax.swing.JLabel" binding="lblContainerId">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <minimum-size width="128" height="24"/>
+            <preferred-size width="128" height="24"/>
+            <maximum-size width="128" height="24"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="Container Id:"/>
+        </properties>
+      </component>
+      <component id="2776e" class="javax.swing.JLabel" binding="lblPartitionKey">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <minimum-size width="128" height="24"/>
+            <preferred-size width="128" height="24"/>
+            <maximum-size width="128" height="24"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="Partition Key:"/>
+        </properties>
+      </component>
+      <component id="d41c0" class="com.microsoft.azure.toolkit.intellij.common.AzureTextInput" binding="txtContainerId">
+        <constraints>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="d4a53" class="com.microsoft.azure.toolkit.intellij.common.AzureTextInput" binding="txtPartitionKey">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="483ad" class="javax.swing.JCheckBox" binding="chkDedicatedThroughput">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Provision dedicated throughput for this container"/>
+        </properties>
+      </component>
+      <nested-form id="c1b2d" form-file="com/microsoft/azure/toolkit/intellij/cosmos/creation/ThroughputConfigPanel.form" binding="pnlThroughput">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </nested-form>
+      <vspacer id="3f675">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+    </children>
+  </grid>
+</form>

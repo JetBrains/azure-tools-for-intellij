@@ -89,6 +89,9 @@ public class DeploymentSlotComboBox extends AzureComboBox<DeploymentSlotConfig> 
         if (module == null) {
             return this.draftItems;
         }
+
+        module.refresh();
+
         final List<DeploymentSlotConfig> result = module.list().stream().map(slot ->
             DeploymentSlotConfig.builder().name(slot.getName()).build()).collect(Collectors.toList());
         final DeploymentSlotConfig current = getValue();
@@ -99,6 +102,18 @@ public class DeploymentSlotComboBox extends AzureComboBox<DeploymentSlotConfig> 
         final List<String> existingSlotNames = result.stream().map(DeploymentSlotConfig::getName).collect(Collectors.toList());
         draftItems.stream().filter(draft -> !existingSlotNames.contains(draft.getName())).forEach(result::add);
         return result;
+    }
+
+    @Override
+    protected void refreshItems() {
+        final AbstractAzResource<?, ?, ?> resource = StringUtils.isEmpty(appServiceId) ? null : Azure.az().getById(appServiceId);
+        final IDeploymentSlotModule<?, ?, ?> module = (IDeploymentSlotModule<?, ?, ?>) Optional.ofNullable(resource)
+                .flatMap(r -> r.getSubModules().stream().filter(m -> m instanceof IDeploymentSlotModule).findFirst())
+                .orElse(null);
+        if (module != null) {
+            module.refresh();
+        }
+        super.refreshItems();
     }
 
     @Override

@@ -6,4 +6,7 @@
         <actions implementation="com.microsoft.azure.toolkit.ide.vm.VirtualMachineActionsContributor"/>
         <actions implementation="com.microsoft.azure.toolkit.intellij.vm.IntelliJVMActionsContributor"/>
     </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <iconMapper mappingFile="azure-intellij-plugin-vm-IconMappings.json"/>
+    </extensions>
 </idea-plugin>

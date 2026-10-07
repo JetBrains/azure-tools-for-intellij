@@ -1,0 +1,11 @@
+<!-- Copyright © 2000–2024 JetBrains s.r.o. -->
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <path fill="#43454A" d="M9 10c0-1.24 1.04-2 2-2 .16 0 .32.03.48.07-.44-.93-1-1.84-1.01-2.28-.01-.73.23-1.02.23-2.29 0-1.44-1.76-2-2.7-2s-2.7.56-2.7 2c0 1.26.24 1.55.23 2.29-.01.63-1.11 2.17-1.43 3.39 1.67.48 2.91 2 2.91 3.83 0 .15-.03.29-.04.43.32.04.67.07 1.04.07s.69-.02 1-.06v-3.44z"/>
+  <path fill="none" stroke="#CED0D6" stroke-linecap="round" stroke-linejoin="round" d="M11.2 7.51c-.37-.72-.72-1.37-.73-1.72-.01-.73.23-1.02.23-2.29 0-1.44-1.76-2-2.7-2s-2.7.56-2.7 2c0 1.26.24 1.55.23 2.29 0 .54-.84 1.78-1.28 2.89m3.22 4.81c.17 0 .34.01.53.01s.34 0 .5-.01"/>
+  <path fill="none" stroke="#CED0D6" stroke-linejoin="round" d="M8 4.79c-.22 0-.65.17-.65.26 0 .14.48.61.65.61s.65-.48.65-.61c0-.1-.43-.26-.65-.26Z" clip-rule="evenodd"/>
+  <path fill="none" stroke="#CED0D6" stroke-linejoin="round" d="M7.19 1.61 8 2.7l.81-1.09"/>
+  <path fill="#57965C" fill-rule="evenodd" d="m15.53 11.65-4-2.5A1 1 0 0 0 11 9c-.48 0-1 .38-1 1v5c0 .62.52 1 1 1 .19 0 .36-.05.53-.15l4-2.5c.3-.19.47-.5.47-.85s-.17-.66-.47-.85" clip-rule="evenodd"/>
+  <path fill="#25324D" d="M3 15.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
+  <path fill="none" stroke="#548AF7" stroke-miterlimit="10" d="M3 15.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+  <path fill="none" stroke="#548AF7" stroke-linecap="round" stroke-miterlimit="10" d="M3 10.5v5M5.5 13h-5"/>
+</svg>

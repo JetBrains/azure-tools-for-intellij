@@ -15,7 +15,7 @@ import com.microsoft.azure.toolkit.lib.common.model.Subscription;
 import com.microsoft.azure.toolkit.lib.compute.AzureCompute;
 import com.microsoft.azure.toolkit.lib.compute.virtualmachine.VirtualMachine;
 import com.microsoft.azure.toolkit.lib.compute.virtualmachine.VirtualMachineDraft;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

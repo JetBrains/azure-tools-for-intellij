@@ -1,0 +1,25 @@
+<idea-plugin>
+  <depends>org.jetbrains.plugins.textmate</depends>
+  <resource-bundle>messages.BicepBundle</resource-bundle>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileType name="Bicep"
+              implementationClass="com.microsoft.azure.toolkit.intellij.bicep.BicepFileType"
+              extensions="bicep"/>
+    <fileTypeUsageSchemaDescriptor schema="Bicep" implementationClass="com.microsoft.azure.toolkit.intellij.bicep.BicepFileTypeSchemaRecogniser"/>
+    <platform.lsp.serverSupportProvider implementation="com.microsoft.azure.toolkit.intellij.bicep.lsp.BicepLspSupportProvider"/>
+    <projectConfigurable id="azure-bicep"
+                         groupId="language"
+                         bundle="messages.BicepBundle"
+                         key="settings.display.name"
+                         instance="com.microsoft.azure.toolkit.intellij.bicep.settings.BicepConfigurable"/>
+    <editorNotificationProvider implementation="com.microsoft.azure.toolkit.intellij.bicep.lsp.BicepLsEditorNotificationProvider"/>
+  </extensions>
+
+  <actions>
+    <action id="BicepInstallLsInfrastructureAction"
+            class="com.microsoft.azure.toolkit.intellij.bicep.lsp.BicepInstallLsInfrastructureAction"
+            icon="AllIcons.Actions.Install">
+    </action>
+  </actions>
+</idea-plugin>

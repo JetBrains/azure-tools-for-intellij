@@ -17,11 +17,11 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.microsoft.azure.toolkit.intellij.cloudshell.actions.RevealFileAction
 import com.microsoft.azure.toolkit.intellij.cloudshell.rest.CloudConsoleService
-import io.ktor.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.io.path.extension
 import kotlin.io.path.moveTo
 
 @Service(Service.Level.PROJECT)

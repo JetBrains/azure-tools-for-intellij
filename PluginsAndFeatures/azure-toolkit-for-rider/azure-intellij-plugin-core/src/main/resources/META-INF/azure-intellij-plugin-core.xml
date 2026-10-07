@@ -1,0 +1,59 @@
+<!--
+  ~ Copyright 2018-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
+  -->
+
+<idea-plugin>
+    <depends>com.jetbrains.restClient</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="com.microsoft.azure.toolkit.intellij.base.PluginLifecycleActivity"/>
+
+        <applicationConfigurable parentId="tools"
+                                 displayName="Azure"
+                                 id="com.microsoft.intellij.AzureConfigurable"
+                                 instance="com.microsoft.azure.toolkit.intellij.settings.AzureConfigurable"/>
+        <projectConfigurable parentId="com.microsoft.intellij.AzureConfigurable"
+                             displayName="Azure Identity"
+                             id="com.microsoft.azure.toolkit.intellij.identity.IdentityConfigurable"
+                             instance="com.microsoft.azure.toolkit.intellij.identity.IdentityConfigurable"/>
+
+        <postStartupActivity implementation="com.microsoft.azure.toolkit.intellij.icons.RiderIconPatcherRegistrar"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <actions implementation="com.microsoft.azure.toolkit.intellij.settings.IntellijCommonActionsContributor"/>
+    </extensions>
+
+    <actions>
+        <group id="AzurePopupGroup"
+               text="Azure"
+               description="Azure"
+               icon="/icons/Common/Azure.svg"
+               popup="true"
+               searchable="false">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <reference ref="Actions.WebAppDeployAction"/>
+            <reference ref="Actions.WebAppContainersDeployAction"/>
+            <reference ref="Actions.FunctionAppDeployAction"/>
+        </group>
+
+        <group id="AzureToolkit.AzureActionGroup"
+               class="com.intellij.openapi.actionSystem.DefaultActionGroup"
+               text="Azure"
+               description="Contains Azure tools plugin actions"
+               icon="/icons/Common/Azure.svg"
+               searchable="false"
+               popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+            <reference ref="AzureToolkit.SelectSubscriptions"/>
+            <separator/>
+            <reference ref="Actions.WebAppDeployAction"/>
+            <reference ref="Actions.WebAppContainersDeployAction"/>
+            <reference ref="Actions.FunctionAppDeployAction"/>
+            <separator/>
+            <reference ref="AzureToolkit.CloudShell.Group"/>
+            <separator/>
+            <reference ref="AzureToolkit.AzureSignIn"/>
+        </group>
+    </actions>
+</idea-plugin>

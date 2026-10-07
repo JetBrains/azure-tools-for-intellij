@@ -1,0 +1,16 @@
+{
+  "icons": {
+    "expui": {
+      "Microsoft.Cache": {
+        "Redis": {
+          "default.svg": "icons/Microsoft.Cache/Redis/default.svg",
+          "disabled.svg": "icons/Microsoft.Cache/Redis/disabled.svg",
+          "failed.svg": "icons/Microsoft.Cache/Redis/failed.svg",
+          "running.svg": "icons/Microsoft.Cache/Redis/running.svg",
+          "unknown.svg": "icons/Microsoft.Cache/Redis/unknown.svg"
+        },
+        "default.svg": "icons/Microsoft.Cache/default.svg"
+      }
+    }
+  }
+}

@@ -51,8 +51,6 @@ public class IntellijStorageActionsContributor implements IActionsContributor {
         am.registerHandler(StorageActionsContributor.DOWNLOAD_FILE, (file, e) -> StorageFileActions.downloadFile(file, ((AnActionEvent) e).getProject()));
         am.registerHandler(StorageActionsContributor.COPY_FILE_URL, (file, e) -> StorageFileActions.copyUrl(file, ((AnActionEvent) e).getProject()));
         am.registerHandler(StorageActionsContributor.COPY_FILE_SAS_URL, (file, e) -> StorageFileActions.copySasUrl(file, ((AnActionEvent) e).getProject()));
-        am.registerHandler(StorageActionsContributor.START_AZURITE, (account, e) -> AzureTaskManager.getInstance().runLater(() -> AzuriteService.getInstance().startAzurite(((AnActionEvent) e).getProject())));
-        am.registerHandler(StorageActionsContributor.STOP_AZURITE, (account, e) -> AzuriteService.getInstance().stopAzurite());
 
         final BiConsumer<ResourceGroup, AnActionEvent> groupCreateAccountHandler = (r, e) -> {
             final StorageAccountConfig config = StorageAccountConfig.builder().build();

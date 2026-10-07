@@ -11,5 +11,6 @@
         <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.keyvault.property.certificate.CertificateVersionPropertiesEditorProvider"/>
         <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.keyvault.property.key.KeyPropertiesEditorProvider"/>
         <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.keyvault.property.key.KeyVersionPropertiesEditorProvider"/>
+        <iconMapper mappingFile="azure-intellij-plugin-keyvault-IconMappings.json"/>
     </extensions>
 </idea-plugin>

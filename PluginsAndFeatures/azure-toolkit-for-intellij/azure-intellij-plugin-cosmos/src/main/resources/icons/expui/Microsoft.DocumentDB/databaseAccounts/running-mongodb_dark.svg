@@ -1,0 +1,9 @@
+<!-- Copyright © 2000–2024 JetBrains s.r.o. -->
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <path fill="#43454A" d="M9 10c0-1.24 1.04-2 2-2 .37 0 .73.11 1.05.3l1.44.9V3c0-.83-2.46-1.5-5.5-1.5s-5.5.67-5.5 1.5v10c0 .83 2.46 1.5 5.5 1.5.34 0 .68 0 1-.03V10z"/>
+  <path fill="none" stroke="#CED0D6" stroke-linecap="round" stroke-linejoin="round" d="M13.5 8.62V3m-11 0v10c0 .83 2.46 1.5 5.5 1.5h.5"/>
+  <path fill="none" stroke="#CED0D6" stroke-linejoin="round" d="M8 4.5c3.038 0 5.5-.672 5.5-1.5S11.038 1.5 8 1.5 2.5 2.172 2.5 3 4.962 4.5 8 4.5Z"/>
+  <path fill="none" stroke="#CED0D6" stroke-linecap="round" stroke-linejoin="round" d="M8 6.5S6.5 7.33 6.5 9 8 11.5 8 11.5m0 1v-1"/>
+  <path fill="#CED0D6" d="M8.97 10c0-.76.4-1.35.93-1.68-.32-1.49-1.63-2.23-1.69-2.26a.5.5 0 0 0-.24-.05V12c.08 0 .17-.02.24-.06.03-.02.38-.23.76-.61z"/>
+  <path fill="#57965C" fill-rule="evenodd" d="m15.53 11.65-4-2.5A1 1 0 0 0 11 9c-.48 0-1 .38-1 1v5c0 .62.52 1 1 1 .19 0 .36-.05.53-.15l4-2.5c.3-.19.47-.5.47-.85s-.17-.66-.47-.85" clip-rule="evenodd"/>
+</svg>

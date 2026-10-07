@@ -1,0 +1,22 @@
+{
+  "icons": {
+    "expui": {
+      "Microsoft.EventHub": {
+        "namespaces": {
+          "eventhubs": {
+            "default.svg": "icons/Microsoft.EventHub/namespaces/eventhubs/default.svg",
+            "running.svg": "icons/Microsoft.EventHub/namespaces/eventhubs/running.svg",
+            "stopped.svg": "icons/Microsoft.EventHub/namespaces/eventhubs/stopped.svg",
+            "unknown.svg": "icons/Microsoft.EventHub/namespaces/eventhubs/unknown.svg",
+            "unknown-senddisabled.svg": "icons/Microsoft.EventHub/namespaces/eventhubs/unknown-senddisabled.svg"
+          },
+          "default.svg": "icons/Microsoft.EventHub/namespaces/default.svg",
+          "running.svg": "icons/Microsoft.EventHub/namespaces/running.svg",
+          "stopped.svg": "icons/Microsoft.EventHub/namespaces/stopped.svg",
+          "unknown.svg": "icons/Microsoft.EventHub/namespaces/unknown.svg"
+        },
+        "default.svg": "icons/Microsoft.EventHub/default.svg"
+      }
+    }
+  }
+}

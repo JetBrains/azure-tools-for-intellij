@@ -1,0 +1,11 @@
+{
+  "icons": {
+    "expui": {
+      "Common": {
+        "sign_in.svg": "icons/Common/sign_in.svg",
+        "sign_out.svg": "icons/Common/sign_out.svg",
+        "variable.svg": "icons/Common/variable.svg"
+      }
+    }
+  }
+}

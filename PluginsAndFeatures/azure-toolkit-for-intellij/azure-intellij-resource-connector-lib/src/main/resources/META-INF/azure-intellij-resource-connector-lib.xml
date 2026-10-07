@@ -16,15 +16,15 @@
 <!--        <framework.detector implementation="com.microsoft.azure.toolkit.intellij.facet.AzureFacetType$AzureFacetDetector"/>-->
         <postStartupActivity implementation="com.microsoft.azure.toolkit.intellij.connector.dotazure.MigrateStartupActivity"/>
         <postStartupActivity implementation="com.microsoft.azure.toolkit.intellij.facet.AddFacetStartupActivity"/>
-        <toolWindow id="Resource Connections (Deprecated)" anchor="right" icon="/icons/Common/AzureResourceConnector.svg" canCloseContents="false"
-                    factoryClass="com.microsoft.azure.toolkit.intellij.connector.ResourceConnectionExplorer$ToolWindowFactory"/>
+<!--        <toolWindow id="Resource Connections (Deprecated)" anchor="right" icon="/icons/Common/AzureResourceConnector.svg" canCloseContents="false"-->
+<!--                    factoryClass="com.microsoft.azure.toolkit.intellij.connector.ResourceConnectionExplorer$ToolWindowFactory"/>-->
         <projectService
             serviceInterface="com.microsoft.azure.toolkit.intellij.connector.ConnectionManager"
             serviceImplementation="com.microsoft.azure.toolkit.intellij.connector.ConnectionManager$Impl" />
         <applicationService
             serviceInterface="com.microsoft.azure.toolkit.intellij.connector.ResourceManager"
             serviceImplementation="com.microsoft.azure.toolkit.intellij.connector.ResourceManager$Impl" />
-        <stepsBeforeRunProvider implementation="com.microsoft.azure.toolkit.intellij.connector.dotazure.DotEnvBeforeRunTaskProvider" id="ConnectionRunnerForConfigurationId"/>
+<!--        <stepsBeforeRunProvider implementation="com.microsoft.azure.toolkit.intellij.connector.dotazure.DotEnvBeforeRunTaskProvider" id="ConnectionRunnerForConfigurationId"/>-->
     </extensions>
     <projectListeners>
         <listener class="com.microsoft.azure.toolkit.intellij.connector.ResourceConnectionExplorer$ToolWindowOpener"
