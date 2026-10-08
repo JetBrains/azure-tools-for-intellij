@@ -76,6 +76,12 @@
                 description="Deploy selected module to Azure Functions"
                 icon="/icons/FunctionApp/Deploy.svg">
         </action>
+        <action id="Actions.FunctionAppContainersDeployAction"
+                class="com.microsoft.azure.toolkit.intellij.legacy.function.actions.DeployFunctionAppContainerAction"
+                text="Deploy to Azure Functions for Containers..."
+                description="Deploy image to Azure Functions"
+                icon="/icons/FunctionApp/Deploy.svg">
+        </action>
 
         <group id="AzurePopupGroup"
                text="Azure"
@@ -87,6 +93,7 @@
             <reference ref="Actions.WebAppDeployAction"/>
             <reference ref="Actions.WebAppContainersDeployAction"/>
             <reference ref="Actions.FunctionAppDeployAction"/>
+            <reference ref="Actions.FunctionAppContainersDeployAction"/>
         </group>
     </actions>
 

@@ -57,6 +57,7 @@
             <reference ref="Actions.WebAppDeployAction"/>
             <reference ref="Actions.WebAppContainersDeployAction"/>
             <reference ref="Actions.FunctionAppDeployAction"/>
+            <reference ref="Actions.FunctionAppContainersDeployAction"/>
             <separator/>
             <reference ref="AzureToolkit.CloudShell.Group"/>
             <separator/>
