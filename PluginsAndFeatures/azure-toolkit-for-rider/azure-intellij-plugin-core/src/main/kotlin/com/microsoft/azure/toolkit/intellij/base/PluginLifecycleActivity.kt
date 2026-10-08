@@ -31,6 +31,7 @@ import com.microsoft.azure.toolkit.lib.auth.AzureCloud
 import com.microsoft.azure.toolkit.lib.common.proxy.ProxyInfo
 import com.microsoft.azure.toolkit.lib.common.proxy.ProxyManager
 import com.microsoft.azure.toolkit.lib.common.task.AzureRxTaskManager
+import kotlinx.coroutines.CancellationException
 import java.nio.file.Path
 import java.util.*
 import javax.net.ssl.HttpsURLConnection
@@ -42,6 +43,7 @@ class PluginLifecycleActivity : ProjectActivity {
     }
 
     override suspend fun execute(project: Project) {
+        val initializationService = PluginInitializationService.getInstance(project)
         try {
             registerRxTaskManager()
             val azureJson = getFilePathForToolkitMachineStore(project).absolutePathString()
@@ -53,8 +55,12 @@ class PluginLifecycleActivity : ProjectActivity {
             initProxy()
             initializeConfig()
             restoreSignIn()
-            PluginInitializationService.getInstance(project).setInitialized()
+            initializationService.setInitialized()
+        } catch (e: CancellationException) {
+            initializationService.setInitializationFailed(e)
+            throw e
         } catch (t: Throwable) {
+            initializationService.setInitializationFailed(t)
             LOG.error(t)
         }
     }

@@ -17,6 +17,7 @@
 ### Fixed
 
 - Incorrect stack version for windows Azure Functions ([RIDER-132791](https://youtrack.jetbrains.com/issue/RIDER-132791))
+- Cannot invoke "IMachineStore.getProperty(String, String)" because "store" is null
 
 ## [4.8.4] - 2026-08-03
 
