@@ -37,13 +37,13 @@ fun PublishableProjectModel.getStackAndVersion(
             val stackName = if (isFunction) "DOTNET" else "DOTNETCORE"
             val stack =
                 if (dotnetVersion != null) RuntimeStack(stackName, dotnetVersion)
-                else RuntimeStack(stackName, "8.0")
+                else RuntimeStack(stackName, "10.0")
 
             return PublishableProjectRuntime(stack, dotnetVersion, null)
         } else {
             val version =
                 if (dotnetVersion != null) NetFrameworkVersion.fromString("v$dotnetVersion")
-                else NetFrameworkVersion.fromString("v8.0")
+                else NetFrameworkVersion.fromString("v10.0")
 
             return PublishableProjectRuntime(null, null, version)
         }
@@ -67,7 +67,7 @@ data class PublishableProjectRuntime(
     val frameworkVersion: NetFrameworkVersion?
 )
 
-@Suppress("UnstableApiUsage")
+@Suppress("JetBrainsInternalApiUsage")
 suspend fun PublishableProjectModel.getFunctionStack(
     project: Project,
     operatingSystem: OperatingSystem

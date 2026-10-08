@@ -68,7 +68,7 @@ class FunctionDeploymentState(
 
         checkCanceled()
 
-        val config = creatDotNetFunctionAppConfig(publishableProject, options)
+        val config = createDotNetFunctionAppConfig(publishableProject, options)
         val createTask = CreateDotNetFunctionAppTask(config, processHandlerMessenger)
         val deployTarget = createTask.execute()
 
@@ -121,7 +121,7 @@ class FunctionDeploymentState(
         }
     }
 
-    private suspend fun creatDotNetFunctionAppConfig(
+    private suspend fun createDotNetFunctionAppConfig(
         publishableProject: PublishableProjectModel,
         options: FunctionDeploymentConfigurationOptions
     ) = DotNetFunctionAppConfig().apply {

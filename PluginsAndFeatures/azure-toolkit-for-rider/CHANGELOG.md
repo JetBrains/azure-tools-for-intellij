@@ -14,6 +14,10 @@
 - Sync plugin with upstream `release-v3.97.2`.
 - Sync plugin with upstream `release-v3.97.1`.
 
+### Fixed
+
+- Incorrect stack version for windows Azure Functions ([RIDER-132791](https://youtrack.jetbrains.com/issue/RIDER-132791))
+
 ## [4.8.4] - 2026-08-03
 
 ### Changed

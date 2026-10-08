@@ -121,11 +121,13 @@ class DotNetFunctionAppDraft : FunctionApp,
 
         OperatingSystem.WINDOWS -> {
             val functionStack = requireNotNull(runtime.functionStack) { "Unable to configure function runtime" }
+            val frameworkVersion = requireNotNull(runtime.frameworkVersion) { "Unable to configure function runtime" }
             blank
                 .withExistingAppServicePlan(plan.remote)
                 .withExistingResourceGroup(resourceGroupName)
                 .withRuntime(functionStack.runtime())
                 .withRuntimeVersion(functionStack.version())
+                .apply { withNetFrameworkVersion(frameworkVersion) }
         }
 
         OperatingSystem.DOCKER -> throw AzureToolkitRuntimeException("Unsupported operating system $os")
