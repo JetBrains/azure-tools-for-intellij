@@ -19,44 +19,40 @@ import com.microsoft.azure.toolkit.intellij.legacy.webapp.runner.webApp.WebAppCo
 import com.microsoft.azure.toolkit.lib.appservice.webapp.WebApp
 import com.microsoft.azure.toolkit.lib.common.task.AzureTaskManager
 
-class DeployWebAppAction : AnAction() {
-    companion object {
-        private val configType = ConfigurationTypeUtil.findConfigurationType(WebAppConfigurationType::class.java)
+internal class DeployWebAppAction : AnAction() {
+    fun deploy(webApp: WebApp?, project: Project?) {
+        if (webApp == null || project == null) return
+        val settings = getOrCreateRunConfigurationSettings(project, webApp)
+        runConfiguration(project, settings)
+    }
 
-        fun deploy(webApp: WebApp?, project: Project?) {
-            if (webApp == null || project == null) return
-            val settings = getOrCreateRunConfigurationSettings(project, webApp)
-            runConfiguration(project, settings)
+    private fun deploy(project: Project) {
+        val settings = getOrCreateRunConfigurationSettings(project, null)
+        runConfiguration(project, settings)
+    }
+
+    private fun getOrCreateRunConfigurationSettings(project: Project, webApp: WebApp?): RunnerAndConfigurationSettings {
+        val manager = RunManagerEx.getInstanceEx(project)
+        val name = webApp?.name ?: ""
+        val type = ConfigurationTypeUtil.findConfigurationType(WebAppConfigurationType::class.java)
+        val runConfigurationName = "${type.name}: ${project.name} $name"
+        val settings = manager.findConfigurationByName(runConfigurationName)
+                ?: manager.createConfiguration(runConfigurationName, type)
+        val runConfiguration = settings.configuration
+        if (runConfiguration is WebAppConfiguration && webApp != null) {
+            runConfiguration.setWebApp(webApp)
         }
+        return settings
+    }
 
-        private fun deploy(project: Project) {
-            val settings = getOrCreateRunConfigurationSettings(project, null)
-            runConfiguration(project, settings)
-        }
-
-        private fun getOrCreateRunConfigurationSettings(project: Project, webApp: WebApp?): RunnerAndConfigurationSettings {
-            val manager = RunManagerEx.getInstanceEx(project)
-            val name = webApp?.name ?: ""
-            val type = configType
-            val runConfigurationName = "${type.name}: ${project.name} $name"
-            val settings = manager.findConfigurationByName(runConfigurationName)
-                    ?: manager.createConfiguration(runConfigurationName, type)
-            val runConfiguration = settings.configuration
-            if (runConfiguration is WebAppConfiguration && webApp != null) {
-                runConfiguration.setWebApp(webApp)
-            }
-            return settings
-        }
-
-        private fun runConfiguration(project: Project, settings: RunnerAndConfigurationSettings) {
-            val manager = RunManagerEx.getInstanceEx(project)
-            AzureTaskManager.getInstance().runLater {
-                if (RunDialog.editConfiguration(project, settings, "Deploy To Web App", DefaultRunExecutor.getRunExecutorInstance())) {
-                    settings.storeInLocalWorkspace()
-                    manager.addConfiguration(settings)
-                    manager.selectedConfiguration = settings
-                    ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance())
-                }
+    private fun runConfiguration(project: Project, settings: RunnerAndConfigurationSettings) {
+        val manager = RunManagerEx.getInstanceEx(project)
+        AzureTaskManager.getInstance().runLater {
+            if (RunDialog.editConfiguration(project, settings, "Deploy To Web App", DefaultRunExecutor.getRunExecutorInstance())) {
+                settings.storeInLocalWorkspace()
+                manager.addConfiguration(settings)
+                manager.selectedConfiguration = settings
+                ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance())
             }
         }
     }

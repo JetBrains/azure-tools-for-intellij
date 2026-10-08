@@ -1,8 +1,8 @@
 /*
- * Copyright 2018-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
+ * Copyright 2018-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
  */
 
-package com.microsoft.azure.toolkit.intellij.legacy.webapp.action
+package com.microsoft.azure.toolkit.intellij.legacy.function.actions
 
 import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.RunManagerEx
@@ -14,10 +14,10 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.microsoft.azure.toolkit.intellij.common.auth.AzureLoginHelper
-import com.microsoft.azure.toolkit.intellij.legacy.webapp.runner.webAppContainer.WebAppContainerConfigurationType
+import com.microsoft.azure.toolkit.intellij.legacy.function.runner.functionAppContainer.FunctionAppContainerConfigurationType
 import com.microsoft.azure.toolkit.lib.common.task.AzureTaskManager
 
-internal class DeployWebAppContainerAction : AnAction() {
+internal class DeployFunctionAppContainerAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         AzureTaskManager.getInstance().runLater {
@@ -33,16 +33,16 @@ internal class DeployWebAppContainerAction : AnAction() {
     private fun getOrCreateRunConfigurationSettings(project: Project): RunnerAndConfigurationSettings {
         val manager = RunManagerEx.getInstanceEx(project)
         val configType =
-            ConfigurationTypeUtil.findConfigurationType(WebAppContainerConfigurationType::class.java)
+            ConfigurationTypeUtil.findConfigurationType(FunctionAppContainerConfigurationType::class.java)
         val runConfigurationName = "${configType.name}: ${project.name}"
         return manager.findConfigurationByName(runConfigurationName)
-                ?: manager.createConfiguration(runConfigurationName, configType)
+            ?: manager.createConfiguration(runConfigurationName, configType)
     }
 
     private fun runConfiguration(project: Project, settings: RunnerAndConfigurationSettings) {
         val manager = RunManagerEx.getInstanceEx(project)
         AzureTaskManager.getInstance().runLater {
-            if (RunDialog.editConfiguration(project, settings, "Deploy Image to Web App", DefaultRunExecutor.getRunExecutorInstance())) {
+            if (RunDialog.editConfiguration(project, settings, "Deploy Image to Function App", DefaultRunExecutor.getRunExecutorInstance())) {
                 settings.storeInLocalWorkspace()
                 manager.addConfiguration(settings)
                 manager.selectedConfiguration = settings

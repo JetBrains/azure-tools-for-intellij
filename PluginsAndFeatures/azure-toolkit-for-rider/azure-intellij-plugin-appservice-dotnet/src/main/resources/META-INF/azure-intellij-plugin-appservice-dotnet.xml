@@ -2,7 +2,6 @@
   ~ Copyright 2018-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
   -->
 
-<!--suppress PluginXmlValidity -->
 <idea-plugin>
     <dependencies>
         <plugin id="com.intellij.modules.rider"/>
@@ -49,6 +48,7 @@
 
         <notificationGroup id="Azure AppServices" displayType="BALLOON" isLogByDefault="true"/>
 
+        <!--suppress JetBrainsInternalExtensionsUsage -->
         <xdebugger.dialog.process.view.provider
                 implementation="com.microsoft.azure.toolkit.intellij.debugger.view.AttachToAzureAppServiceProcessViewProvider"/>
         <xdebugger.attachDebuggerProvider
@@ -60,19 +60,41 @@
     <actions>
         <action id="Actions.WebAppDeployAction"
                 class="com.microsoft.azure.toolkit.intellij.legacy.webapp.action.DeployWebAppAction"
-                text="Deploy to Azure Web Apps..." description="Deploy selected module to Azure WebApp"
+                text="Deploy to Azure Web Apps..."
+                description="Deploy selected module to Azure WebApp"
                 icon="/icons/WebApp/Deploy.svg">
         </action>
         <action id="Actions.WebAppContainersDeployAction"
                 class="com.microsoft.azure.toolkit.intellij.legacy.webapp.action.DeployWebAppContainerAction"
-                text="Deploy to Azure Web Apps for Containers..." description="Deploy image to Azure WebApp"
+                text="Deploy to Azure Web Apps for Containers..."
+                description="Deploy image to Azure WebApp"
                 icon="/icons/WebApp/Deploy.svg">
         </action>
         <action id="Actions.FunctionAppDeployAction"
                 class="com.microsoft.azure.toolkit.intellij.legacy.function.actions.DeployFunctionAppAction"
-                text="Deploy to Azure Functions..." description="Deploy selected module to Azure Functions"
+                text="Deploy to Azure Functions..."
+                description="Deploy selected module to Azure Functions"
                 icon="/icons/FunctionApp/Deploy.svg">
         </action>
+        <action id="Actions.FunctionAppContainersDeployAction"
+                class="com.microsoft.azure.toolkit.intellij.legacy.function.actions.DeployFunctionAppContainerAction"
+                text="Deploy to Azure Functions for Containers..."
+                description="Deploy image to Azure Functions"
+                icon="/icons/FunctionApp/Deploy.svg">
+        </action>
+
+        <group id="AzurePopupGroup"
+               text="Azure"
+               description="Azure"
+               icon="/icons/Common/Azure.svg"
+               popup="true"
+               searchable="false">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <reference ref="Actions.WebAppDeployAction"/>
+            <reference ref="Actions.WebAppContainersDeployAction"/>
+            <reference ref="Actions.FunctionAppDeployAction"/>
+            <reference ref="Actions.FunctionAppContainersDeployAction"/>
+        </group>
     </actions>
 
     <projectListeners>

@@ -13,6 +13,7 @@ import com.microsoft.azure.toolkit.ide.appservice.function.FunctionAppActionsCon
 import com.microsoft.azure.toolkit.ide.appservice.webapp.WebAppActionsContributor.WEBAPP_ACTIONS
 import com.microsoft.azure.toolkit.ide.common.IActionsContributor
 import com.microsoft.azure.toolkit.ide.common.action.ResourceCommonActionsContributor
+import com.microsoft.azure.toolkit.ide.common.icon.AzureIcon
 import com.microsoft.azure.toolkit.ide.common.icon.AzureIcons
 import com.microsoft.azure.toolkit.ide.containerregistry.ContainerRegistryActionsContributor
 import com.microsoft.azure.toolkit.intellij.appservice.actions.AppServiceFileAction
@@ -80,7 +81,7 @@ class AppServiceRiderActionsContributor : IActionsContributor {
 
         Action(remoteDebuggingActionId)
             .withLabel("Attach Debugger")
-            .withIcon(AzureIcons.Action.ATTACH_DEBUGGER.iconPath)
+            .withIcon(AzureIcon.getIconPathWithModifier(AzureIcons.Action.ATTACH_DEBUGGER))
             .withIdParam { appService: AppServiceAppBase<*, *, *> -> appService.name }
             .visibleWhen { s: Any? -> s is AppServiceAppBase<*, *, *> }
             .enableWhen { appService: AppServiceAppBase<*, *, *> -> appService.canBeDebugged() }
@@ -99,11 +100,11 @@ class AppServiceRiderActionsContributor : IActionsContributor {
         am.registerHandler(
             ResourceCommonActionsContributor.DEPLOY,
             { r, _ -> r is WebApp },
-            { c, e: AnActionEvent -> DeployWebAppAction.deploy(c as? WebApp, e.project) })
+            { c, e: AnActionEvent -> DeployWebAppAction().deploy(c as? WebApp, e.project) })
         am.registerHandler(
             ResourceCommonActionsContributor.DEPLOY,
             { r, _ -> r is FunctionApp },
-            { c, e: AnActionEvent -> DeployFunctionAppAction.deploy(c as? FunctionApp, e.project) })
+            { c, e: AnActionEvent -> DeployFunctionAppAction().deploy(c as? FunctionApp, e.project) })
         am.registerHandler(
             ResourceCommonActionsContributor.SHOW_PROPERTIES,
             { r, _ -> r is WebApp },

@@ -43,6 +43,28 @@
     <xi:include href="/META-INF/azure-intellij-plugin-cosmos-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-bicep.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
+    <actions>
+        <group id="AzureToolkit.AzureActionGroup"
+               class="com.intellij.openapi.actionSystem.DefaultActionGroup"
+               text="Azure"
+               description="Contains Azure tools plugin actions"
+               icon="/icons/Common/Azure.svg"
+               searchable="false"
+               popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+            <reference ref="AzureToolkit.SelectSubscriptions"/>
+            <separator/>
+            <reference ref="Actions.WebAppDeployAction"/>
+            <reference ref="Actions.WebAppContainersDeployAction"/>
+            <reference ref="Actions.FunctionAppDeployAction"/>
+            <reference ref="Actions.FunctionAppContainersDeployAction"/>
+            <separator/>
+            <reference ref="AzureToolkit.CloudShell.Group"/>
+            <separator/>
+            <reference ref="AzureToolkit.AzureSignIn"/>
+        </group>
+    </actions>
+
     <resource-bundle>messages.RiderAzureMessages</resource-bundle>
 
     <depends>com.intellij.modules.rider</depends>
