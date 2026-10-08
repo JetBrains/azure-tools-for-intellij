@@ -99,11 +99,11 @@ class AppServiceRiderActionsContributor : IActionsContributor {
         am.registerHandler(
             ResourceCommonActionsContributor.DEPLOY,
             { r, _ -> r is WebApp },
-            { c, e: AnActionEvent -> DeployWebAppAction.deploy(c as? WebApp, e.project) })
+            { c, e: AnActionEvent -> DeployWebAppAction().deploy(c as? WebApp, e.project) })
         am.registerHandler(
             ResourceCommonActionsContributor.DEPLOY,
             { r, _ -> r is FunctionApp },
-            { c, e: AnActionEvent -> DeployFunctionAppAction.deploy(c as? FunctionApp, e.project) })
+            { c, e: AnActionEvent -> DeployFunctionAppAction().deploy(c as? FunctionApp, e.project) })
         am.registerHandler(
             ResourceCommonActionsContributor.SHOW_PROPERTIES,
             { r, _ -> r is WebApp },
