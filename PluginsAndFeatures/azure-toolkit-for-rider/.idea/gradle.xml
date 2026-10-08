@@ -32,6 +32,7 @@
             <option value="$PROJECT_DIR$/azure-intellij-plugin-keyvault-dotnet" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-lib-dotnet" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-redis-dotnet" />
+            <option value="$PROJECT_DIR$/azure-intellij-plugin-service-explorer-dotnet" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-storage-dotnet" />
           </set>
         </option>

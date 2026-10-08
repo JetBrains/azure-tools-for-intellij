@@ -1,0 +1,14 @@
+<!--
+  ~ Copyright 2018-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
+  -->
+
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow anchor="left"
+                    id="Azure Explorer"
+                    canCloseContents="false"
+                    icon="/icons/Toolwindows/AzureToolWindow.svg"
+                    doNotActivateOnStart="true"
+                    factoryClass="com.microsoft.azure.toolkit.intellij.explorer.RiderAzureExplorerToolWindowFactory"/>
+    </extensions>
+</idea-plugin>

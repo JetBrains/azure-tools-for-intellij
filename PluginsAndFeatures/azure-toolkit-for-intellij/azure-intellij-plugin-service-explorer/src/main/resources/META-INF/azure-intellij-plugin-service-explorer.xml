@@ -6,12 +6,12 @@
         <actions implementation="com.microsoft.azure.toolkit.intellij.explorer.action.AzureExplorerActionsContributor"/>
     </extensions>
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow anchor="left"
-                    id="Azure Explorer"
-                    canCloseContents="false"
-                    icon="/icons/Toolwindows/AzureToolWindow.svg"
-                    doNotActivateOnStart="true"
-                    factoryClass="com.microsoft.azure.toolkit.intellij.explorer.AzureExplorer$ToolWindowFactory"/>
+<!--        <toolWindow anchor="left"-->
+<!--                    id="Azure Explorer"-->
+<!--                    canCloseContents="false"-->
+<!--                    icon="/icons/Toolwindows/AzureToolWindow.svg"-->
+<!--                    doNotActivateOnStart="true"-->
+<!--                    factoryClass="com.microsoft.azure.toolkit.intellij.explorer.AzureExplorer$ToolWindowFactory"/>-->
     </extensions>
     <actions>
         <action class="com.microsoft.azure.toolkit.intellij.explorer.action.AzureExplorerOpenAction" id="Actions.AzureExplorerOpenAction"
