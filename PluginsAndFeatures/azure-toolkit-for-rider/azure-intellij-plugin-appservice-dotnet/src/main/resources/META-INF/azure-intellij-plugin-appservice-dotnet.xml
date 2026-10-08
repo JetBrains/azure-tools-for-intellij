@@ -2,7 +2,6 @@
   ~ Copyright 2018-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
   -->
 
-<!--suppress PluginXmlValidity -->
 <idea-plugin>
     <dependencies>
         <plugin id="com.intellij.modules.rider"/>
@@ -49,6 +48,7 @@
 
         <notificationGroup id="Azure AppServices" displayType="BALLOON" isLogByDefault="true"/>
 
+        <!--suppress JetBrainsInternalExtensionsUsage -->
         <xdebugger.dialog.process.view.provider
                 implementation="com.microsoft.azure.toolkit.intellij.debugger.view.AttachToAzureAppServiceProcessViewProvider"/>
         <xdebugger.attachDebuggerProvider
