@@ -23,37 +23,4 @@
     <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
         <actions implementation="com.microsoft.azure.toolkit.intellij.settings.IntellijCommonActionsContributor"/>
     </extensions>
-
-    <actions>
-        <group id="AzurePopupGroup"
-               text="Azure"
-               description="Azure"
-               icon="/icons/Common/Azure.svg"
-               popup="true"
-               searchable="false">
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
-            <reference ref="Actions.WebAppDeployAction"/>
-            <reference ref="Actions.WebAppContainersDeployAction"/>
-            <reference ref="Actions.FunctionAppDeployAction"/>
-        </group>
-
-        <group id="AzureToolkit.AzureActionGroup"
-               class="com.intellij.openapi.actionSystem.DefaultActionGroup"
-               text="Azure"
-               description="Contains Azure tools plugin actions"
-               icon="/icons/Common/Azure.svg"
-               searchable="false"
-               popup="true">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
-            <reference ref="AzureToolkit.SelectSubscriptions"/>
-            <separator/>
-            <reference ref="Actions.WebAppDeployAction"/>
-            <reference ref="Actions.WebAppContainersDeployAction"/>
-            <reference ref="Actions.FunctionAppDeployAction"/>
-            <separator/>
-            <reference ref="AzureToolkit.CloudShell.Group"/>
-            <separator/>
-            <reference ref="AzureToolkit.AzureSignIn"/>
-        </group>
-    </actions>
 </idea-plugin>
