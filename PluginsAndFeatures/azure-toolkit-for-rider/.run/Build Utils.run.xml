@@ -28,6 +28,7 @@
               <option value="clean" />
               <option value="install" />
               <option value="-DskipTests" />
+              <option value="-Dcheckstyle.skip=true" />
             </list>
           </option>
           <option name="multimoduleDir" />
