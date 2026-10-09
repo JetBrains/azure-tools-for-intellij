@@ -12,24 +12,24 @@ import com.intellij.openapi.module.ModuleType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class FunctionsFacetType extends FacetType<FunctionsFacet, FunctionsFacetConfiguration> {
-    FunctionsFacetType() {
-        super(FunctionsFacet.FACET_TYPE_ID, "AzureFunctions", "AzureFunctions");
-    }
-
-    @Override
-    public FunctionsFacetConfiguration createDefaultConfiguration() {
-        return null;
-    }
-
-    @Override
-    public FunctionsFacet createFacet(@NotNull Module module, String name,
-        @NotNull FunctionsFacetConfiguration configuration, @Nullable Facet underlyingFacet) {
-        return null;
-    }
-
-    @Override
-    public boolean isSuitableModuleType(ModuleType moduleType) {
-        return false;
-    }
-}
+//public class FunctionsFacetType extends FacetType<FunctionsFacet, FunctionsFacetConfiguration> {
+//    FunctionsFacetType() {
+//        super(FunctionsFacet.FACET_TYPE_ID, "AzureFunctions", "AzureFunctions");
+//    }
+//
+//    @Override
+//    public FunctionsFacetConfiguration createDefaultConfiguration() {
+//        return null;
+//    }
+//
+//    @Override
+//    public FunctionsFacet createFacet(@NotNull Module module, String name,
+//        @NotNull FunctionsFacetConfiguration configuration, @Nullable Facet underlyingFacet) {
+//        return null;
+//    }
+//
+//    @Override
+//    public boolean isSuitableModuleType(ModuleType moduleType) {
+//        return false;
+//    }
+//}

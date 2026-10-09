@@ -1,33 +1,10 @@
 plugins {
-    alias(libs.plugins.kotlin)
+    id("azure.kotlin-module")
     alias(libs.plugins.serialization)
-    id("org.jetbrains.intellij.platform.module")
-    id("java")
-}
-
-repositories {
-    mavenCentral()
-    mavenLocal()
-
-    intellijPlatform {
-        defaultRepositories()
-        jetbrainsRuntime()
-    }
-}
-
-val platformVersion: String by extra
-
-kotlin {
-    jvmToolchain(25)
 }
 
 dependencies {
     intellijPlatform {
-        rider(platformVersion) {
-            useInstaller = false
-            useCache = true
-        }
-        jetbrainsRuntime()
         bundledModules("intellij.rider.rdclient.dotnet", "intellij.rider.ssh")
         bundledPlugins("com.jetbrains.restClient", "Docker", "rider.intellij.plugin.appender")
     }

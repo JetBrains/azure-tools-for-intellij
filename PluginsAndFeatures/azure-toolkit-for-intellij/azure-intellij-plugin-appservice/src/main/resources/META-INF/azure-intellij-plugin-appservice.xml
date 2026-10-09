@@ -8,10 +8,10 @@
         <actions implementation="com.microsoft.azure.toolkit.ide.appservice.webapp.WebAppActionsContributor"/>
         <actions implementation="com.microsoft.azure.toolkit.ide.appservice.file.AppServiceFileActionsContributor"/>
         <actions implementation="com.microsoft.azure.toolkit.ide.appservice.function.FunctionAppActionsContributor"/>
-        <guidanceInputProvider implementation="com.microsoft.azure.toolkit.intellij.appservice.AppServiceInputProvider"/>
+<!--        <guidanceInputProvider implementation="com.microsoft.azure.toolkit.intellij.appservice.AppServiceInputProvider"/>-->
     </extensions>
     <extensions defaultExtensionNs="com.intellij">
-        <facetType implementation="com.microsoft.azure.toolkit.intellij.legacy.function.wizard.facet.FunctionsFacetType"/>
+<!--        <facetType implementation="com.microsoft.azure.toolkit.intellij.legacy.function.wizard.facet.FunctionsFacetType"/>-->
         <iconMapper mappingFile="azure-intellij-plugin-appservice-IconMappings.json"/>
     </extensions>
 </idea-plugin>

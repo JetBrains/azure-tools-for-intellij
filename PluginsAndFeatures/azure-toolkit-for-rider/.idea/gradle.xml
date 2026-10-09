@@ -4,6 +4,17 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/build-logic" name="azure-build-logic">
+                <projects>
+                  <project path="$PROJECT_DIR$/build-logic" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
@@ -34,6 +45,7 @@
             <option value="$PROJECT_DIR$/azure-intellij-plugin-redis-dotnet" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-service-explorer-dotnet" />
             <option value="$PROJECT_DIR$/azure-intellij-plugin-storage-dotnet" />
+            <option value="$PROJECT_DIR$/build-logic" />
           </set>
         </option>
       </GradleProjectSettings>

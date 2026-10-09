@@ -1,32 +1,10 @@
 plugins {
-    alias(libs.plugins.kotlin)
+    id("azure.kotlin-module")
     alias(libs.plugins.serialization)
-    id("org.jetbrains.intellij.platform.module")
-}
-
-repositories {
-    mavenCentral()
-    mavenLocal()
-
-    intellijPlatform {
-        defaultRepositories()
-        jetbrainsRuntime()
-    }
-}
-
-val platformVersion: String by extra
-
-kotlin {
-    jvmToolchain(25)
 }
 
 dependencies {
     intellijPlatform {
-        rider(platformVersion) {
-            useInstaller = false
-            useCache = true
-        }
-        jetbrainsRuntime()
         bundledPlugins("org.jetbrains.plugins.terminal")
     }
 
