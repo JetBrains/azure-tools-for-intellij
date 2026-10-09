@@ -5,6 +5,11 @@
         <notificationGroup id="Azure CloudShell" displayType="BALLOON" isLogByDefault="true"/>
     </extensions>
 
+    <extensions defaultExtensionNs="org.jetbrains.plugins.terminal">
+        <openPredefinedTerminalProvider
+                implementation="com.microsoft.azure.toolkit.intellij.cloudshell.actions.AzureCloudShellTerminalActionProvider"/>
+    </extensions>
+
     <actions>
         <group id="AzureToolkit.CloudShell.Group"
                class="com.intellij.openapi.actionSystem.DefaultActionGroup"
