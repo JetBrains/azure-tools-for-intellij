@@ -31,7 +31,7 @@ internal data object BicepLS : LsInfrastructure {
         get() = BicepBundle.message("progress.title.load.ls")
 
     override fun findExecutablePath(): Path {
-        return PLUGIN_TMP_PATH.resolve(extractedDirectoryName).resolve(executableName)
+        return BicepInfrastructureLoader.getInstance().bicepTmpPath.resolve(extractedDirectoryName).resolve(executableName)
     }
 
     override fun isValid(): Boolean {
@@ -64,7 +64,7 @@ internal data object BicepLS : LsInfrastructure {
     }
 
     private fun runtimeConfigPath(): Path =
-        PLUGIN_TMP_PATH.resolve(extractedDirectoryName).resolve(RUNTIME_CONFIG_FILENAME)
+        BicepInfrastructureLoader.getInstance().bicepTmpPath.resolve(extractedDirectoryName).resolve(RUNTIME_CONFIG_FILENAME)
 
     private fun createDefaultRuntimeConfig(path: Path) {
         val template = """
