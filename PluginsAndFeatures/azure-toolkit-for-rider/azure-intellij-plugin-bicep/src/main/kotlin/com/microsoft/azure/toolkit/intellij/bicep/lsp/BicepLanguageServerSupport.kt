@@ -5,7 +5,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.lsp.api.LspServerManager
+import com.intellij.platform.lsp.api.LspClientManager
 import com.jetbrains.rider.environment.RiderEnvironment
 import com.microsoft.azure.toolkit.intellij.bicep.BicepBundle.BICEP_EXTENSION
 import kotlin.io.path.absolutePathString
@@ -25,7 +25,7 @@ internal fun getComputedLsValidityOrScheduleValidation(project: Project): LsVali
 }
 
 internal fun forceRunLanguageServer(project: Project) {
-    LspServerManager.getInstance(project).startServersIfNeeded(BicepLspSupportProvider::class.java)
+    LspClientManager.getInstance(project).startClientsIfNeeded(BicepLspSupportProvider::class.java)
 }
 
 internal fun findActiveBicepFileEditor(project: Project): Editor? {

@@ -7,7 +7,7 @@
               implementationClass="com.microsoft.azure.toolkit.intellij.bicep.BicepFileType"
               extensions="bicep"/>
     <fileTypeUsageSchemaDescriptor schema="Bicep" implementationClass="com.microsoft.azure.toolkit.intellij.bicep.BicepFileTypeSchemaRecogniser"/>
-    <platform.lsp.serverSupportProvider implementation="com.microsoft.azure.toolkit.intellij.bicep.lsp.BicepLspSupportProvider"/>
+    <platform.lsp.integrationProvider implementation="com.microsoft.azure.toolkit.intellij.bicep.lsp.BicepLspSupportProvider"/>
     <projectConfigurable id="azure-bicep"
                          groupId="language"
                          bundle="messages.BicepBundle"

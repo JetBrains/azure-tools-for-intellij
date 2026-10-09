@@ -7,22 +7,22 @@ package com.microsoft.azure.toolkit.intellij.bicep.lsp
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.lsp.api.LspServer
-import com.intellij.platform.lsp.api.LspServerSupportProvider
-import com.intellij.platform.lsp.api.lsWidget.LspServerWidgetItem
+import com.intellij.platform.lsp.api.LspClient
+import com.intellij.platform.lsp.api.LspIntegrationProvider
+import com.intellij.platform.lsp.api.lsWidget.LspClientWidgetItem
 import com.microsoft.azure.toolkit.intellij.bicep.settings.BicepConfigurable
 
-internal class BicepLspSupportProvider : LspServerSupportProvider {
+internal class BicepLspSupportProvider : LspIntegrationProvider {
     override fun fileOpened(
         project: Project,
         file: VirtualFile,
-        serverStarter: LspServerSupportProvider.LspServerStarter
+        clientStarter: LspIntegrationProvider.LspClientStarter
     ) {
         if (isLsAvailableFor(file, project)) {
-            serverStarter.ensureServerStarted(BicepLspDescriptor(project))
+            clientStarter.ensureClientStarted(BicepLspDescriptor(project))
         }
     }
 
-    override fun createLspServerWidgetItem(lspServer: LspServer, currentFile: VirtualFile?): LspServerWidgetItem =
-        LspServerWidgetItem(lspServer, currentFile, AllIcons.Providers.Azure, BicepConfigurable::class.java)
+    override fun createWidgetItem(lspClient: LspClient, currentFile: VirtualFile?): LspClientWidgetItem =
+        LspClientWidgetItem(lspClient, currentFile, AllIcons.Providers.Azure, BicepConfigurable::class.java)
 }
