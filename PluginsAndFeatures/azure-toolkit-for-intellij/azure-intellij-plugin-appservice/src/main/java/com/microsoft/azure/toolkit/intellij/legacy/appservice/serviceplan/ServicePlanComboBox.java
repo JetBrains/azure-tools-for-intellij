@@ -196,6 +196,10 @@ public class ServicePlanComboBox extends AzureComboBox<AppServicePlan> {
             .withHandler(plan -> {
                 plan.setRegion(region);
                 plan.setOperatingSystem(os);
+                // The dialog can update the selected draft in place; reselect it to notify listeners.
+                if (Objects.equals(plan, this.getValue())) {
+                    this.setValue((AppServicePlan) null);
+                }
                 this.setValue(plan);
             }));
         dialog.show();

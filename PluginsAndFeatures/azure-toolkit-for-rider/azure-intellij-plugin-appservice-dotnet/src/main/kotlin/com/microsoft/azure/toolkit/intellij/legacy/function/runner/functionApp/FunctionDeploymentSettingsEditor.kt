@@ -10,9 +10,9 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.MutableCollectionComboBoxModel
-import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.dsl.builder.Align
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.listCellRenderer.textListCellRenderer
 import com.intellij.util.ui.launchOnShow
 import com.jetbrains.rider.model.PublishableProjectModel
 import com.jetbrains.rider.run.configurations.publishing.PublishRuntimeSettingsCoreHelper.ConfigurationAndPlatform
@@ -26,7 +26,9 @@ class FunctionDeploymentSettingsEditor(
     private val viewModel: FunctionDeploymentSettingsEditorViewModel
 ) : SettingsEditor<FunctionDeploymentConfiguration>() {
 
-    private val functionAppTreePanel = FunctionAppDeploymentTreePanel(project, viewModel).also {
+    private val functionAppTreePanel = FunctionAppDeploymentTreePanel(viewModel) {
+        FunctionAppCreationDialog(project, viewModel.isNetFramework.value)
+    }.also {
         Disposer.register(this, it)
     }
 
@@ -34,7 +36,7 @@ class FunctionDeploymentSettingsEditor(
         row("Project:") {
             comboBox(
                 MutableCollectionComboBoxModel<PublishableProjectModel>(),
-                renderer = SimpleListCellRenderer.create("") { it.projectName }
+                renderer = textListCellRenderer("") { it.projectName }
             )
                 .bindItems(viewModel.publishableProjects)
                 .bindSelectedItem(viewModel.selectedProject)
@@ -43,7 +45,7 @@ class FunctionDeploymentSettingsEditor(
         row("Configuration:") {
             comboBox(
                 MutableCollectionComboBoxModel<ConfigurationAndPlatform>(),
-                renderer = SimpleListCellRenderer.create("") { "${it.configuration} | ${it.platform}" }
+                renderer = textListCellRenderer("") { "${it.configuration} | ${it.platform}" }
             )
                 .bindItems(viewModel.configurationAndPlatforms)
                 .bindSelectedItem(viewModel.selectedConfigurationAndPlatform)

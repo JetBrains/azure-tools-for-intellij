@@ -4,24 +4,28 @@
 
 package com.microsoft.azure.toolkit.intellij.legacy.function.runner.functionApp
 
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDeploymentModel
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDeploymentTreePanel
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDeploymentViewModel
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceNode
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.FunctionAppNode
+import com.microsoft.azure.toolkit.intellij.common.ConfigDialog
 import com.microsoft.azure.toolkit.lib.appservice.config.FunctionAppConfig
 import com.microsoft.azure.toolkit.lib.common.action.Action
 
-internal class FunctionAppDeploymentTreePanel(private val project: Project, vm: AppServiceDeploymentViewModel<FunctionAppConfig>) :
+internal class FunctionAppDeploymentTreePanel(
+    vm: AppServiceDeploymentViewModel<FunctionAppConfig>,
+    createDialog: () -> ConfigDialog<FunctionAppConfig>
+) :
     AppServiceDeploymentTreePanel<FunctionAppConfig>(
         vm,
         "Search function apps...",
         "No function apps found",
         { vm, panel ->
-            val dialog = FunctionAppCreationDialog(project, vm.isNetFramework.value)
-            Disposer.register(panel, dialog)
+            val dialog = createDialog()
+            Disposer.register(panel, dialog as? Disposable ?: dialog.disposable)
             dialog.setOkAction(
                 Action<FunctionAppConfig>(Action.Id.of("user/function.create_app.app"))
                     .withLabel("Create")

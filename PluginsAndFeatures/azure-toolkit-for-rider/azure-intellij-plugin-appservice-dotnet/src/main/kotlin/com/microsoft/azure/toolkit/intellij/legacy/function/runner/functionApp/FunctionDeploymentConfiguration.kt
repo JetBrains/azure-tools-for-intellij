@@ -12,10 +12,12 @@ import com.intellij.execution.configurations.LocatableConfigurationBase
 import com.intellij.execution.configurations.RuntimeConfigurationError
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.platform.util.coroutines.childScope
 import com.microsoft.azure.toolkit.intellij.AppServiceProjectService
 import com.microsoft.azure.toolkit.intellij.legacy.utils.isAccountSignedIn
 import com.microsoft.azure.toolkit.lib.appservice.function.FunctionAppBase
+import kotlinx.coroutines.cancel
 
 class FunctionDeploymentConfiguration(private val project: Project, factory: ConfigurationFactory, name: String?) :
     LocatableConfigurationBase<FunctionDeploymentConfigurationOptions>(project, factory, name) {
@@ -41,7 +43,9 @@ class FunctionDeploymentConfiguration(private val project: Project, factory: Con
         val configurationScope = AppServiceProjectService.getInstance(project).scope
             .childScope("FunctionDeploymentConfiguration")
         val viewModel = FunctionDeploymentSettingsEditorViewModel(project, configurationScope)
-        return FunctionDeploymentSettingsEditor(project, viewModel)
+        return FunctionDeploymentSettingsEditor(project, viewModel).also {
+            Disposer.register(it) { configurationScope.cancel() }
+        }
     }
 
     override fun checkConfiguration() {

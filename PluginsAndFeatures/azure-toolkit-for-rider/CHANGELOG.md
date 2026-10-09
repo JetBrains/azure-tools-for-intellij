@@ -6,6 +6,7 @@
 
 ### Changed
 
+- Change the default pricing tier for Azure Functions to Flex Consumption.
 - Sync plugin with upstream `release-3.97.7`.
 - Sync plugin with upstream `release-3.97.6`.
 - Sync plugin with upstream `release-v3.97.5`.
@@ -16,6 +17,7 @@
 
 ### Fixed
 
+- Service plan pricing tier changes are not reflected in the Function App creation form when the plan name is unchanged.
 - Incorrect stack version for windows Azure Functions ([RIDER-132791](https://youtrack.jetbrains.com/issue/RIDER-132791))
 - Cannot invoke "IMachineStore.getProperty(String, String)" because "store" is null
 

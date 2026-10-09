@@ -10,6 +10,7 @@ import com.microsoft.azure.toolkit.lib.Azure
 import com.microsoft.azure.toolkit.lib.appservice.config.FunctionAppConfig
 import com.microsoft.azure.toolkit.lib.appservice.config.RuntimeConfig
 import com.microsoft.azure.toolkit.lib.appservice.model.OperatingSystem
+import com.microsoft.azure.toolkit.lib.appservice.model.PricingTier
 import com.microsoft.azure.toolkit.lib.auth.AzureAccount
 import com.microsoft.azure.toolkit.lib.common.utils.Utils
 import com.microsoft.azure.toolkit.lib.resource.ResourceGroup
@@ -20,14 +21,24 @@ class FunctionAppConfigProducer {
         fun getInstance() = service<FunctionAppConfigProducer>()
     }
 
-    fun generateDefaultConfig(group: ResourceGroup? = null): FunctionAppConfig {
+    fun generateDefaultConfig(
+        group: ResourceGroup? = null,
+        targetProjectOnNetFramework: Boolean = false
+    ): FunctionAppConfig {
         val subscription = group?.subscription
             ?: Azure.az(AzureAccount::class.java).account().selectedSubscriptions.firstOrNull()
         val appName = Utils.generateRandomResourceName("app", 32)
         val rgName = group?.name ?: "rg-$appName"
         val result = FunctionAppConfig.buildDefaultFunctionConfig(rgName, appName)
         result.appSettings = mutableMapOf()
-        result.runtime = RuntimeConfig().apply { os = OperatingSystem.WINDOWS }
+        result.pricingTier =
+            if (targetProjectOnNetFramework) PricingTier.CONSUMPTION
+            else PricingTier.FLEX_CONSUMPTION
+        result.runtime = RuntimeConfig().apply {
+            os =
+                if (targetProjectOnNetFramework) OperatingSystem.WINDOWS
+                else OperatingSystem.LINUX
+        }
         subscription?.let { result.subscriptionId = it.id }
         group?.let { result.region = it.region }
 
