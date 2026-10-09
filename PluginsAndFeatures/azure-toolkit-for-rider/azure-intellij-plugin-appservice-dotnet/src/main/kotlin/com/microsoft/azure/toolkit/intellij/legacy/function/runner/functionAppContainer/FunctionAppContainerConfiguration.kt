@@ -11,10 +11,13 @@ import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.LocatableConfigurationBase
 import com.intellij.execution.configurations.RuntimeConfigurationError
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.platform.util.coroutines.childScope
 import com.microsoft.azure.toolkit.intellij.AppServiceProjectService
 import com.microsoft.azure.toolkit.intellij.legacy.utils.isAccountSignedIn
+import kotlinx.coroutines.cancel
 
 class FunctionAppContainerConfiguration(private val project: Project, factory: ConfigurationFactory, name: String?) :
     LocatableConfigurationBase<FunctionAppContainerConfigurationOptions>(project, factory, name) {
@@ -38,7 +41,14 @@ class FunctionAppContainerConfiguration(private val project: Project, factory: C
             this
         )
 
-    override fun getConfigurationEditor() = FunctionAppContainerSettingEditor(project)
+    override fun getConfigurationEditor(): SettingsEditor<FunctionAppContainerConfiguration> {
+        val configurationScope = AppServiceProjectService.getInstance(project).scope
+            .childScope("FunctionAppContainerConfiguration")
+        val viewModel = FunctionAppContainerSettingEditorViewModel(project, configurationScope)
+        return FunctionAppContainerSettingEditor(project, viewModel).also {
+            Disposer.register(it) { configurationScope.cancel() }
+        }
+    }
 
     override fun checkConfiguration() {
         val options = getState() ?: return

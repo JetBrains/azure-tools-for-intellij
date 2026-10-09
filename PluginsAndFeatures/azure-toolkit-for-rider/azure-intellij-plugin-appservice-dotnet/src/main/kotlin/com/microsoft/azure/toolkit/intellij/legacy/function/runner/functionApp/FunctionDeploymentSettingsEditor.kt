@@ -26,7 +26,9 @@ class FunctionDeploymentSettingsEditor(
     private val viewModel: FunctionDeploymentSettingsEditorViewModel
 ) : SettingsEditor<FunctionDeploymentConfiguration>() {
 
-    private val functionAppTreePanel = FunctionAppDeploymentTreePanel(project, viewModel).also {
+    private val functionAppTreePanel = FunctionAppDeploymentTreePanel(viewModel) {
+        FunctionAppCreationDialog(project, viewModel.isNetFramework.value)
+    }.also {
         Disposer.register(this, it)
     }
 
