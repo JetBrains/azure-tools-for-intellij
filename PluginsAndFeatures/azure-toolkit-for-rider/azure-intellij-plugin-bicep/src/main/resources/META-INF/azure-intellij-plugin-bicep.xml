@@ -9,7 +9,7 @@
     <fileTypeUsageSchemaDescriptor schema="Bicep" implementationClass="com.microsoft.azure.toolkit.intellij.bicep.BicepFileTypeSchemaRecogniser"/>
     <platform.lsp.integrationProvider implementation="com.microsoft.azure.toolkit.intellij.bicep.lsp.BicepLspSupportProvider"/>
     <projectConfigurable id="azure-bicep"
-                         groupId="language"
+                         parentId="com.microsoft.intellij.AzureConfigurable"
                          bundle="messages.BicepBundle"
                          key="settings.display.name"
                          instance="com.microsoft.azure.toolkit.intellij.bicep.settings.BicepConfigurable"/>
