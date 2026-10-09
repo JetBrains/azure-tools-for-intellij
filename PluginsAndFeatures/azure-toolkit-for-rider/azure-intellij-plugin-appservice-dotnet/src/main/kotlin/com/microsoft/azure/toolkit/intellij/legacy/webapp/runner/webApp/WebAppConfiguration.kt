@@ -12,10 +12,12 @@ import com.intellij.execution.configurations.LocatableConfigurationBase
 import com.intellij.execution.configurations.RuntimeConfigurationError
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.platform.util.coroutines.childScope
 import com.microsoft.azure.toolkit.intellij.AppServiceProjectService
 import com.microsoft.azure.toolkit.intellij.legacy.utils.isAccountSignedIn
 import com.microsoft.azure.toolkit.lib.appservice.webapp.WebAppBase
+import kotlinx.coroutines.cancel
 
 class WebAppConfiguration(private val project: Project, factory: ConfigurationFactory, name: String?) :
     LocatableConfigurationBase<WebAppConfigurationOptions>(project, factory, name) {
@@ -41,7 +43,9 @@ class WebAppConfiguration(private val project: Project, factory: ConfigurationFa
         val configurationScope = AppServiceProjectService.getInstance(project).scope
             .childScope("WebAppConfiguration")
         val viewModel = WebAppSettingEditorViewModel(project, configurationScope)
-        return WebAppSettingEditor(project, viewModel)
+        return WebAppSettingEditor(project, viewModel).also {
+            Disposer.register(it) { configurationScope.cancel() }
+        }
     }
 
     override fun checkConfiguration() {

@@ -7,6 +7,7 @@
 package com.microsoft.azure.toolkit.intellij.appservice.utils
 
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.MutableCollectionComboBoxModel
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.util.ui.launchOnShow
@@ -14,10 +15,71 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.swing.JToggleButton
+import javax.swing.JSpinner
 import javax.swing.event.ChangeEvent
 import javax.swing.event.ChangeListener
+import javax.swing.event.DocumentEvent
 import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
+import javax.swing.text.JTextComponent
+
+internal fun <T : JTextComponent> Cell<T>.bindText(flow: MutableStateFlow<String>): Cell<T> =
+    applyToComponent {
+        launchOnShow("Text field state binding") {
+            val listener = object : DocumentAdapter() {
+                var isActive = true
+
+                override fun textChanged(e: DocumentEvent) {
+                    if (isActive) {
+                        flow.value = text
+                    }
+                }
+            }
+            document.addDocumentListener(listener)
+
+            try {
+                flow.collect {
+                    try {
+                        listener.isActive = false
+                        if (text != it) text = it
+                    } finally {
+                        listener.isActive = true
+                    }
+                }
+            } finally {
+                document.removeDocumentListener(listener)
+            }
+        }
+    }
+
+internal fun <T : JSpinner> Cell<T>.bindIntValue(flow: MutableStateFlow<Int>): Cell<T> =
+    applyToComponent {
+        launchOnShow("Spinner state binding") {
+            val listener = object : ChangeListener {
+                var isActive = true
+
+                override fun stateChanged(e: ChangeEvent) {
+                    if (isActive) {
+                        flow.value = (value as Number).toInt()
+                    }
+                }
+            }
+            addChangeListener(listener)
+
+            try {
+                flow.collect {
+                    try {
+                        listener.isActive = false
+                        value = it
+                    } finally {
+                        listener.isActive = true
+                    }
+                }
+            } finally {
+                removeChangeListener(listener)
+            }
+        }
+    }
 
 fun Cell<JToggleButton>.bindSelected(
     isSelected: Flow<Boolean>,
@@ -94,7 +156,7 @@ fun <T : Any> ComboBox<T>.bindSelectedItem(flow: MutableStateFlow<T?>) {
             flow.collect {
                 try {
                     listener.isActive = false
-                    model.selectedItem = it
+                    selectedItem = it
                 } finally {
                     listener.isActive = true
                 }

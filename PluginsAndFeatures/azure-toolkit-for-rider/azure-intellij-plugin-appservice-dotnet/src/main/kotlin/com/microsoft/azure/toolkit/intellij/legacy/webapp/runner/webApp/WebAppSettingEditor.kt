@@ -26,7 +26,9 @@ class WebAppSettingEditor(
     private val viewModel: WebAppSettingEditorViewModel
 ) : SettingsEditor<WebAppConfiguration>() {
 
-    private val webAppTreePanel = WebAppDeploymentTreePanel(project, viewModel).also {
+    private val webAppTreePanel = WebAppDeploymentTreePanel(viewModel) {
+        WebAppCreationDialog(project, viewModel.isNetFramework.value)
+    }.also {
         Disposer.register(this, it)
     }
 
