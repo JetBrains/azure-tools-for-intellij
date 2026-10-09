@@ -2,39 +2,58 @@
  * Copyright 2018-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
  */
 
+@file:Suppress("UnstableApiUsage")
+
 package com.microsoft.azure.toolkit.intellij.bicep.lsp
 
+import com.intellij.openapi.util.NlsSafe
+import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
+import com.intellij.util.concurrency.annotations.RequiresReadLockAbsence
 import com.microsoft.azure.toolkit.intellij.bicep.BicepBundle
 import kotlinx.serialization.json.*
+import org.jetbrains.annotations.Nls
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.exists
 
-internal data object BicepLS : LsInfrastructure {
+internal data object BicepLS {
     private const val URL_TEMPLATE = "https://github.com/Azure/bicep/releases/download/%s/bicep-langserver.zip"
     private const val RUNTIME_CONFIG_FILENAME = "Bicep.LangServer.runtimeconfig.json"
 
-    override val formattedUrl: String
+    val formattedUrl: @NlsSafe String
         get() {
             val supportedVersion = "v0.46.1"
             return URL_TEMPLATE.format(supportedVersion)
         }
 
-    override val extractedDirectoryName: String
+    val extractedDirectoryName: @NlsSafe String
         get() = "bicep-langserver"
 
-    override val executableName: String
+    val executableName: @NlsSafe String
         get() = "Bicep.LangServer.dll"
 
-    override val presentableName: String
+    val presentableName: @Nls String
         get() = BicepBundle.message("progress.title.load.ls")
 
-    override fun findExecutablePath(): Path {
-        return BicepInfrastructureLoader.getInstance().bicepTmpPath.resolve(extractedDirectoryName).resolve(executableName)
+    @RequiresBackgroundThread
+    @RequiresReadLockAbsence
+    fun findExecutablePath(): Path {
+        return BicepInfrastructureLoader.getInstance()
+            .bicepTmpPath
+            .resolve(extractedDirectoryName)
+            .resolve(executableName)
     }
 
-    override fun isValid(): Boolean {
+    @RequiresBackgroundThread
+    @RequiresReadLockAbsence
+    fun isPresent(): Boolean {
+        return findExecutablePath().exists()
+    }
+
+    @RequiresBackgroundThread
+    @RequiresReadLockAbsence
+    fun isValid(): Boolean {
         if (!isPresent()) return false
 
         val runtimeConfigPath = runtimeConfigPath()
@@ -47,7 +66,9 @@ internal data object BicepLS : LsInfrastructure {
         return (rollForwardValue as? JsonPrimitive)?.content == "Major"
     }
 
-    override fun patchInfrastructureFiles() {
+    @RequiresBackgroundThread
+    @RequiresReadLockAbsence
+    fun patchInfrastructureFiles() {
         val runtimeConfigPath = runtimeConfigPath()
         try {
             if (!runtimeConfigPath.exists()) {

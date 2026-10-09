@@ -33,7 +33,7 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
         get() = lsVerified.get()
 
     fun scheduleLsDownload() {
-        BicepInfrastructureLoader.getInstance().cleanTmpDirectorySafe(BicepLS)
+        BicepInfrastructureLoader.getInstance().cleanTmpDirectorySafe()
         scheduleLsInfrastructureSetup(LsSetupMode.DOWNLOAD_AND_VALIDATE)
     }
 
@@ -65,7 +65,7 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
     }
 
     private suspend fun ensureInfrastructureValid(setupMode: LsSetupMode): LsValidity {
-        return if (ensureInfrastructureExists(setupMode) && isInfrastructureValid() && tryRunServerAndCheckNoErrorsInOutput())
+        return if (ensureInfrastructureExists(setupMode) && BicepLS.isValid() && tryRunServerAndCheckNoErrorsInOutput())
             LsValidity.VALID
         else
             LsValidity.INVALID
@@ -74,12 +74,8 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
     private suspend fun ensureInfrastructureExists(setupMode: LsSetupMode): Boolean {
         return when (setupMode) {
             LsSetupMode.DOWNLOAD_AND_VALIDATE -> BicepInfrastructureLoader.getInstance().downloadLsInfrastructure(project)
-            LsSetupMode.VALIDATE_EXISTING -> isInfrastructurePresent()
+            LsSetupMode.VALIDATE_EXISTING -> BicepLS.isPresent()
         }
-    }
-
-    private fun isInfrastructureValid(): Boolean {
-        return LsInfrastructure.allKnown().all(LsInfrastructure::isValid)
     }
 
     private suspend fun tryRunServerAndCheckNoErrorsInOutput(): Boolean {
@@ -94,10 +90,6 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
         }
 
         return true
-    }
-
-    private fun isInfrastructurePresent(): Boolean {
-        return LsInfrastructure.allKnown().all(LsInfrastructure::isPresent)
     }
 
     private suspend fun displayAvailabilityHint(lsValidity: LsValidity, setupMode: LsSetupMode) {
