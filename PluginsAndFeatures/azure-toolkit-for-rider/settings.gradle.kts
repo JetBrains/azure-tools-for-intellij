@@ -1,6 +1,8 @@
 rootProject.name = "azure-toolkit-for-rider"
 
 pluginManagement {
+    includeBuild("build-logic")
+
     repositories {
         gradlePluginPortal()
         mavenCentral()
