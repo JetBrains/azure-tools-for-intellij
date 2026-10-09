@@ -40,7 +40,9 @@ class FunctionAppCreationDialog(
 
         val projectName = removeInvalidCharacters(project.name)
         basicPanel = AppServiceInfoBasicPanel(targetProjectOnNetFramework) {
-            FunctionAppConfigProducer.getInstance().generateDefaultConfig()
+            FunctionAppConfigProducer
+                .getInstance()
+                .generateDefaultConfig(targetProjectOnNetFramework = targetProjectOnNetFramework)
         }
         Disposer.register(this, basicPanel)
 
@@ -54,7 +56,10 @@ class FunctionAppCreationDialog(
             row { cell(advancedPanel) }
         }
 
-        advancedPanel.setValidPricingTier(PricingTier.FUNCTION_PRICING.toList(), PricingTier.CONSUMPTION)
+        val defaultPricingTier =
+            if (targetProjectOnNetFramework) PricingTier.CONSUMPTION
+            else PricingTier.FLEX_CONSUMPTION
+        advancedPanel.setValidPricingTier(PricingTier.FUNCTION_PRICING.toList(), defaultPricingTier)
 
         this.init()
 

@@ -99,7 +99,9 @@ open class FunctionAppComboBox(project: Project) : AppServiceComboBox<FunctionAp
     override fun createResource() {
         val dialog = FunctionAppCreationDialog(project, targetProjectOnNetFramework)
         Disposer.register(this, dialog)
-        dialog.data = FunctionAppConfigProducer.getInstance().generateDefaultConfig()
+        dialog.data = FunctionAppConfigProducer
+            .getInstance()
+            .generateDefaultConfig(targetProjectOnNetFramework = targetProjectOnNetFramework)
         setOkActionAndShowDialog(dialog)
     }
 
