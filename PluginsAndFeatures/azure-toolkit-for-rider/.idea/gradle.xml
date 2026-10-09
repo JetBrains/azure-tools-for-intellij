@@ -23,7 +23,6 @@
             <option value="$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-cloud-shell" />
             <option value="$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-database" />
             <option value="$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-eventhubs" />
-            <option value="$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-guidance" />
             <option value="$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-keyvault" />
             <option value="$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-lib" />
             <option value="$PROJECT_DIR$/../azure-toolkit-for-intellij/azure-intellij-plugin-monitor" />
