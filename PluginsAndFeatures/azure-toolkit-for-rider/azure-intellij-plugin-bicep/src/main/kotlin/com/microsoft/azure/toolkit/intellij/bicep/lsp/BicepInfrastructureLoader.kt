@@ -31,97 +31,96 @@ internal class BicepInfrastructureLoader {
         private val LOG = logger<BicepInfrastructureLoader>()
     }
 
-    suspend fun downloadLsInfrastructure(project: Project): Boolean {
+    suspend fun downloadLsInfrastructure(project: Project, bicepLS: BicepLS): Boolean {
         return withBackgroundProgress(project, BicepBundle.message("progress.title.load.infra")) {
             reportSequentialProgress { reporter ->
-                if (BicepInfrastructureService.getInstance().isPresent()) return@reportSequentialProgress true
+                if (BicepInfrastructureService.getInstance().isPresent(bicepLS)) return@reportSequentialProgress true
 
                 val downloadedResource = reporter.nextStep(
                     endFraction = 70,
-                    text = BicepBundle.message("progress.title.load", BicepLS.presentableName)
+                    text = BicepBundle.message("progress.title.load", bicepLS.presentableName)
                 ) {
-                    downloadResourceSafe()
+                    downloadResourceSafe(bicepLS)
                 } ?: return@reportSequentialProgress false
 
-                LOG.info("Loaded ${BicepLS.presentableName} to `$downloadedResource`")
+                LOG.info("Loaded ${bicepLS.presentableName} to `$downloadedResource`")
 
                 val unpackedResource = reporter.nextStep(
                     endFraction = 90,
-                    text = BicepBundle.message("progress.title.unpack", BicepLS.presentableName)
+                    text = BicepBundle.message("progress.title.unpack", bicepLS.presentableName)
                 ) {
-                    unzipResourceSafe(downloadedResource)
+                    unzipResourceSafe(downloadedResource, bicepLS)
                 } ?: return@reportSequentialProgress false
 
-                LOG.info("Unpacked ${BicepLS.presentableName} to `$unpackedResource`")
+                LOG.info("Unpacked ${bicepLS.presentableName} to `$unpackedResource`")
 
                 reporter.nextStep(
                     endFraction = 100,
-                    text = BicepBundle.message("progress.title.patch", BicepLS.presentableName)
+                    text = BicepBundle.message("progress.title.patch", bicepLS.presentableName)
                 ) {
-                    patchResourceSafe()
+                    patchResourceSafe(bicepLS)
                 }
 
-                BicepInfrastructureService.getInstance().isPresent()
+                BicepInfrastructureService.getInstance().isPresent(bicepLS)
             }
         }
     }
 
-    private fun downloadResourceSafe(): Path? = runCatching {
-        downloadResource()
+    private fun downloadResourceSafe(bicepLS: BicepLS): Path? = runCatching {
+        downloadResource(bicepLS)
     }.onFailureNoPce { exception ->
-        LOG.warn("Unable to download ${BicepLS.presentableName}. Abort LS installation", exception)
+        LOG.warn("Unable to download ${bicepLS.presentableName}. Abort LS installation", exception)
     }.getOrNull()
 
-    private fun downloadResource(): Path {
-        val effectiveUrl = BicepLS.formattedUrl
-        val targetFile = BicepInfrastructureService.getInstance().downloadedArchivePath()
+    private fun downloadResource(bicepLS: BicepLS): Path {
+        val targetFile = BicepInfrastructureService.getInstance().downloadedArchivePath(bicepLS)
         if (targetFile.exists()) return targetFile
 
-        return HttpRequests.request(effectiveUrl)
+        return HttpRequests.request(bicepLS.formattedUrl)
             .connect { request ->
-                LOG.warn("Started loading of ${BicepLS.presentableName}")
+                LOG.warn("Started loading of ${bicepLS.presentableName}")
                 val downloadedPath = request.saveToFile(targetFile, ProgressManager.getGlobalProgressIndicator())
-                LOG.warn("Loaded ${BicepLS.presentableName} to `$downloadedPath`")
+                LOG.warn("Loaded ${bicepLS.presentableName} to `$downloadedPath`")
                 downloadedPath
             }
     }
 
-    private fun unzipResourceSafe(resourcePath: Path): Path? = runCatching {
-        unzipResource(resourcePath)
+    private fun unzipResourceSafe(resourcePath: Path, bicepLS: BicepLS): Path? = runCatching {
+        unzipResource(resourcePath, bicepLS)
     }.onFailureNoPce { exception ->
-        LOG.warn("Unable to extract ${BicepLS.presentableName} archive. Abort LS installation", exception)
+        LOG.warn("Unable to extract ${bicepLS.presentableName} archive. Abort LS installation", exception)
         Files.delete(resourcePath)
     }.getOrNull()
 
-    private fun unzipResource(resourcePath: Path): Path? {
+    private fun unzipResource(resourcePath: Path, bicepLS: BicepLS): Path? {
         val decompressor = when (resourcePath.extension) {
             "zip" -> Decompressor.Zip(resourcePath)
             "gz", "tgz" -> Decompressor.Tar(resourcePath)
             else -> {
                 LOG.warn(
-                    "Downloaded resource '${BicepLS.presentableName}' has unexpected extension '${resourcePath.extension}'. " +
+                    "Downloaded resource '${bicepLS.presentableName}' has unexpected extension '${resourcePath.extension}'. " +
                             "Abort installation"
                 )
                 return null
             }
         }
-        val target = BicepInfrastructureService.getInstance().extractedDirectoryPath()
+        val target = BicepInfrastructureService.getInstance().extractedDirectoryPath(bicepLS)
         if (target.exists()) return target
         decompressor.extract(target)
         Files.delete(resourcePath)
         return target
     }
 
-    private fun patchResourceSafe() = runCatching {
-        patchInfrastructureFiles()
+    private fun patchResourceSafe(bicepLS: BicepLS) = runCatching {
+        patchInfrastructureFiles(bicepLS)
     }.onFailureNoPce { exception ->
-        LOG.warn("Unable to patch ${BicepLS.presentableName} archive", exception)
+        LOG.warn("Unable to patch ${bicepLS.presentableName} archive", exception)
     }
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
-    private fun patchInfrastructureFiles() {
-        val runtimeConfigPath = BicepInfrastructureService.getInstance().runtimeConfigPath()
+    private fun patchInfrastructureFiles(bicepLS: BicepLS) {
+        val runtimeConfigPath = BicepInfrastructureService.getInstance().runtimeConfigPath(bicepLS)
         try {
             if (!runtimeConfigPath.exists()) {
                 createDefaultRuntimeConfig(runtimeConfigPath)

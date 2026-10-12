@@ -8,14 +8,16 @@ import com.intellij.openapi.util.NlsSafe
 import com.microsoft.azure.toolkit.intellij.bicep.BicepBundle
 import org.jetbrains.annotations.Nls
 
-internal data object BicepLS {
-    private const val URL_TEMPLATE = "https://github.com/Azure/bicep/releases/download/%s/bicep-langserver.zip"
+internal data class BicepLS(val version: String) {
+    companion object {
+        private const val DEFAULT_VERSION = "v0.46.1"
+        private const val URL_TEMPLATE = "https://github.com/Azure/bicep/releases/download/%s/bicep-langserver.zip"
+
+        fun getDefaultBicepLS(): BicepLS = BicepLS(DEFAULT_VERSION)
+    }
 
     val formattedUrl: @NlsSafe String
-        get() {
-            val supportedVersion = "v0.46.1"
-            return URL_TEMPLATE.format(supportedVersion)
-        }
+        get() = URL_TEMPLATE.format(version)
 
     val extractedDirectoryName: @NlsSafe String
         get() = "bicep-langserver"

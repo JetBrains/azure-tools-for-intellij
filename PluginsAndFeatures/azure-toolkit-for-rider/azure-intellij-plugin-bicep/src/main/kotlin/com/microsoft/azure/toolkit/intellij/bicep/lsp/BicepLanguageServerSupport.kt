@@ -38,9 +38,12 @@ internal fun findAllOpenedBicepFiles(project: Project): Sequence<VirtualFile> {
         .filter { file -> file.extension == BICEP_EXTENSION }
 }
 
-internal fun prepareBicepServerLaunchCommandLine(riderEnvironment: RiderEnvironment): GeneralCommandLine {
+internal fun prepareBicepServerLaunchCommandLine(
+    riderEnvironment: RiderEnvironment,
+    bicepLS: BicepLS = BicepLS.getDefaultBicepLS()
+): GeneralCommandLine {
     val dotnetExecutablePath = riderEnvironment.getRuntime().cliPath().absolutePathString()
-    val bicepExecutablePath = BicepInfrastructureService.getInstance().findExecutablePath().absolutePathString()
+    val bicepExecutablePath = BicepInfrastructureService.getInstance().findExecutablePath(bicepLS).absolutePathString()
 
     return GeneralCommandLine(dotnetExecutablePath, bicepExecutablePath)
 }

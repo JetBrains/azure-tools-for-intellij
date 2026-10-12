@@ -31,51 +31,51 @@ internal class BicepInfrastructureService {
 
     val bicepTmpPath: Path = Path.of(PathManager.getSystemPath()).resolve("bicep")
 
-    fun cleanTmpDirectorySafe(): Boolean {
+    fun cleanTmpDirectorySafe(bicepLS: BicepLS): Boolean {
         return runCatching {
-            cleanTmpDirectory()
+            cleanTmpDirectory(bicepLS)
         }.onFailure { exception ->
             if (exception is ProcessCanceledException) throw exception
             LOG.warn(
-                "Unable to clean download directory `${BicepLS.extractedDirectoryName}`. Abort LS installation",
+                "Unable to clean download directory `${bicepLS.extractedDirectoryName}`. Abort LS installation",
                 exception
             )
         }.isSuccess
     }
 
     @OptIn(ExperimentalPathApi::class)
-    private fun cleanTmpDirectory() {
-        extractedDirectoryPath()
+    private fun cleanTmpDirectory(bicepLS: BicepLS) {
+        extractedDirectoryPath(bicepLS)
             .takeIf { it.exists() }
             ?.deleteRecursively()
     }
 
-    fun downloadedArchivePath(): Path = bicepTmpPath.resolve(BicepLS.formattedUrl.substringAfterLast("/"))
+    fun downloadedArchivePath(bicepLS: BicepLS): Path = bicepTmpPath.resolve(bicepLS.formattedUrl.substringAfterLast("/"))
 
-    fun extractedDirectoryPath(): Path = bicepTmpPath.resolve(BicepLS.extractedDirectoryName)
+    fun extractedDirectoryPath(bicepLS: BicepLS): Path = bicepTmpPath.resolve(bicepLS.extractedDirectoryName)
 
-    fun runtimeConfigPath(): Path = extractedDirectoryPath()
+    fun runtimeConfigPath(bicepLS: BicepLS): Path = extractedDirectoryPath(bicepLS)
         .resolve(RUNTIME_CONFIG_FILENAME)
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
-    fun findExecutablePath(): Path {
-        return extractedDirectoryPath()
-            .resolve(BicepLS.executableName)
+    fun findExecutablePath(bicepLS: BicepLS): Path {
+        return extractedDirectoryPath(bicepLS)
+            .resolve(bicepLS.executableName)
     }
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
-    fun isPresent(): Boolean {
-        return findExecutablePath().exists()
+    fun isPresent(bicepLS: BicepLS): Boolean {
+        return findExecutablePath(bicepLS).exists()
     }
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
-    fun isValid(): Boolean {
-        if (!isPresent()) return false
+    fun isValid(bicepLS: BicepLS): Boolean {
+        if (!isPresent(bicepLS)) return false
 
-        val runtimeConfigPath = runtimeConfigPath()
+        val runtimeConfigPath = runtimeConfigPath(bicepLS)
         if (!runtimeConfigPath.exists()) return false
 
         val root = parseRuntimeConfig(runtimeConfigPath) ?: return false

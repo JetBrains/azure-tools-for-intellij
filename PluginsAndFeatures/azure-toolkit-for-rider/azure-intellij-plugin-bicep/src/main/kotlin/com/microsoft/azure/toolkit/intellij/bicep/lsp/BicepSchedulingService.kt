@@ -23,6 +23,7 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
         fun getInstance(project: Project): BicepSchedulingService = project.service<BicepSchedulingService>()
     }
 
+    private val bicepLS = BicepLS.getDefaultBicepLS()
     private val setupInProgress = MutableStateFlow(false)
     private val lsVerified = AtomicReference(LsValidity.YET_UNKNOWN)
 
@@ -33,7 +34,7 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
         get() = lsVerified.get()
 
     fun scheduleLsDownload() {
-        BicepInfrastructureService.getInstance().cleanTmpDirectorySafe()
+        BicepInfrastructureService.getInstance().cleanTmpDirectorySafe(bicepLS)
         scheduleLsInfrastructureSetup(LsSetupMode.DOWNLOAD_AND_VALIDATE)
     }
 
@@ -66,7 +67,7 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
 
     private suspend fun ensureInfrastructureValid(setupMode: LsSetupMode): LsValidity {
         return if (ensureInfrastructureExists(setupMode) &&
-            BicepInfrastructureService.getInstance().isValid() &&
+            BicepInfrastructureService.getInstance().isValid(bicepLS) &&
             tryRunServerAndCheckNoErrorsInOutput())
             LsValidity.VALID
         else
@@ -75,14 +76,14 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
 
     private suspend fun ensureInfrastructureExists(setupMode: LsSetupMode): Boolean {
         return when (setupMode) {
-            LsSetupMode.DOWNLOAD_AND_VALIDATE -> BicepInfrastructureLoader.getInstance().downloadLsInfrastructure(project)
-            LsSetupMode.VALIDATE_EXISTING -> BicepInfrastructureService.getInstance().isPresent()
+            LsSetupMode.DOWNLOAD_AND_VALIDATE -> BicepInfrastructureLoader.getInstance().downloadLsInfrastructure(project, bicepLS)
+            LsSetupMode.VALIDATE_EXISTING -> BicepInfrastructureService.getInstance().isPresent(bicepLS)
         }
     }
 
     private suspend fun tryRunServerAndCheckNoErrorsInOutput(): Boolean {
         val environment = project.initializeAndGetEnvironment()
-        val testCommandLine = prepareBicepServerLaunchCommandLine(environment)
+        val testCommandLine = prepareBicepServerLaunchCommandLine(environment, bicepLS)
         val testOutput = withContext(Dispatchers.IO) {
             CapturingProcessHandler.Silent(testCommandLine).runProcess(1000, true)
         }
