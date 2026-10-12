@@ -46,8 +46,8 @@ internal class BicepInfrastructureLoader {
 
     @OptIn(ExperimentalPathApi::class)
     private fun cleanTmpDirectory() {
-        BicepInfrastructureService.getInstance().bicepTmpPath
-            .resolve(BicepLS.extractedDirectoryName)
+        BicepInfrastructureService.getInstance()
+            .extractedDirectoryPath()
             .takeIf { it.exists() }
             ?.deleteRecursively()
     }
@@ -95,7 +95,7 @@ internal class BicepInfrastructureLoader {
 
     private fun downloadResource(): Path {
         val effectiveUrl = BicepLS.formattedUrl
-        val targetFile = BicepInfrastructureService.getInstance().bicepTmpPath.resolve(effectiveUrl.substringAfterLast("/"))
+        val targetFile = BicepInfrastructureService.getInstance().downloadedArchivePath()
         if (targetFile.exists()) return targetFile
 
         return HttpRequests.request(effectiveUrl)
@@ -126,7 +126,7 @@ internal class BicepInfrastructureLoader {
                 return null
             }
         }
-        val target = BicepInfrastructureService.getInstance().bicepTmpPath.resolve(BicepLS.extractedDirectoryName)
+        val target = BicepInfrastructureService.getInstance().extractedDirectoryPath()
         if (target.exists()) return target
         decompressor.extract(target)
         Files.delete(resourcePath)

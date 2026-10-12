@@ -26,15 +26,17 @@ internal class BicepInfrastructureService {
 
     val bicepTmpPath: Path = Path.of(PathManager.getSystemPath()).resolve("bicep")
 
-    fun runtimeConfigPath(): Path = bicepTmpPath
-        .resolve(BicepLS.extractedDirectoryName)
+    fun downloadedArchivePath(): Path = bicepTmpPath.resolve(BicepLS.formattedUrl.substringAfterLast("/"))
+
+    fun extractedDirectoryPath(): Path = bicepTmpPath.resolve(BicepLS.extractedDirectoryName)
+
+    fun runtimeConfigPath(): Path = extractedDirectoryPath()
         .resolve(RUNTIME_CONFIG_FILENAME)
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
     fun findExecutablePath(): Path {
-        return bicepTmpPath
-            .resolve(BicepLS.extractedDirectoryName)
+        return extractedDirectoryPath()
             .resolve(BicepLS.executableName)
     }
 
