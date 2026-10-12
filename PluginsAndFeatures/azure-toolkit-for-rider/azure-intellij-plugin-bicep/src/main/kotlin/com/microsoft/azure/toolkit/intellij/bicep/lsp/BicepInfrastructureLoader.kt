@@ -2,7 +2,6 @@
 
 package com.microsoft.azure.toolkit.intellij.bicep.lsp
 
-import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
@@ -11,9 +10,15 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportSequentialProgress
+import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
+import com.intellij.util.concurrency.annotations.RequiresReadLockAbsence
 import com.intellij.util.io.Decompressor
 import com.intellij.util.io.HttpRequests
 import com.microsoft.azure.toolkit.intellij.bicep.BicepBundle
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.ExperimentalPathApi
@@ -28,8 +33,6 @@ internal class BicepInfrastructureLoader {
         private val LOG = logger<BicepInfrastructureLoader>()
     }
 
-    val bicepTmpPath: Path = Path.of(PathManager.getSystemPath()).resolve("bicep")
-
     fun cleanTmpDirectorySafe(): Boolean {
         return runCatching {
             cleanTmpDirectory()
@@ -43,7 +46,8 @@ internal class BicepInfrastructureLoader {
 
     @OptIn(ExperimentalPathApi::class)
     private fun cleanTmpDirectory() {
-        bicepTmpPath.resolve(BicepLS.extractedDirectoryName)
+        BicepInfrastructureService.getInstance().bicepTmpPath
+            .resolve(BicepLS.extractedDirectoryName)
             .takeIf { it.exists() }
             ?.deleteRecursively()
     }
@@ -51,7 +55,7 @@ internal class BicepInfrastructureLoader {
     suspend fun downloadLsInfrastructure(project: Project): Boolean {
         return withBackgroundProgress(project, BicepBundle.message("progress.title.load.infra")) {
             reportSequentialProgress { reporter ->
-                if (BicepLS.isPresent()) return@reportSequentialProgress true
+                if (BicepInfrastructureService.getInstance().isPresent()) return@reportSequentialProgress true
 
                 val downloadedResource = reporter.nextStep(
                     endFraction = 70,
@@ -78,7 +82,7 @@ internal class BicepInfrastructureLoader {
                     patchResourceSafe()
                 }
 
-                BicepLS.isPresent()
+                BicepInfrastructureService.getInstance().isPresent()
             }
         }
     }
@@ -91,7 +95,7 @@ internal class BicepInfrastructureLoader {
 
     private fun downloadResource(): Path {
         val effectiveUrl = BicepLS.formattedUrl
-        val targetFile = bicepTmpPath.resolve(effectiveUrl.substringAfterLast("/"))
+        val targetFile = BicepInfrastructureService.getInstance().bicepTmpPath.resolve(effectiveUrl.substringAfterLast("/"))
         if (targetFile.exists()) return targetFile
 
         return HttpRequests.request(effectiveUrl)
@@ -122,7 +126,7 @@ internal class BicepInfrastructureLoader {
                 return null
             }
         }
-        val target = bicepTmpPath.resolve(BicepLS.extractedDirectoryName)
+        val target = BicepInfrastructureService.getInstance().bicepTmpPath.resolve(BicepLS.extractedDirectoryName)
         if (target.exists()) return target
         decompressor.extract(target)
         Files.delete(resourcePath)
@@ -130,9 +134,66 @@ internal class BicepInfrastructureLoader {
     }
 
     private fun patchResourceSafe() = runCatching {
-        BicepLS.patchInfrastructureFiles()
+        patchInfrastructureFiles()
     }.onFailureNoPce { exception ->
         LOG.warn("Unable to patch ${BicepLS.presentableName} archive", exception)
+    }
+
+    @RequiresBackgroundThread
+    @RequiresReadLockAbsence
+    private fun patchInfrastructureFiles() {
+        val runtimeConfigPath = BicepInfrastructureService.getInstance().runtimeConfigPath()
+        try {
+            if (!runtimeConfigPath.exists()) {
+                createDefaultRuntimeConfig(runtimeConfigPath)
+                return
+            }
+
+            val root = parseRuntimeConfig(runtimeConfigPath) ?: return
+            val updated = addRollForwardIfMissing(root) ?: return
+            writeRuntimeConfig(runtimeConfigPath, updated)
+        } catch (_: Throwable) {
+            // Intentionally ignore: patching should be best-effort and never break the flow
+        }
+    }
+
+    private fun createDefaultRuntimeConfig(path: Path) {
+        val template = """
+            {
+              "runtimeOptions": {
+                "tfm": "net8.0",
+                "rollForward": "Major",
+                "framework": {
+                  "name": "Microsoft.NETCore.App",
+                  "version": "8.0.0"
+                },
+                "configProperties": {
+                  "System.Reflection.Metadata.MetadataUpdater.IsSupported": false,
+                  "System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization": false
+                }
+              }
+            }
+        """.trimIndent()
+        Files.writeString(path, template, StandardCharsets.UTF_8)
+    }
+
+    /**
+     * Returns a new JsonObject with rollForward set to "Major" if it was missing, otherwise null.
+     */
+    private fun addRollForwardIfMissing(rootObj: JsonObject): JsonObject? {
+        val runtimeOptionsObj = rootObj["runtimeOptions"] as? JsonObject
+        val hasRollForward = runtimeOptionsObj?.containsKey("rollForward") == true
+        if (hasRollForward) return null
+
+        val newRuntimeOptions = buildJsonObject {
+            if (runtimeOptionsObj != null) for ((k, v) in runtimeOptionsObj) put(k, v)
+            put("rollForward", JsonPrimitive("Major"))
+        }
+
+        return buildJsonObject {
+            for ((k, v) in rootObj) if (k != "runtimeOptions") put(k, v)
+            put("runtimeOptions", newRuntimeOptions)
+        }
     }
 
     private fun <T> Result<T>.onFailureNoPce(action: (exception: Throwable) -> Unit): Result<T> {

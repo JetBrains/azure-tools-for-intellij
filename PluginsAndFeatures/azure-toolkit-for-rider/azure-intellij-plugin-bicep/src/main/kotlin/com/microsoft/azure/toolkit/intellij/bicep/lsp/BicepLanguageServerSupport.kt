@@ -40,7 +40,7 @@ internal fun findAllOpenedBicepFiles(project: Project): Sequence<VirtualFile> {
 
 internal fun prepareBicepServerLaunchCommandLine(riderEnvironment: RiderEnvironment): GeneralCommandLine {
     val dotnetExecutablePath = riderEnvironment.getRuntime().cliPath().absolutePathString()
-    val bicepExecutablePath = BicepLS.findExecutablePath().absolutePathString()
+    val bicepExecutablePath = BicepInfrastructureService.getInstance().findExecutablePath().absolutePathString()
 
     return GeneralCommandLine(dotnetExecutablePath, bicepExecutablePath)
 }
