@@ -33,7 +33,7 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
         get() = lsVerified.get()
 
     fun scheduleLsDownload() {
-        BicepInfrastructureLoader.getInstance().cleanTmpDirectorySafe()
+        BicepInfrastructureService.getInstance().cleanTmpDirectorySafe()
         scheduleLsInfrastructureSetup(LsSetupMode.DOWNLOAD_AND_VALIDATE)
     }
 

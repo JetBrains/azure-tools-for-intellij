@@ -21,8 +21,6 @@ import kotlinx.serialization.json.buildJsonObject
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.deleteRecursively
 import kotlin.io.path.exists
 import kotlin.io.path.extension
 
@@ -31,25 +29,6 @@ internal class BicepInfrastructureLoader {
     companion object {
         fun getInstance(): BicepInfrastructureLoader = service<BicepInfrastructureLoader>()
         private val LOG = logger<BicepInfrastructureLoader>()
-    }
-
-    fun cleanTmpDirectorySafe(): Boolean {
-        return runCatching {
-            cleanTmpDirectory()
-        }.onFailureNoPce { exception ->
-            LOG.warn(
-                "Unable to clean download directory `${BicepLS.extractedDirectoryName}`. Abort LS installation",
-                exception
-            )
-        }.isSuccess
-    }
-
-    @OptIn(ExperimentalPathApi::class)
-    private fun cleanTmpDirectory() {
-        BicepInfrastructureService.getInstance()
-            .extractedDirectoryPath()
-            .takeIf { it.exists() }
-            ?.deleteRecursively()
     }
 
     suspend fun downloadLsInfrastructure(project: Project): Boolean {
