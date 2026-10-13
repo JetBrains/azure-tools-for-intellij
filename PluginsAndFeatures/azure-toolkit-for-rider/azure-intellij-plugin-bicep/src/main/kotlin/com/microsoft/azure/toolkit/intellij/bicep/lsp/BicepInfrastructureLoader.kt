@@ -15,6 +15,9 @@ import com.intellij.util.concurrency.annotations.RequiresReadLockAbsence
 import com.intellij.util.io.Decompressor
 import com.intellij.util.io.HttpRequests
 import com.microsoft.azure.toolkit.intellij.bicep.BicepBundle
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -27,8 +30,18 @@ import kotlin.io.path.extension
 @Service(Service.Level.APP)
 internal class BicepInfrastructureLoader {
     companion object {
+        private const val LATEST_RELEASE_URL = "https://api.github.com/repos/Azure/bicep/releases/latest"
+
         fun getInstance(): BicepInfrastructureLoader = service<BicepInfrastructureLoader>()
         private val LOG = logger<BicepInfrastructureLoader>()
+    }
+
+    suspend fun findLatestVersion(): String? = withContext(Dispatchers.IO) {
+        val response = HttpRequests.request(LATEST_RELEASE_URL)
+            .accept("application/vnd.github+json")
+            .readString()
+        val release = Json.parseToJsonElement(response) as? JsonObject ?: return@withContext null
+        (release["tag_name"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() }
     }
 
     suspend fun downloadLsInfrastructure(project: Project, bicepLS: BicepLS): Boolean {

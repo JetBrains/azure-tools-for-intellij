@@ -1,20 +1,28 @@
 package com.microsoft.azure.toolkit.intellij.bicep.lsp
 
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.CapturingProcessHandler
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.rethrowControlFlowException
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
+import com.jetbrains.rider.environment.initializeAndGetEnvironment
 import com.microsoft.azure.toolkit.intellij.bicep.BicepBundle
+import com.microsoft.azure.toolkit.intellij.bicep.settings.BicepSettings
+import com.microsoft.azure.toolkit.intellij.bicep.settings.BicepSettingsState.LanguageServerSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.isRegularFile
 
 @Service(Service.Level.PROJECT)
 internal class BicepSchedulingService(private val project: Project, val coroutineScope: CoroutineScope) {
@@ -22,7 +30,6 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
         fun getInstance(project: Project): BicepSchedulingService = project.service<BicepSchedulingService>()
     }
 
-    private val bicepLS = BicepLS.getDefaultBicepLS()
     private val setupInProgress = MutableStateFlow(false)
     private val lsVerified = AtomicReference(LsValidity.YET_UNKNOWN)
 
@@ -46,7 +53,13 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
         lsVerified.set(LsValidity.YET_UNKNOWN)
         coroutineScope.launch(Dispatchers.Default + ModalityState.any().asContextElement()) {
             try {
-                val infrastructureValidity = ensureInfrastructureValid(setupMode)
+                val infrastructureValidity = try {
+                    ensureInfrastructureValid(setupMode)
+                } catch (exception: Exception) {
+                    rethrowControlFlowException(exception)
+                    thisLogger().warn("Unable to validate Bicep language server infrastructure", exception)
+                    LsValidity.INVALID
+                }
                 lsVerified.set(infrastructureValidity)
                 if (infrastructureValidity == LsValidity.VALID) {
                     forceRunLanguageServer(project)
@@ -64,16 +77,45 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
     }
 
     private suspend fun ensureInfrastructureValid(setupMode: LsSetupMode): LsValidity {
-        return if (ensureInfrastructureExists(setupMode) &&
-            BicepInfrastructureService.getInstance().isValid(bicepLS) &&
-            tryRunServerAndCheckNoErrorsInOutput()
-        )
+        val settings = BicepSettings.getInstance(project)
+        val bicepLS = when (settings.getLanguageServerSource()) {
+            LanguageServerSource.LOCAL_FILE -> null
+
+            LanguageServerSource.SPECIFIC_VERSION -> {
+                val version = settings.getLanguageServerVersion()
+                    ?.takeIf { it.isNotBlank() }
+                    ?: return LsValidity.INVALID
+                BicepLS(version)
+            }
+
+            LanguageServerSource.LATEST -> {
+                val version = BicepInfrastructureLoader.getInstance()
+                    .findLatestVersion()
+                    ?: return LsValidity.INVALID
+                BicepLS(version)
+            }
+        }
+
+        val infrastructureService = BicepInfrastructureService.getInstance()
+        val executablePath = if (bicepLS != null) {
+            if (!ensureInfrastructureExists(setupMode, bicepLS) || !infrastructureService.isValid(bicepLS)) {
+                return LsValidity.INVALID
+            }
+            infrastructureService.findExecutablePath(bicepLS)
+        } else {
+            val path = settings.getLanguageServerPath()
+                ?.takeIf { it.isNotBlank() }
+                ?: return LsValidity.INVALID
+            Path.of(path)
+        }
+        return if (tryRunServerAndCheckNoErrorsInOutput(executablePath)) {
             LsValidity.VALID
-        else
+        } else {
             LsValidity.INVALID
+        }
     }
 
-    private suspend fun ensureInfrastructureExists(setupMode: LsSetupMode): Boolean {
+    private suspend fun ensureInfrastructureExists(setupMode: LsSetupMode, bicepLS: BicepLS): Boolean {
         return when (setupMode) {
             LsSetupMode.DOWNLOAD_AND_VALIDATE ->
                 BicepInfrastructureLoader.getInstance().downloadLsInfrastructure(project, bicepLS)
@@ -83,8 +125,12 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
         }
     }
 
-    private suspend fun tryRunServerAndCheckNoErrorsInOutput(): Boolean {
-        val testCommandLine = prepareBicepServerLaunchCommandLine(project)
+    private suspend fun tryRunServerAndCheckNoErrorsInOutput(executablePath: Path): Boolean {
+        if (!executablePath.isRegularFile()) return false
+
+        val riderEnvironment = project.initializeAndGetEnvironment()
+        val dotnetExecutablePath = riderEnvironment.getRuntime().cliPath().absolutePathString()
+        val testCommandLine = GeneralCommandLine(dotnetExecutablePath, executablePath.absolutePathString())
         val testOutput = withContext(Dispatchers.IO) {
             CapturingProcessHandler.Silent(testCommandLine).runProcess(1000, true)
         }
