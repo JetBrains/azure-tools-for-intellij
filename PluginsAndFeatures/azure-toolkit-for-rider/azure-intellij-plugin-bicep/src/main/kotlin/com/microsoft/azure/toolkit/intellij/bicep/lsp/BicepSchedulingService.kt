@@ -68,7 +68,8 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
     private suspend fun ensureInfrastructureValid(setupMode: LsSetupMode): LsValidity {
         return if (ensureInfrastructureExists(setupMode) &&
             BicepInfrastructureService.getInstance().isValid(bicepLS) &&
-            tryRunServerAndCheckNoErrorsInOutput())
+            tryRunServerAndCheckNoErrorsInOutput()
+        )
             LsValidity.VALID
         else
             LsValidity.INVALID
@@ -76,8 +77,11 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
 
     private suspend fun ensureInfrastructureExists(setupMode: LsSetupMode): Boolean {
         return when (setupMode) {
-            LsSetupMode.DOWNLOAD_AND_VALIDATE -> BicepInfrastructureLoader.getInstance().downloadLsInfrastructure(project, bicepLS)
-            LsSetupMode.VALIDATE_EXISTING -> BicepInfrastructureService.getInstance().isPresent(bicepLS)
+            LsSetupMode.DOWNLOAD_AND_VALIDATE ->
+                BicepInfrastructureLoader.getInstance().downloadLsInfrastructure(project, bicepLS)
+
+            LsSetupMode.VALIDATE_EXISTING ->
+                BicepInfrastructureService.getInstance().isPresent(bicepLS)
         }
     }
 
