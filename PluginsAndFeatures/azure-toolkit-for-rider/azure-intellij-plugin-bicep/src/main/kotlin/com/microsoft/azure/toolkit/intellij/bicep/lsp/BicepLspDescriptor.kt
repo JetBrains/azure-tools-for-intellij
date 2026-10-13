@@ -12,7 +12,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.lsp.api.ProjectWideLspClientDescriptor
 import com.intellij.platform.lsp.api.customization.*
-import com.jetbrains.rider.environment.initializeAndGetEnvironment
 import com.microsoft.azure.toolkit.intellij.bicep.BicepBundle
 
 internal class BicepLspDescriptor : ProjectWideLspClientDescriptor {
@@ -37,7 +36,7 @@ internal class BicepLspDescriptor : ProjectWideLspClientDescriptor {
 
     override fun createCommandLine(): GeneralCommandLine {
         return runBlockingMaybeCancellable {
-            prepareBicepServerLaunchCommandLine(project.initializeAndGetEnvironment())
+            prepareBicepServerLaunchCommandLine(project)
         }
     }
 

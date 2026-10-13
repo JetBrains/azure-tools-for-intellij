@@ -13,12 +13,16 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.concurrency.annotations.RequiresReadLockAbsence
+import com.intellij.util.text.VersionComparatorUtil
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import java.nio.file.Path
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.deleteRecursively
 import kotlin.io.path.exists
+import kotlin.io.path.isDirectory
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.name
 
 @Service(Service.Level.APP)
 internal class BicepInfrastructureService {
@@ -65,6 +69,20 @@ internal class BicepInfrastructureService {
     fun runtimeConfigPath(bicepLS: BicepLS): Path =
         extractedDirectoryPath(bicepLS)
             .resolve(RUNTIME_CONFIG_FILENAME)
+
+    @RequiresBackgroundThread
+    @RequiresReadLockAbsence
+    fun findLatestVersion(): String? {
+        val serversDirectory = Path.of(PathManager.getSystemPath()).resolve(BICEP_DIRECTORY_NAME)
+        if (!serversDirectory.isDirectory()) {
+            return null
+        }
+
+        return serversDirectory.listDirectoryEntries()
+            .filter { it.isDirectory() }
+            .map { it.name }
+            .maxWithOrNull { first, second -> VersionComparatorUtil.compare(first, second) }
+    }
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
