@@ -54,9 +54,6 @@ internal class BicepConfigurable(private val project: Project) : BoundConfigurab
               }
           }
         }.bind(state::languageServerSource)
-        row(BicepBundle.message("action.BicepInstallLsInfrastructureAction.text")) {
-          actionButton(ActionManager.getInstance().getAction("BicepInstallLsInfrastructureAction"))
-        }
       }
     }
   }
