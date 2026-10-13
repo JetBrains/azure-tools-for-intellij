@@ -45,7 +45,7 @@ internal fun findAllOpenedBicepFiles(project: Project): Sequence<VirtualFile> {
 
 internal suspend fun prepareBicepServerLaunchCommandLine(project: Project): GeneralCommandLine {
     val settings = BicepSettings.getInstance(project)
-    val infrastructureService = BicepInfrastructureService.getInstance()
+    val infrastructureService = BicepInfrastructureService.getInstance(project)
     val bicepExecutablePath = when (settings.getLanguageServerSource()) {
         LanguageServerSource.LOCAL_FILE -> {
             val path = settings.getLanguageServerPath()

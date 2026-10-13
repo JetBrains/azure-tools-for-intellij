@@ -96,7 +96,7 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
             }
         }
 
-        val infrastructureService = BicepInfrastructureService.getInstance()
+        val infrastructureService = BicepInfrastructureService.getInstance(project)
         val executablePath = if (bicepLS != null) {
             if (!ensureInfrastructureExists(setupMode, bicepLS) || !infrastructureService.isValid(bicepLS)) {
                 return LsValidity.INVALID
@@ -121,7 +121,7 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
                 BicepInfrastructureLoader.getInstance().downloadLsInfrastructure(project, bicepLS)
 
             LsSetupMode.VALIDATE_EXISTING ->
-                BicepInfrastructureService.getInstance().isPresent(bicepLS)
+                BicepInfrastructureService.getInstance(project).isPresent(bicepLS)
         }
     }
 

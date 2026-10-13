@@ -47,7 +47,7 @@ internal class BicepInfrastructureLoader {
     suspend fun downloadLsInfrastructure(project: Project, bicepLS: BicepLS): Boolean {
         return withBackgroundProgress(project, BicepBundle.message("progress.title.load.infra")) {
             reportSequentialProgress { reporter ->
-                val infrastructureService = BicepInfrastructureService.getInstance()
+                val infrastructureService = BicepInfrastructureService.getInstance(project)
                 if (infrastructureService.isPresent(bicepLS)) return@reportSequentialProgress true
 
                 infrastructureService.cleanServerDirectorySafe(bicepLS)
@@ -56,7 +56,7 @@ internal class BicepInfrastructureLoader {
                     endFraction = 70,
                     text = BicepBundle.message("progress.title.load", bicepLS.presentableName)
                 ) {
-                    downloadResourceSafe(bicepLS)
+                    downloadResourceSafe(bicepLS, infrastructureService.downloadedArchivePath(bicepLS))
                 } ?: return@reportSequentialProgress false
 
                 LOG.info("Loaded ${bicepLS.presentableName} to `$downloadedResource`")
@@ -65,7 +65,7 @@ internal class BicepInfrastructureLoader {
                     endFraction = 90,
                     text = BicepBundle.message("progress.title.unpack", bicepLS.presentableName)
                 ) {
-                    unzipResourceSafe(downloadedResource, bicepLS)
+                    unzipResourceSafe(downloadedResource, bicepLS, infrastructureService.extractedDirectoryPath(bicepLS))
                 } ?: return@reportSequentialProgress false
 
                 LOG.info("Unpacked ${bicepLS.presentableName} to `$unpackedResource`")
@@ -74,7 +74,7 @@ internal class BicepInfrastructureLoader {
                     endFraction = 100,
                     text = BicepBundle.message("progress.title.patch", bicepLS.presentableName)
                 ) {
-                    patchResourceSafe(bicepLS)
+                    patchResourceSafe(bicepLS, infrastructureService.runtimeConfigPath(bicepLS))
                 }
 
                 infrastructureService.isPresent(bicepLS)
@@ -82,14 +82,13 @@ internal class BicepInfrastructureLoader {
         }
     }
 
-    private fun downloadResourceSafe(bicepLS: BicepLS): Path? = runCatching {
-        downloadResource(bicepLS)
+    private fun downloadResourceSafe(bicepLS: BicepLS, targetFile: Path): Path? = runCatching {
+        downloadResource(bicepLS, targetFile)
     }.onFailureNoPce { exception ->
         LOG.warn("Unable to download ${bicepLS.presentableName}. Abort LS installation", exception)
     }.getOrNull()
 
-    private fun downloadResource(bicepLS: BicepLS): Path {
-        val targetFile = BicepInfrastructureService.getInstance().downloadedArchivePath(bicepLS)
+    private fun downloadResource(bicepLS: BicepLS, targetFile: Path): Path {
         if (targetFile.exists()) return targetFile
 
         return HttpRequests.request(bicepLS.formattedUrl)
@@ -101,14 +100,14 @@ internal class BicepInfrastructureLoader {
             }
     }
 
-    private fun unzipResourceSafe(resourcePath: Path, bicepLS: BicepLS): Path? = runCatching {
-        unzipResource(resourcePath, bicepLS)
+    private fun unzipResourceSafe(resourcePath: Path, bicepLS: BicepLS, target: Path): Path? = runCatching {
+        unzipResource(resourcePath, bicepLS, target)
     }.onFailureNoPce { exception ->
         LOG.warn("Unable to extract ${bicepLS.presentableName} archive. Abort LS installation", exception)
         Files.delete(resourcePath)
     }.getOrNull()
 
-    private fun unzipResource(resourcePath: Path, bicepLS: BicepLS): Path? {
+    private fun unzipResource(resourcePath: Path, bicepLS: BicepLS, target: Path): Path? {
         val decompressor = when (resourcePath.extension) {
             "zip" -> Decompressor.Zip(resourcePath)
             "gz", "tgz" -> Decompressor.Tar(resourcePath)
@@ -120,23 +119,21 @@ internal class BicepInfrastructureLoader {
                 return null
             }
         }
-        val target = BicepInfrastructureService.getInstance().extractedDirectoryPath(bicepLS)
         if (target.exists()) return target
         decompressor.extract(target)
         Files.delete(resourcePath)
         return target
     }
 
-    private fun patchResourceSafe(bicepLS: BicepLS) = runCatching {
-        patchInfrastructureFiles(bicepLS)
+    private fun patchResourceSafe(bicepLS: BicepLS, runtimeConfigPath: Path) = runCatching {
+        patchInfrastructureFiles(runtimeConfigPath)
     }.onFailureNoPce { exception ->
         LOG.warn("Unable to patch ${bicepLS.presentableName} archive", exception)
     }
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
-    private fun patchInfrastructureFiles(bicepLS: BicepLS) {
-        val runtimeConfigPath = BicepInfrastructureService.getInstance().runtimeConfigPath(bicepLS)
+    private fun patchInfrastructureFiles(runtimeConfigPath: Path) {
         try {
             if (!runtimeConfigPath.exists()) {
                 createDefaultRuntimeConfig(runtimeConfigPath)

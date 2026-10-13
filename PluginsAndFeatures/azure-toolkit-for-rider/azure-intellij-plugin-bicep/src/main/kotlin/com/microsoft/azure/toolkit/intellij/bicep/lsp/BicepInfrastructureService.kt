@@ -6,11 +6,14 @@
 
 package com.microsoft.azure.toolkit.intellij.bicep.lsp
 
-import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.progress.ProcessCanceledException
+import com.intellij.openapi.diagnostic.rethrowControlFlowException
+import com.intellij.openapi.project.Project
+import com.intellij.platform.eel.provider.asNioPath
+import com.intellij.platform.eel.provider.getEelDescriptor
+import com.intellij.platform.eel.provider.toEelApi
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.concurrency.annotations.RequiresReadLockAbsence
 import com.intellij.util.text.VersionComparatorUtil
@@ -24,26 +27,33 @@ import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.name
 
-@Service(Service.Level.APP)
-internal class BicepInfrastructureService {
+@Service(Service.Level.PROJECT)
+internal class BicepInfrastructureService(private val project: Project) {
     companion object {
+        private const val AZURE_TOOLS_DIRECTORY_NAME = ".azure-tools-for-rider"
         private const val BICEP_DIRECTORY_NAME = "bicep"
         private const val RUNTIME_CONFIG_FILENAME = "Bicep.LangServer.runtimeconfig.json"
 
-        fun getInstance(): BicepInfrastructureService = service<BicepInfrastructureService>()
+        fun getInstance(project: Project): BicepInfrastructureService = project.service<BicepInfrastructureService>()
         private val LOG = logger<BicepInfrastructureService>()
     }
 
-    private fun serverDirectoryPath(bicepLS: BicepLS): Path =
-        Path.of(PathManager.getSystemPath())
+    private suspend fun serversDirectoryPath(): Path {
+        val eelApi = project.getEelDescriptor().toEelApi()
+        return eelApi.userInfo.home.asNioPath()
+            .resolve(AZURE_TOOLS_DIRECTORY_NAME)
             .resolve(BICEP_DIRECTORY_NAME)
+    }
+
+    private suspend fun serverDirectoryPath(bicepLS: BicepLS): Path =
+        serversDirectoryPath()
             .resolve(bicepLS.version)
 
-    fun cleanServerDirectorySafe(bicepLS: BicepLS): Boolean {
+    suspend fun cleanServerDirectorySafe(bicepLS: BicepLS): Boolean {
         return runCatching {
             cleanServerDirectory(bicepLS)
         }.onFailure { exception ->
-            if (exception is ProcessCanceledException) throw exception
+            rethrowControlFlowException(exception)
             LOG.warn(
                 "Unable to clean download directory `${bicepLS.extractedDirectoryName}`. Abort LS installation",
                 exception
@@ -52,28 +62,28 @@ internal class BicepInfrastructureService {
     }
 
     @OptIn(ExperimentalPathApi::class)
-    private fun cleanServerDirectory(bicepLS: BicepLS) {
+    private suspend fun cleanServerDirectory(bicepLS: BicepLS) {
         extractedDirectoryPath(bicepLS)
             .takeIf { it.exists() }
             ?.deleteRecursively()
     }
 
-    fun downloadedArchivePath(bicepLS: BicepLS): Path =
+    suspend fun downloadedArchivePath(bicepLS: BicepLS): Path =
         serverDirectoryPath(bicepLS)
             .resolve(bicepLS.formattedUrl.substringAfterLast("/"))
 
-    fun extractedDirectoryPath(bicepLS: BicepLS): Path =
+    suspend fun extractedDirectoryPath(bicepLS: BicepLS): Path =
         serverDirectoryPath(bicepLS)
             .resolve(bicepLS.extractedDirectoryName)
 
-    fun runtimeConfigPath(bicepLS: BicepLS): Path =
+    suspend fun runtimeConfigPath(bicepLS: BicepLS): Path =
         extractedDirectoryPath(bicepLS)
             .resolve(RUNTIME_CONFIG_FILENAME)
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
-    fun findLatestVersion(): String? {
-        val serversDirectory = Path.of(PathManager.getSystemPath()).resolve(BICEP_DIRECTORY_NAME)
+    suspend fun findLatestVersion(): String? {
+        val serversDirectory = serversDirectoryPath()
         if (!serversDirectory.isDirectory()) {
             return null
         }
@@ -86,20 +96,20 @@ internal class BicepInfrastructureService {
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
-    fun findExecutablePath(bicepLS: BicepLS): Path {
+    suspend fun findExecutablePath(bicepLS: BicepLS): Path {
         return extractedDirectoryPath(bicepLS)
             .resolve(bicepLS.executableName)
     }
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
-    fun isPresent(bicepLS: BicepLS): Boolean {
+    suspend fun isPresent(bicepLS: BicepLS): Boolean {
         return findExecutablePath(bicepLS).exists()
     }
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
-    fun isValid(bicepLS: BicepLS): Boolean {
+    suspend fun isValid(bicepLS: BicepLS): Boolean {
         if (!isPresent(bicepLS)) return false
 
         val runtimeConfigPath = runtimeConfigPath(bicepLS)
