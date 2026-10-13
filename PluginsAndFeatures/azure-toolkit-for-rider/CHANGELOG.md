@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Support downloading Bicep LSP latest version from GitHub releases
+
 ### Changed
 
 - Sync plugin with upstream `release-3.97.7`.
