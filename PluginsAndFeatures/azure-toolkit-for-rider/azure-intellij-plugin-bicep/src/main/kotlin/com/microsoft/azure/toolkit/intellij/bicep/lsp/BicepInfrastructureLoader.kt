@@ -34,7 +34,10 @@ internal class BicepInfrastructureLoader {
     suspend fun downloadLsInfrastructure(project: Project, bicepLS: BicepLS): Boolean {
         return withBackgroundProgress(project, BicepBundle.message("progress.title.load.infra")) {
             reportSequentialProgress { reporter ->
-                if (BicepInfrastructureService.getInstance().isPresent(bicepLS)) return@reportSequentialProgress true
+                val infrastructureService = BicepInfrastructureService.getInstance()
+                if (infrastructureService.isPresent(bicepLS)) return@reportSequentialProgress true
+
+                infrastructureService.cleanServerDirectorySafe(bicepLS)
 
                 val downloadedResource = reporter.nextStep(
                     endFraction = 70,
@@ -61,7 +64,7 @@ internal class BicepInfrastructureLoader {
                     patchResourceSafe(bicepLS)
                 }
 
-                BicepInfrastructureService.getInstance().isPresent(bicepLS)
+                infrastructureService.isPresent(bicepLS)
             }
         }
     }
