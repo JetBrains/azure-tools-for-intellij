@@ -5,6 +5,7 @@ package com.microsoft.azure.toolkit.intellij.bicep.lsp
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.rethrowControlFlowException
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
@@ -16,6 +17,8 @@ import com.intellij.util.io.Decompressor
 import com.intellij.util.io.HttpRequests
 import com.microsoft.azure.toolkit.intellij.bicep.BicepBundle
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -24,6 +27,9 @@ import kotlinx.serialization.json.buildJsonObject
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.UUID
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.deleteRecursively
 import kotlin.io.path.exists
 import kotlin.io.path.extension
 
@@ -36,6 +42,8 @@ internal class BicepInfrastructureLoader {
         private val LOG = logger<BicepInfrastructureLoader>()
     }
 
+    private val downloadMutex = Mutex()
+
     suspend fun findLatestVersion(): String? = withContext(Dispatchers.IO) {
         val response = HttpRequests.request(LATEST_RELEASE_URL)
             .accept("application/vnd.github+json")
@@ -44,13 +52,24 @@ internal class BicepInfrastructureLoader {
         (release["tag_name"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() }
     }
 
-    suspend fun downloadLsInfrastructure(project: Project, bicepLS: BicepLS): Boolean {
-        return withBackgroundProgress(project, BicepBundle.message("progress.title.load.infra")) {
+    suspend fun downloadLatestLsInfrastructure(project: Project) {
+        try {
+            val version = findLatestVersion() ?: return
+            downloadLsInfrastructure(project, BicepLS(version))
+        } catch (exception: Exception) {
+            rethrowControlFlowException(exception)
+            LOG.warn("Unable to update Bicep language server infrastructure", exception)
+        }
+    }
+
+    @OptIn(ExperimentalPathApi::class)
+    suspend fun downloadLsInfrastructure(project: Project, bicepLS: BicepLS): Boolean = downloadMutex.withLock {
+        withBackgroundProgress(project, BicepBundle.message("progress.title.load.infra")) {
             reportSequentialProgress { reporter ->
                 val infrastructureService = BicepInfrastructureService.getInstance(project)
-                if (infrastructureService.isPresent(bicepLS)) return@reportSequentialProgress true
+                if (infrastructureService.isValid(bicepLS)) return@reportSequentialProgress true
 
-                infrastructureService.cleanServerDirectorySafe(bicepLS)
+                if (!infrastructureService.cleanServerDirectorySafe(bicepLS)) return@reportSequentialProgress false
 
                 val downloadedResource = reporter.nextStep(
                     endFraction = 70,
@@ -61,23 +80,33 @@ internal class BicepInfrastructureLoader {
 
                 LOG.info("Loaded ${bicepLS.presentableName} to `$downloadedResource`")
 
-                val unpackedResource = reporter.nextStep(
-                    endFraction = 90,
-                    text = BicepBundle.message("progress.title.unpack", bicepLS.presentableName)
-                ) {
-                    unzipResourceSafe(downloadedResource, bicepLS, infrastructureService.extractedDirectoryPath(bicepLS))
-                } ?: return@reportSequentialProgress false
+                val extractedDirectory = infrastructureService.extractedDirectoryPath(bicepLS)
+                val stagingDirectory = extractedDirectory.resolveSibling(".bicep-${UUID.randomUUID()}")
+                try {
+                    val unpackedResource = reporter.nextStep(
+                        endFraction = 90,
+                        text = BicepBundle.message("progress.title.unpack", bicepLS.presentableName)
+                    ) {
+                        unzipResourceSafe(downloadedResource, bicepLS, stagingDirectory)
+                    } ?: return@reportSequentialProgress false
 
-                LOG.info("Unpacked ${bicepLS.presentableName} to `$unpackedResource`")
+                    LOG.info("Unpacked ${bicepLS.presentableName} to `$unpackedResource`")
 
-                reporter.nextStep(
-                    endFraction = 100,
-                    text = BicepBundle.message("progress.title.patch", bicepLS.presentableName)
-                ) {
-                    patchResourceSafe(bicepLS, infrastructureService.runtimeConfigPath(bicepLS))
+                    val runtimeConfigPath = infrastructureService.runtimeConfigPath(stagingDirectory)
+                    reporter.nextStep(
+                        endFraction = 100,
+                        text = BicepBundle.message("progress.title.patch", bicepLS.presentableName)
+                    ) {
+                        patchResourceSafe(bicepLS, runtimeConfigPath)
+                    }
+
+                    if (!infrastructureService.isValid(bicepLS, stagingDirectory)) return@reportSequentialProgress false
+
+                    Files.move(stagingDirectory, extractedDirectory)
+                    true
+                } finally {
+                    if (stagingDirectory.exists()) stagingDirectory.deleteRecursively()
                 }
-
-                infrastructureService.isPresent(bicepLS)
             }
         }
     }

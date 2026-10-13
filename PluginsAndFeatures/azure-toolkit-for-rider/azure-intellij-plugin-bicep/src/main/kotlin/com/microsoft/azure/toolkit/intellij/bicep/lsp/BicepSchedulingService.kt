@@ -22,6 +22,7 @@ import kotlinx.coroutines.withContext
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.exists
 import kotlin.io.path.isRegularFile
 
 @Service(Service.Level.PROJECT)
@@ -53,8 +54,9 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
         lsVerified.set(LsValidity.YET_UNKNOWN)
         coroutineScope.launch(Dispatchers.Default + ModalityState.any().asContextElement()) {
             try {
+                val languageServerSource = BicepSettings.getInstance(project).getLanguageServerSource()
                 val infrastructureValidity = try {
-                    ensureInfrastructureValid(setupMode)
+                    ensureInfrastructureValid(setupMode, languageServerSource)
                 } catch (exception: Exception) {
                     rethrowControlFlowException(exception)
                     thisLogger().warn("Unable to validate Bicep language server infrastructure", exception)
@@ -65,6 +67,13 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
                     forceRunLanguageServer(project)
                 }
                 displayAvailabilityHint(infrastructureValidity, setupMode)
+
+                if (infrastructureValidity == LsValidity.VALID
+                    && setupMode == LsSetupMode.VALIDATE_EXISTING
+                    && languageServerSource == LanguageServerSource.LATEST
+                ) {
+                    BicepInfrastructureLoader.getInstance().downloadLatestLsInfrastructure(project)
+                }
             } finally {
                 setupInProgress.compareAndSet(expect = true, update = false)
                 reloadEditorNotifications(project)
@@ -76,27 +85,30 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
         VALIDATE_EXISTING, DOWNLOAD_AND_VALIDATE
     }
 
-    private suspend fun ensureInfrastructureValid(setupMode: LsSetupMode): LsValidity {
+    private suspend fun ensureInfrastructureValid(
+        setupMode: LsSetupMode,
+        languageServerSource: LanguageServerSource
+    ): LsValidity {
         val settings = BicepSettings.getInstance(project)
-        val bicepLS = when (settings.getLanguageServerSource()) {
+        val infrastructureService = BicepInfrastructureService.getInstance(project)
+        val bicepLS = when (languageServerSource) {
             LanguageServerSource.LOCAL_FILE -> null
 
             LanguageServerSource.SPECIFIC_VERSION -> {
-                val version = settings.getLanguageServerVersion()
-                    ?.takeIf { it.isNotBlank() }
+                val version = settings.getLanguageServerVersion()?.takeIf { it.isNotBlank() }
                     ?: return LsValidity.INVALID
                 BicepLS(version)
             }
 
             LanguageServerSource.LATEST -> {
-                val version = BicepInfrastructureLoader.getInstance()
-                    .findLatestVersion()
-                    ?: return LsValidity.INVALID
+                val version = when (setupMode) {
+                    LsSetupMode.VALIDATE_EXISTING -> infrastructureService.findLatestVersion()
+                    LsSetupMode.DOWNLOAD_AND_VALIDATE -> BicepInfrastructureLoader.getInstance().findLatestVersion()
+                } ?: return LsValidity.INVALID
                 BicepLS(version)
             }
         }
 
-        val infrastructureService = BicepInfrastructureService.getInstance(project)
         val executablePath = if (bicepLS != null) {
             if (!ensureInfrastructureExists(setupMode, bicepLS) || !infrastructureService.isValid(bicepLS)) {
                 return LsValidity.INVALID
@@ -108,6 +120,7 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
                 ?: return LsValidity.INVALID
             Path.of(path)
         }
+
         return if (tryRunServerAndCheckNoErrorsInOutput(executablePath)) {
             LsValidity.VALID
         } else {
@@ -121,7 +134,7 @@ internal class BicepSchedulingService(private val project: Project, val coroutin
                 BicepInfrastructureLoader.getInstance().downloadLsInfrastructure(project, bicepLS)
 
             LsSetupMode.VALIDATE_EXISTING ->
-                BicepInfrastructureService.getInstance(project).isPresent(bicepLS)
+                BicepInfrastructureService.getInstance(project).findExecutablePath(bicepLS).exists()
         }
     }
 

@@ -25,6 +25,7 @@ import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.deleteRecursively
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
+import kotlin.io.path.isRegularFile
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.name
 
@@ -87,10 +88,6 @@ internal class BicepInfrastructureService(private val project: Project) {
         serverDirectoryPath(bicepLS)
             .resolve(bicepLS.extractedDirectoryName)
 
-    suspend fun runtimeConfigPath(bicepLS: BicepLS): Path =
-        extractedDirectoryPath(bicepLS)
-            .resolve(RUNTIME_CONFIG_FILENAME)
-
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
     suspend fun findLatestVersion(): String? {
@@ -100,31 +97,47 @@ internal class BicepInfrastructureService(private val project: Project) {
         }
 
         return serversDirectory.listDirectoryEntries()
-            .filter { it.isDirectory() }
+            .filter { it.isDirectory() && isValid(BicepLS(it.name)) }
             .map { it.name }
             .maxWithOrNull { first, second -> VersionComparatorUtil.compare(first, second) }
     }
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
+    suspend fun runtimeConfigPath(bicepLS: BicepLS): Path =
+        runtimeConfigPath(extractedDirectoryPath(bicepLS))
+
+    @RequiresBackgroundThread
+    @RequiresReadLockAbsence
+    fun runtimeConfigPath(extractedDirectory: Path): Path =
+        extractedDirectory.resolve(RUNTIME_CONFIG_FILENAME)
+
+    @RequiresBackgroundThread
+    @RequiresReadLockAbsence
     suspend fun findExecutablePath(bicepLS: BicepLS): Path {
-        return extractedDirectoryPath(bicepLS)
-            .resolve(bicepLS.executableName)
+        return findExecutablePath(bicepLS, extractedDirectoryPath(bicepLS))
     }
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
-    suspend fun isPresent(bicepLS: BicepLS): Boolean {
-        return findExecutablePath(bicepLS).exists()
+    fun findExecutablePath(bicepLS: BicepLS, extractedDirectory: Path): Path {
+        return extractedDirectory.resolve(bicepLS.executableName)
     }
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
     suspend fun isValid(bicepLS: BicepLS): Boolean {
-        if (!isPresent(bicepLS)) return false
+        return isValid(bicepLS, extractedDirectoryPath(bicepLS))
+    }
 
-        val runtimeConfigPath = runtimeConfigPath(bicepLS)
-        if (!runtimeConfigPath.exists()) return false
+    @RequiresBackgroundThread
+    @RequiresReadLockAbsence
+    fun isValid(bicepLS: BicepLS, extractedDirectory: Path): Boolean {
+        val executable = findExecutablePath(bicepLS, extractedDirectory)
+        if (!executable.isRegularFile()) return false
+
+        val runtimeConfigPath = runtimeConfigPath(extractedDirectory)
+        if (!runtimeConfigPath.isRegularFile()) return false
 
         val root = parseRuntimeConfig(runtimeConfigPath) ?: return false
         val runtimeOptionsObj = root["runtimeOptions"] as? JsonObject ?: return false
