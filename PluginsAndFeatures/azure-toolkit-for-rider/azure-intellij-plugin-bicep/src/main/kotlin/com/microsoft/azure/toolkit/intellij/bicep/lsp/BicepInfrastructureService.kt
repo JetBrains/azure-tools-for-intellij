@@ -19,6 +19,7 @@ import com.intellij.util.concurrency.annotations.RequiresReadLockAbsence
 import com.intellij.util.text.VersionComparatorUtil
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import java.nio.file.LinkOption
 import java.nio.file.Path
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.deleteRecursively
@@ -33,6 +34,7 @@ internal class BicepInfrastructureService(private val project: Project) {
         private const val AZURE_TOOLS_DIRECTORY_NAME = ".azure-tools-for-rider"
         private const val BICEP_DIRECTORY_NAME = "bicep"
         private const val RUNTIME_CONFIG_FILENAME = "Bicep.LangServer.runtimeconfig.json"
+        private const val MAX_RETAINED_SERVER_VERSIONS = 5
 
         fun getInstance(project: Project): BicepInfrastructureService = project.service<BicepInfrastructureService>()
         private val LOG = logger<BicepInfrastructureService>()
@@ -66,6 +68,15 @@ internal class BicepInfrastructureService(private val project: Project) {
         extractedDirectoryPath(bicepLS)
             .takeIf { it.exists() }
             ?.deleteRecursively()
+
+        val serversDirectory = serversDirectoryPath()
+        if (!serversDirectory.isDirectory()) return
+
+        serversDirectory.listDirectoryEntries()
+            .filter { it.isDirectory(LinkOption.NOFOLLOW_LINKS) && it.name != bicepLS.version }
+            .sortedWith { first, second -> VersionComparatorUtil.compare(second.name, first.name) }
+            .drop(MAX_RETAINED_SERVER_VERSIONS - 1)
+            .forEach { it.deleteRecursively() }
     }
 
     suspend fun downloadedArchivePath(bicepLS: BicepLS): Path =
