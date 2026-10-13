@@ -10,12 +10,11 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.progress.runBlockingMaybeCancellable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.lsp.api.ProjectWideLspServerDescriptor
+import com.intellij.platform.lsp.api.ProjectWideLspClientDescriptor
 import com.intellij.platform.lsp.api.customization.*
-import com.jetbrains.rider.environment.initializeAndGetEnvironment
 import com.microsoft.azure.toolkit.intellij.bicep.BicepBundle
 
-internal class BicepLspDescriptor : ProjectWideLspServerDescriptor {
+internal class BicepLspDescriptor : ProjectWideLspClientDescriptor {
     constructor(project: Project) : super(project, "Bicep LSP") {
         this.lspCustomization = object : LspCustomization() {
             override val inlayHintCustomizer: LspInlayHintCustomizer = LspInlayHintDisabled
@@ -37,7 +36,7 @@ internal class BicepLspDescriptor : ProjectWideLspServerDescriptor {
 
     override fun createCommandLine(): GeneralCommandLine {
         return runBlockingMaybeCancellable {
-            prepareBicepServerLaunchCommandLine(project.initializeAndGetEnvironment())
+            prepareBicepServerLaunchCommandLine(project)
         }
     }
 

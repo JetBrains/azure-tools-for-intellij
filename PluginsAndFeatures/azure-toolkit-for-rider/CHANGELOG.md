@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Support downloading Bicep LSP latest version from GitHub releases
+
 ### Changed
 
 - Change the default pricing tier for Azure Functions to Flex Consumption.
