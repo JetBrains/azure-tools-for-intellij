@@ -11,7 +11,7 @@ import com.jetbrains.rider.azureFunctions.settings.AzureFunctionSettingStateServ
 import com.microsoft.azure.toolkit.intellij.storage.azurite.settings.AzuriteLocationMode
 import com.microsoft.azure.toolkit.intellij.storage.azurite.settings.AzuriteSettings
 
-@Suppress("UnstableApiUsage")
+@Suppress("JetBrainsInternalApiUsage")
 internal class AzuriteSettingsMigrationStartupActivity : ProjectActivity {
     companion object {
         private const val AZURE_FUNCTIONS_STORAGE_SETTINGS_MIGRATED = "Rider.Azure.Toolkit.Storage.Settings.Migrated"
@@ -48,10 +48,6 @@ internal class AzuriteSettingsMigrationStartupActivity : ProjectActivity {
 
         if (newSettings.azuriteSkipApiVersionCheck == false) {
             newSettings.azuriteSkipApiVersionCheck = previousSettings.skipApiVersionCheck
-        }
-
-        if (newSettings.azuriteShowService == true) {
-            newSettings.azuriteShowService = previousSettings.showAzuriteService
         }
 
         if (newSettings.azuriteCheckExecutable == true) {

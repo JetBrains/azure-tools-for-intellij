@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Compatibility issue with Rider 2026.2.3.1
+
 ## [4.8.5] - 2026-10-13
 
 ### Added
