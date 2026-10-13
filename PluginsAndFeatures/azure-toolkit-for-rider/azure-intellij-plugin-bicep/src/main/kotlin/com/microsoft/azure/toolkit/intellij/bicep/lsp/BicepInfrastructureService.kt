@@ -23,17 +23,21 @@ import kotlin.io.path.exists
 @Service(Service.Level.APP)
 internal class BicepInfrastructureService {
     companion object {
+        private const val BICEP_DIRECTORY_NAME = "bicep"
         private const val RUNTIME_CONFIG_FILENAME = "Bicep.LangServer.runtimeconfig.json"
 
         fun getInstance(): BicepInfrastructureService = service<BicepInfrastructureService>()
         private val LOG = logger<BicepInfrastructureService>()
     }
 
-    val bicepTmpPath: Path = Path.of(PathManager.getSystemPath()).resolve("bicep")
+    private fun serverDirectoryPath(bicepLS: BicepLS): Path =
+        Path.of(PathManager.getSystemPath())
+            .resolve(BICEP_DIRECTORY_NAME)
+            .resolve(bicepLS.version)
 
-    fun cleanTmpDirectorySafe(bicepLS: BicepLS): Boolean {
+    fun cleanServerDirectorySafe(bicepLS: BicepLS): Boolean {
         return runCatching {
-            cleanTmpDirectory(bicepLS)
+            cleanServerDirectory(bicepLS)
         }.onFailure { exception ->
             if (exception is ProcessCanceledException) throw exception
             LOG.warn(
@@ -44,18 +48,23 @@ internal class BicepInfrastructureService {
     }
 
     @OptIn(ExperimentalPathApi::class)
-    private fun cleanTmpDirectory(bicepLS: BicepLS) {
+    private fun cleanServerDirectory(bicepLS: BicepLS) {
         extractedDirectoryPath(bicepLS)
             .takeIf { it.exists() }
             ?.deleteRecursively()
     }
 
-    fun downloadedArchivePath(bicepLS: BicepLS): Path = bicepTmpPath.resolve(bicepLS.formattedUrl.substringAfterLast("/"))
+    fun downloadedArchivePath(bicepLS: BicepLS): Path =
+        serverDirectoryPath(bicepLS)
+            .resolve(bicepLS.formattedUrl.substringAfterLast("/"))
 
-    fun extractedDirectoryPath(bicepLS: BicepLS): Path = bicepTmpPath.resolve(bicepLS.extractedDirectoryName)
+    fun extractedDirectoryPath(bicepLS: BicepLS): Path =
+        serverDirectoryPath(bicepLS)
+            .resolve(bicepLS.extractedDirectoryName)
 
-    fun runtimeConfigPath(bicepLS: BicepLS): Path = extractedDirectoryPath(bicepLS)
-        .resolve(RUNTIME_CONFIG_FILENAME)
+    fun runtimeConfigPath(bicepLS: BicepLS): Path =
+        extractedDirectoryPath(bicepLS)
+            .resolve(RUNTIME_CONFIG_FILENAME)
 
     @RequiresBackgroundThread
     @RequiresReadLockAbsence
