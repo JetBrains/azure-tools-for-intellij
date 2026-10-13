@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [4.8.5] - 2026-10-13
+
 ### Added
 
 - Support downloading Bicep LSP latest version from GitHub releases
@@ -496,7 +498,8 @@
 - Reimplement Azure Functions Core Tools integration
 - Reimplement Azure Functions templates
 
-[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.8.4...HEAD
+[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.8.5...HEAD
+[4.8.5]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.8.4...4.8.5
 [4.8.4]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.8.3...4.8.4
 [4.8.3]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.8.2...4.8.3
 [4.8.2]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.8.1...4.8.2
