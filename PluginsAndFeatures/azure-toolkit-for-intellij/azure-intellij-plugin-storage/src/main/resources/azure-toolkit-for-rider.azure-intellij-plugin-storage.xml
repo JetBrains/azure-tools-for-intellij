@@ -1,0 +1,23 @@
+<idea-plugin>
+    <dependencies>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-service-explorer"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-resource-connector-lib"/>
+    </dependencies>
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.storage.StorageNodeProvider"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.storage.StorageActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.storage.IntellijStorageActionsContributor"/>
+    </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <iconMapper mappingFile="azure-intellij-plugin-storage-IconMappings.json"/>
+    </extensions>
+    <projectListeners>
+        <listener class="com.microsoft.azure.toolkit.intellij.storage.azurite.AzuriteTaskAdder"
+                  topic="com.intellij.execution.RunManagerListener" />
+        <listener class="com.microsoft.azure.toolkit.intellij.storage.azurite.AzuriteTaskAdder"
+                  topic="com.microsoft.azure.toolkit.intellij.connector.ConnectionTopics$ConnectionChanged" />
+        <listener class="com.microsoft.azure.toolkit.intellij.storage.azurite.AzuriteTaskAdder"
+                  topic="com.microsoft.azure.toolkit.intellij.common.runconfig.IWebAppRunConfiguration$ModuleChangedListener" />
+    </projectListeners>
+</idea-plugin>

@@ -23,7 +23,6 @@
     <xi:include href="/META-INF/azure-intellij-plugin-appservice-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-keyvault.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-keyvault-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <xi:include href="/META-INF/azure-intellij-plugin-storage.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-storage-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-servicebus.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-eventhubs.xml" xpointer="xpointer(/idea-plugin/*)"/>
@@ -45,6 +44,7 @@
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-database-dotnet" loading="embedded"/>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-redis" loading="embedded"/>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-redis-dotnet" loading="embedded"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-storage" loading="embedded"/>
     </content>
 
     <actions>
