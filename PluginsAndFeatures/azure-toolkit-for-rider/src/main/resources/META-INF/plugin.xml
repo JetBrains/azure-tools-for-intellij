@@ -19,7 +19,6 @@
 </ul>
     ]]></description>
 
-    <xi:include href="/META-INF/azure-intellij-plugin-core.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-resource-connector-lib.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-service-explorer.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-service-explorer-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
@@ -41,6 +40,7 @@
     <content>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib" loading="embedded"/>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib-dotnet" loading="embedded"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-core" loading="embedded"/>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-bicep" loading="optional"/>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-cloud-shell" loading="optional"/>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-cosmos" loading="embedded"/>
