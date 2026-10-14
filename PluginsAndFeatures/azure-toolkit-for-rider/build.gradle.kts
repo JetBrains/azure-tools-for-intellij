@@ -44,7 +44,6 @@ dependencies {
 
     implementation(project(path = ":azure-intellij-plugin-appservice"))
     implementation(project(path = ":azure-intellij-plugin-appservice-dotnet"))
-    implementation(project(path = ":azure-intellij-plugin-database"))
     implementation(project(path = ":azure-intellij-plugin-database-dotnet"))
     implementation(project(path = ":azure-intellij-plugin-redis"))
     implementation(project(path = ":azure-intellij-plugin-redis-dotnet"))
@@ -80,6 +79,7 @@ dependencies {
         pluginModule(implementation(project(":azure-intellij-plugin-cloud-shell")))
         pluginModule(implementation(project(":azure-intellij-plugin-cosmos")))
         pluginModule(implementation(project(":azure-intellij-plugin-cosmos-dotnet")))
+        pluginModule(implementation(project(":azure-intellij-plugin-database")))
     }
 }
 

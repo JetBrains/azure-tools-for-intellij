@@ -1,0 +1,36 @@
+<idea-plugin>
+    <dependencies>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-service-explorer"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-resource-connector-lib"/>
+        <plugin id="com.intellij.database"/>
+    </dependencies>
+
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.database.postgre.PostgreSqlNodeProvider"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.database.postgre.PostgreSqlActionsContributor"/>
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.database.postgre.single.PostgreSqlNodeProvider"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.database.postgre.single.PostgreSqlActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.database.postgre.IntellijPostgreSqlActionsContributor"/>
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.database.mysql.MySqlNodeProvider"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.database.mysql.MySqlActionsContributor"/>
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.database.mysql.single.MySqlNodeProvider"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.database.mysql.single.MySqlActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.database.mysql.IntellijMySqlActionsContributor"/>
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.database.sqlserver.SqlServerNodeProvider"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.database.sqlserver.SqlServerActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.database.sqlserver.IntellijSqlServerActionsContributor"/>
+    </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.database.postgre.property.PostgreSqlPropertiesEditorProvider"/>
+        <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.database.mysql.property.MySqlPropertiesEditorProvider"/>
+        <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.database.sqlserver.property.SqlServerPropertiesEditorProvider"/>
+        <postStartupActivity implementation="com.microsoft.azure.toolkit.intellij.database.dbtools.DatabaseDbToolsWorkaround"/>
+        <iconMapper mappingFile="azure-intellij-plugin-database-IconMappings.json"/>
+    </extensions>
+    <extensions defaultExtensionNs="com.intellij.database">
+        <connectionInterceptor implementation="com.microsoft.azure.toolkit.intellij.database.dbtools.DatabaseServerConnectionInterceptor"/>
+        <urlParamEditorProvider implementation="com.microsoft.azure.toolkit.intellij.database.dbtools.DatabaseServerTypeFactory" order="first"/>
+        <urlParamEditorUiProvider implementation="com.microsoft.azure.toolkit.intellij.database.dbtools.DatabaseServerTypeUIFactory" order="first"/>
+    </extensions>
+</idea-plugin>

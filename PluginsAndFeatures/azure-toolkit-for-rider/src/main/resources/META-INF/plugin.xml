@@ -21,7 +21,6 @@
 
     <xi:include href="/META-INF/azure-intellij-plugin-appservice.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-appservice-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <xi:include href="/META-INF/azure-intellij-plugin-database.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-database-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-keyvault.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-keyvault-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
@@ -45,6 +44,7 @@
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-cloud-shell" loading="optional"/>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-cosmos" loading="embedded"/>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-cosmos-dotnet" loading="embedded"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-database" loading="embedded"/>
     </content>
 
     <actions>
