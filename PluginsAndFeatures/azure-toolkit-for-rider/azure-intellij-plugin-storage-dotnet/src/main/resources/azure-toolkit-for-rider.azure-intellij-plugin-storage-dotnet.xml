@@ -1,0 +1,17 @@
+<idea-plugin>
+    <dependencies>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-storage"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-resource-connector-lib"/>
+        <module name="intellij.rider"/>
+        <module name="intellij.rider.rdclient.dotnet"/>
+    </dependencies>
+    <extensions defaultExtensionNs="com.intellij">
+        <backgroundPostStartupActivity
+                implementation="com.microsoft.azure.toolkit.intellij.storage.AzuriteSettingsMigrationStartupActivity"/>
+    </extensions>
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <connectorResourceType implementation="com.microsoft.azure.toolkit.intellij.storage.connection.StorageAccountResourceDefinition"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.storage.IntellijDotnetStorageActionsContributor"/>
+    </extensions>
+</idea-plugin>
