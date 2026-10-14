@@ -44,7 +44,6 @@ dependencies {
 
     implementation(project(path = ":azure-intellij-plugin-appservice"))
     implementation(project(path = ":azure-intellij-plugin-appservice-dotnet"))
-    implementation(project(path = ":azure-intellij-plugin-redis-dotnet"))
     implementation(project(path = ":azure-intellij-plugin-storage"))
     implementation(project(path = ":azure-intellij-plugin-storage-dotnet"))
     implementation(project(path = ":azure-intellij-plugin-keyvault"))
@@ -80,6 +79,7 @@ dependencies {
         pluginModule(implementation(project(":azure-intellij-plugin-database")))
         pluginModule(implementation(project(":azure-intellij-plugin-database-dotnet")))
         pluginModule(implementation(project(":azure-intellij-plugin-redis")))
+        pluginModule(implementation(project(":azure-intellij-plugin-redis-dotnet")))
     }
 }
 
