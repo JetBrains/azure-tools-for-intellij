@@ -30,7 +30,6 @@
     <xi:include href="/META-INF/azure-intellij-plugin-arm.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-database.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-database-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <xi:include href="/META-INF/azure-intellij-plugin-cloud-shell.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-keyvault.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-keyvault-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-redis.xml" xpointer="xpointer(/idea-plugin/*)"/>
@@ -45,6 +44,7 @@
 
     <content>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-bicep" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-cloud-shell" loading="optional"/>
     </content>
 
     <actions>
@@ -62,8 +62,6 @@
             <reference ref="Actions.WebAppContainersDeployAction"/>
             <reference ref="Actions.FunctionAppDeployAction"/>
             <reference ref="Actions.FunctionAppContainersDeployAction"/>
-            <separator/>
-            <reference ref="AzureToolkit.CloudShell.Group"/>
             <separator/>
             <reference ref="AzureToolkit.AzureSignIn"/>
         </group>

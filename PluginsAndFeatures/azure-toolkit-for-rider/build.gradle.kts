@@ -53,7 +53,6 @@ dependencies {
     implementation(project(path = ":azure-intellij-plugin-appservice-dotnet"))
     implementation(project(path = ":azure-intellij-plugin-database"))
     implementation(project(path = ":azure-intellij-plugin-database-dotnet"))
-    implementation(project(path = ":azure-intellij-plugin-cloud-shell"))
     implementation(project(path = ":azure-intellij-plugin-redis"))
     implementation(project(path = ":azure-intellij-plugin-redis-dotnet"))
     implementation(project(path = ":azure-intellij-plugin-storage"))
@@ -80,6 +79,7 @@ dependencies {
         testFramework(TestFrameworkType.Bundled)
 
         pluginModule(implementation(project(":azure-intellij-plugin-bicep")))
+        pluginModule(implementation(project(":azure-intellij-plugin-cloud-shell")))
     }
 }
 
