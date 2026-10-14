@@ -5,6 +5,8 @@
 
 package com.microsoft.azure.toolkit.intellij.legacy.appservice.action;
 
+// Monitor UI is not bundled with Rider.
+/*
 import com.azure.resourcemanager.applicationinsights.models.ApplicationInsightsComponent;
 import com.intellij.openapi.project.Project;
 import com.microsoft.azure.toolkit.intellij.monitor.AzureMonitorManager;
@@ -86,3 +88,4 @@ public class OpenLogsInMonitorAction {
         return null;
     }
 }
+*/

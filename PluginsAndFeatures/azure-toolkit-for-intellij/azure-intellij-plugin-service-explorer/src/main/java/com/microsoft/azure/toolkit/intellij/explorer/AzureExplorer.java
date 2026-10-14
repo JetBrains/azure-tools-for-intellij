@@ -163,8 +163,8 @@ public class AzureExplorer extends Tree {
                     .withHandler((e) -> this.refreshAll()),
                 IAccountActions.SELECT_SUBS,
                 "----",
-                ResourceCommonActionsContributor.SHOW_COURSES,
-                ResourceCommonActionsContributor.OPEN_MONITOR,
+//                ResourceCommonActionsContributor.SHOW_COURSES,
+//                ResourceCommonActionsContributor.OPEN_MONITOR,
                 "----",
                 IAccountActions.AUTHENTICATE))
             .addChildren((a) -> buildAzServiceNodes());
