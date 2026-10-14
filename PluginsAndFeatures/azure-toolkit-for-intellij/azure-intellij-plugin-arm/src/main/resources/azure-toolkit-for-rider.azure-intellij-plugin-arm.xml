@@ -1,0 +1,28 @@
+<idea-plugin>
+    <dependencies>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-service-explorer"/>
+        <plugin id="com.intellij.modules.json"/>
+    </dependencies>
+
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.arm.ResourceGroupNodeProvider"/>
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.arm.DeploymentNodeProvider"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.arm.ResourceGroupActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.arm.DeploymentActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.arm.IntellijResourceGroupActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.arm.IntellijDeploymentActionsContributor"/>
+    </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.arm.property.DeploymentPropertyViewProvider"/>
+        <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.arm.template.ResourceTemplateViewProvider"/>
+        <fileTypeFactory implementation="com.microsoft.azure.toolkit.intellij.arm.language.ARMTemplateFileTypeFactory"/>
+        <lang.syntaxHighlighterFactory language="arm"
+                                       implementationClass="com.microsoft.azure.toolkit.intellij.arm.language.ARMTemplateSyntaxHighlightFactory"/>
+        <lang.parserDefinition language="arm"
+                               implementationClass="com.microsoft.azure.toolkit.intellij.arm.language.ARMTemplateParserDefinition"/>
+        <completion.contributor language="JSON" order="first"
+                                implementationClass="com.microsoft.azure.toolkit.intellij.arm.language.ARMTemplateCompletionContributor"/>
+        <iconMapper mappingFile="azure-intellij-plugin-arm-IconMappings.json"/>
+    </extensions>
+</idea-plugin>
