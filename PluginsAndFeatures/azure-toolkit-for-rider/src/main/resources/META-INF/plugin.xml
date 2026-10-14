@@ -37,14 +37,14 @@
     <xi:include href="/META-INF/azure-intellij-plugin-servicebus.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-eventhubs.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-vm.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <xi:include href="/META-INF/azure-intellij-plugin-cosmos.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <xi:include href="/META-INF/azure-intellij-plugin-cosmos-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
     <content>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib" loading="embedded"/>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib-dotnet" loading="embedded"/>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-bicep" loading="optional"/>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-cloud-shell" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-cosmos" loading="embedded"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-cosmos-dotnet" loading="embedded"/>
     </content>
 
     <actions>
