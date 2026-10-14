@@ -1,0 +1,11 @@
+<idea-plugin>
+    <dependencies>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-keyvault"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-resource-connector-lib"/>
+    </dependencies>
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <connectorResourceType implementation="com.microsoft.azure.toolkit.intellij.keyvault.connection.KeyVaultResourceDefinition"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.keyvault.IntellijDotnetKeyVaultActionsContributor"/>
+    </extensions>
+</idea-plugin>
