@@ -43,8 +43,6 @@ dependencies {
     implementation(libs.azureToolkitIdeCommonLib)
 
     implementation(project(path = ":azure-intellij-plugin-core"))
-    implementation(project(path = ":azure-intellij-plugin-lib"))
-    implementation(project(path = ":azure-intellij-plugin-lib-dotnet"))
     implementation(project(path = ":azure-intellij-plugin-service-explorer"))
     implementation(project(path = ":azure-intellij-plugin-service-explorer-dotnet"))
     implementation(project(path = ":azure-intellij-resource-connector-lib"))
@@ -78,6 +76,8 @@ dependencies {
         bundledPlugins(listOf("com.jetbrains.restClient"))
         testFramework(TestFrameworkType.Bundled)
 
+        pluginModule(implementation(project(":azure-intellij-plugin-lib")))
+        pluginModule(implementation(project(":azure-intellij-plugin-lib-dotnet")))
         pluginModule(implementation(project(":azure-intellij-plugin-bicep")))
         pluginModule(implementation(project(":azure-intellij-plugin-cloud-shell")))
     }

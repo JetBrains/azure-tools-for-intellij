@@ -1,0 +1,6 @@
+<idea-plugin>
+    <dependencies>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib"/>
+        <plugin id="Docker"/>
+    </dependencies>
+</idea-plugin>
