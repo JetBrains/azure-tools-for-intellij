@@ -1,3 +1,7 @@
 <idea-plugin>
-    <depends>Docker</depends>
+    <dependencies>
+        <plugin id="Docker"/>
+        <module name="intellij.platform.remoteServers"/>
+        <module name="intellij.platform.remoteServers.impl"/>
+    </dependencies>
 </idea-plugin>

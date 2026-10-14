@@ -9,6 +9,7 @@
         <plugin id="Docker"/>
         <plugin id="rider.intellij.plugin.appender"/>
         <module name="intellij.rider.ssh"/>
+        <module name="intellij.platform.debugger.impl"/>
     </dependencies>
 
     <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">

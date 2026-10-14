@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     intellijPlatform {
+        bundledModules("intellij.platform.remoteServers", "intellij.platform.remoteServers.impl")
         bundledPlugins("Docker")
     }
 
