@@ -42,8 +42,6 @@ dependencies {
     implementation(libs.azureToolkitCommonLib)
     implementation(libs.azureToolkitIdeCommonLib)
 
-    implementation(project(path = ":azure-intellij-plugin-service-explorer"))
-    implementation(project(path = ":azure-intellij-plugin-service-explorer-dotnet"))
     implementation(project(path = ":azure-intellij-resource-connector-lib"))
     implementation(project(path = ":azure-intellij-plugin-arm"))
     implementation(project(path = ":azure-intellij-plugin-appservice"))
@@ -76,6 +74,8 @@ dependencies {
         pluginModule(implementation(project(":azure-intellij-plugin-lib")))
         pluginModule(implementation(project(":azure-intellij-plugin-lib-dotnet")))
         pluginModule(implementation(project(":azure-intellij-plugin-core")))
+        pluginModule(implementation(project(":azure-intellij-plugin-service-explorer")))
+        pluginModule(implementation(project(":azure-intellij-plugin-service-explorer-dotnet")))
         pluginModule(implementation(project(":azure-intellij-plugin-bicep")))
         pluginModule(implementation(project(":azure-intellij-plugin-cloud-shell")))
         pluginModule(implementation(project(":azure-intellij-plugin-cosmos")))
