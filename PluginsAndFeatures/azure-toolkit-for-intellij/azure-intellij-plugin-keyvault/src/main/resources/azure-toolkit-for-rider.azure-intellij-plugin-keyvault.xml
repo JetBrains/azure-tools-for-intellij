@@ -1,0 +1,21 @@
+<idea-plugin>
+    <dependencies>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-service-explorer"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-resource-connector-lib"/>
+    </dependencies>
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.keyvault.KeyVaultNodeProvider"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.keyvault.KeyVaultActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.keyvault.IntelliJKeyVaultActionsContributor"/>
+    </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.keyvault.property.secret.SecretPropertiesEditorProvider"/>
+        <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.keyvault.property.secret.SecretVersionPropertiesEditorProvider"/>
+        <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.keyvault.property.certificate.CertificatePropertiesEditorProvider"/>
+        <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.keyvault.property.certificate.CertificateVersionPropertiesEditorProvider"/>
+        <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.keyvault.property.key.KeyPropertiesEditorProvider"/>
+        <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.keyvault.property.key.KeyVersionPropertiesEditorProvider"/>
+        <iconMapper mappingFile="azure-intellij-plugin-keyvault-IconMappings.json"/>
+    </extensions>
+</idea-plugin>

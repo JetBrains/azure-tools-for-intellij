@@ -1,0 +1,18 @@
+<idea-plugin>
+    <dependencies>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-service-explorer"/>
+    </dependencies>
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.servicebus.ServiceBusNodeProvider"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.servicebus.ServiceBusActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.servicebus.IntelliJServiceBusActionsContributor"/>
+    </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+<!--        <toolWindow anchor="bottom"-->
+<!--                icon="/icons/Common/service_bus.svg"-->
+<!--                factoryClass="com.microsoft.azure.toolkit.intellij.servicebus.view.ServiceBusToolWindowManager$ServiceBusToolWindowFactory"-->
+<!--                id="Azure Service Bus" canCloseContents="true"/>-->
+        <iconMapper mappingFile="azure-intellij-plugin-servicebus-IconMappings.json"/>
+    </extensions>
+</idea-plugin>
