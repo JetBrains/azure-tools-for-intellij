@@ -1,0 +1,20 @@
+<idea-plugin>
+    <dependencies>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-service-explorer"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-storage"/>
+        <plugin id="com.jetbrains.plugins.webDeployment"/>
+        <plugin id="org.jetbrains.plugins.remote-run"/>
+        <plugin id="org.jetbrains.plugins.terminal"/>
+    </dependencies>
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.vm.VirtualMachineNodeProvider"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.vm.VirtualMachineActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.vm.IntelliJVMActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.vm.IntelliJVMActionsContributorForUltimate"/>
+    </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+<!--        <executionTargetType implementation="com.microsoft.azure.toolkit.intellij.vm.runtarget.AzureVmTargetType"/>-->
+        <iconMapper mappingFile="azure-intellij-plugin-vm-IconMappings.json"/>
+    </extensions>
+</idea-plugin>
