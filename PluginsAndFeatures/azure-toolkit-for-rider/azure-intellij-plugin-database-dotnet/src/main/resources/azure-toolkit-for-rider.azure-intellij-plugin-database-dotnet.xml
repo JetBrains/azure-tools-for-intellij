@@ -1,0 +1,17 @@
+<!--
+  ~ Copyright 2018-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
+  -->
+
+<idea-plugin>
+    <dependencies>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-database"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-resource-connector-lib"/>
+        <plugin id="com.intellij.database"/>
+    </dependencies>
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <connectorResourceType implementation="com.microsoft.azure.toolkit.intellij.database.mysql.connection.DotnetMySqlDatabaseResourceDefinition"/>
+        <connectorResourceType implementation="com.microsoft.azure.toolkit.intellij.database.postgre.connection.DotnetPostgreSqlDatabaseResourceDefinition"/>
+        <connectorResourceType implementation="com.microsoft.azure.toolkit.intellij.database.sqlserver.connection.DotnetSqlServerDatabaseResourceDefinition"/>
+    </extensions>
+</idea-plugin>
