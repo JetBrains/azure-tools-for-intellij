@@ -55,7 +55,6 @@ dependencies {
     implementation(project(path = ":azure-intellij-plugin-service-explorer-dotnet"))
     implementation(project(path = ":azure-intellij-resource-connector-lib"))
     implementation(project(path = ":azure-intellij-plugin-arm"))
-    implementation(project(path = ":azure-intellij-plugin-monitor"))
     implementation(project(path = ":azure-intellij-plugin-appservice"))
     implementation(project(path = ":azure-intellij-plugin-appservice-dotnet"))
     implementation(project(path = ":azure-intellij-plugin-database"))

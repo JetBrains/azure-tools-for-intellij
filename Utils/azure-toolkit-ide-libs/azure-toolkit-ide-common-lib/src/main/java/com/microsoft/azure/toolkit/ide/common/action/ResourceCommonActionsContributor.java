@@ -76,13 +76,13 @@ public class ResourceCommonActionsContributor implements IActionsContributor {
     public static final Action.Id<ServiceLinkerModule> CREATE_SERVICE_LINKER_IN_PORTAL = Action.Id.of("user/$resource.create_service_linker_in_portal");
     public static final Action.Id<AbstractAzService<?, ?>> GETTING_STARTED = Action.Id.of("user/$resource.open_getting_start.service");
     public static final Action.Id<String> INVOKE_COMMAND_IN_TERMINAL = Action.Id.of("user/common.invoke_command_in_terminal");
-    public static final Action.Id<Object> BROWSE_AZURE_SAMPLES = Action.Id.of("user/samples.browse_samples");
+//    public static final Action.Id<Object> BROWSE_AZURE_SAMPLES = Action.Id.of("user/samples.browse_samples");
     public static final Action.Id<String> SEARCH_INSTALLED_PLUGIN = Action.Id.of("user/common.search_installed_plugin.keyword");
     public static final Action.Id<String> SEARCH_MARKETPLACE_PLUGIN = Action.Id.of("user/common.search_marketplace_plugin.keyword");
     public static final Action.Id<String> ENABLE_PLUGIN = Action.Id.of("user/common.enable_plugin.pluginid");
     public static final Action.Id<String> ENABLE_PLUGIN_AND_RESTART = Action.Id.of("user/common.enable_plugin_and_restart.pluginid");
-    public static final Action.Id<Object> SHOW_COURSES = Action.Id.of("user/$resource.show_courses");
-    public static final Action.Id<Object> OPEN_MONITOR = Action.Id.of("user/monitor.open_azure_monitor");
+//    public static final Action.Id<Object> SHOW_COURSES = Action.Id.of("user/$resource.show_courses");
+//    public static final Action.Id<Object> OPEN_MONITOR = Action.Id.of("user/monitor.open_azure_monitor");
     public static final Action.Id<Action.Id<?>> SUPPRESS_ACTION = Action.Id.of("user/common.never_show_again");
 
     public static final String SERVICE_LINKER_ACTIONS = "actions.resource.service_linker";
@@ -342,24 +342,24 @@ public class ResourceCommonActionsContributor implements IActionsContributor {
             .visibleWhen(s -> false)
             .register(am);
 
-        new Action<>(SHOW_COURSES)
-            .withLabel("Getting Started")
-            .withIdParam(s -> s.getClass().getSimpleName())
-            .withIcon(o -> {
-                final String isActionTriggerVal = AzureStoreManager.getInstance().getIdeStore().getProperty("guidance", "is_action_triggered");
-                final boolean isActionTriggered = Optional.ofNullable(isActionTriggerVal).map(Boolean::parseBoolean).orElse(false);
-                return isActionTriggered ? GET_START.getIconPath() : GET_START_NEW.getIconPath();
-            })
-            .withAuthRequired(false)
-            .visibleWhen(s -> false)
-            .register(am);
-
-        new Action<>(OPEN_MONITOR)
-            .withLabel("Open Azure Monitor")
-            .withIcon(AzureIcons.Common.AZURE_MONITOR.getIconPath())
-            .withAuthRequired(false)
-            .visibleWhen(s -> false)
-            .register(am);
+//        new Action<>(SHOW_COURSES)
+//            .withLabel("Getting Started")
+//            .withIdParam(s -> s.getClass().getSimpleName())
+//            .withIcon(o -> {
+//                final String isActionTriggerVal = AzureStoreManager.getInstance().getIdeStore().getProperty("guidance", "is_action_triggered");
+//                final boolean isActionTriggered = Optional.ofNullable(isActionTriggerVal).map(Boolean::parseBoolean).orElse(false);
+//                return isActionTriggered ? GET_START.getIconPath() : GET_START_NEW.getIconPath();
+//            })
+//            .withAuthRequired(false)
+//            .visibleWhen(s -> false)
+//            .register(am);
+//
+//        new Action<>(OPEN_MONITOR)
+//            .withLabel("Open Azure Monitor")
+//            .withIcon(AzureIcons.Common.AZURE_MONITOR.getIconPath())
+//            .withAuthRequired(false)
+//            .visibleWhen(s -> false)
+//            .register(am);
 
         new Action<>(SUPPRESS_ACTION)
             .withLabel("Don't show again")

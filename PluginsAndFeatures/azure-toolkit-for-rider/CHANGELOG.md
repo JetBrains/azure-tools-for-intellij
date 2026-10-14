@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Update platform version to RD-2026.3-EAP6-SNAPSHOT
+
 ## [4.8.6] - 2026-10-13
 
 ### Fixed

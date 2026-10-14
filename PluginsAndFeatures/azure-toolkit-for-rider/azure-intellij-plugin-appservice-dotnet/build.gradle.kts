@@ -5,7 +5,13 @@ plugins {
 
 dependencies {
     intellijPlatform {
-        bundledModules("intellij.rider.rdclient.dotnet", "intellij.rider.ssh")
+        bundledModules(
+            "intellij.rider.rdclient.dotnet",
+            "intellij.rider.ssh",
+            "intellij.platform.debugger.impl",
+            "intellij.platform.remoteServers",
+            "intellij.platform.remoteServers.impl"
+        )
         bundledPlugins("com.jetbrains.restClient", "Docker", "rider.intellij.plugin.appender")
     }
 

@@ -102,5 +102,5 @@ data class ContainerRegistryModel(
     val name: String,
     val address: String,
     val username: String,
-    val authConfig: DockerAuthConfig
+    val authConfig: DockerAuthConfig?
 )

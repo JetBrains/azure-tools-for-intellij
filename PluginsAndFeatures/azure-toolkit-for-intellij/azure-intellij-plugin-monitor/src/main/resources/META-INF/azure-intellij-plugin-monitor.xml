@@ -1,5 +1,8 @@
 <idea-plugin>
-    <depends>com.intellij.modules.json</depends>
+    <dependencies>
+        <plugin id="com.intellij.modules.json"/>
+        <module name="intellij.platform.vcs.core"/>
+    </dependencies>
 
     <extensions defaultExtensionNs="com.intellij">
 <!--        <toolWindow anchor="bottom"-->

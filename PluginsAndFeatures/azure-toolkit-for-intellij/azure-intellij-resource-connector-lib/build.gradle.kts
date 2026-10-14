@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
     intellijPlatform {
-        bundledPlugins("com.intellij.properties")
+        bundledPlugins("com.intellij.properties", "com.intellij.xml")
     }
 
     implementation(project(path = ":azure-intellij-plugin-lib"))

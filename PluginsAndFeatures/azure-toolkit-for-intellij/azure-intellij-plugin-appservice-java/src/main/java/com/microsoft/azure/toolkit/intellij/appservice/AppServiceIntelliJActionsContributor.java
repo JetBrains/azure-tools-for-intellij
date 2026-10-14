@@ -123,9 +123,11 @@ public class AppServiceIntelliJActionsContributor implements IActionsContributor
             tm.runLater(() -> new StopStreamingLogsAction(c, e.getProject()).execute());
         am.registerHandler(AppServiceActionsContributor.STOP_STREAM_LOG, nonLinuxFunction, stopStreamingLogHandler);
 
+        /*
         final BiConsumer<AppServiceAppBase<?, ?, ?>, AnActionEvent> openLogsInMonitorHandler = (c, e) ->
                 new OpenLogsInMonitorAction(c, e.getProject()).execute();
         am.registerHandler(AppServiceActionsContributor.OPEN_LOGS_IN_MONITOR, isAppService, openLogsInMonitorHandler);
+        */
 
         final BiPredicate<AppServiceAppBase<?, ?, ?>, AnActionEvent> isWebApp = (r, e) -> r instanceof WebApp;
         final BiConsumer<AppServiceAppBase<?, ?, ?>, AnActionEvent> sshHandler = (c, e) ->

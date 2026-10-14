@@ -5,6 +5,8 @@
 
 package com.microsoft.azure.toolkit.intellij.legacy.function.runner.component;
 
+// Monitor UI is not bundled with Rider.
+/*
 import com.intellij.openapi.ui.ValidationInfo;
 import com.microsoft.azure.toolkit.intellij.common.AzureFormInputComponent;
 import com.microsoft.azure.toolkit.intellij.monitor.view.left.WorkspaceComboBox;
@@ -77,3 +79,4 @@ public class CreateApplicationInsightsDialog extends AzureDialogWrapper {
         return this.txtInsightsName;
     }
 }
+*/

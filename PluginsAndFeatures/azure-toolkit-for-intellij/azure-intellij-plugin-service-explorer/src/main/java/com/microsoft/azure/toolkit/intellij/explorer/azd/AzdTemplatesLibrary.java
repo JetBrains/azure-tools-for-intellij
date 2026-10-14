@@ -14,9 +14,9 @@ import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
+import com.intellij.ui.components.panels.HorizontalLayout;
 import com.intellij.util.ui.JBUI;
 import com.microsoft.azure.toolkit.intellij.common.AzureActionButton;
-import org.jdesktop.swingx.HorizontalLayout;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -52,7 +52,7 @@ public class AzdTemplatesLibrary extends JPanel {
         final List<String> allTags = topKTags(templates, 10);
 
         final JPanel tilesPanel = new JPanel();
-        final JPanel filterTagsPanel = new JPanel(new HorizontalLayout(JBUI.scale(10)));
+        final JPanel filterTagsPanel = new JPanel(new HorizontalLayout(10, SwingConstants.CENTER));
         filterTagsPanel.setBorder(JBUI.Borders.emptyBottom(10)); // Adds 10px space below the panel
         final JBLabel filterLabel = new JBLabel("Filter by tags:");
         filterTagsPanel.add(filterLabel);

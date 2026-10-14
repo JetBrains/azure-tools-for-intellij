@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
     intellijPlatform {
-        bundledModules("intellij.libraries.microba")
+        bundledModules("intellij.libraries.microba", "intellij.platform.vcs.core")
         bundledPlugins("com.intellij.properties", "com.intellij.modules.json")
     }
 
