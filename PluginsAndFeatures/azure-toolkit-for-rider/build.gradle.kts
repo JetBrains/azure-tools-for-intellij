@@ -4,14 +4,8 @@
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.changelog.Changelog
-import org.jetbrains.intellij.platform.gradle.Constants
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
-import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import kotlin.io.path.absolute
-import kotlin.io.path.isDirectory
-import kotlin.io.path.isRegularFile
 
 plugins {
     alias(libs.plugins.kotlin)
@@ -71,7 +65,6 @@ dependencies {
     implementation(project(path = ":azure-intellij-plugin-vm"))
     implementation(project(path = ":azure-intellij-plugin-cosmos"))
     implementation(project(path = ":azure-intellij-plugin-cosmos-dotnet"))
-    implementation(project(path = ":azure-intellij-plugin-bicep"))
 
     testImplementation(libs.opentest4j)
     testImplementation(libs.junit)
@@ -85,6 +78,8 @@ dependencies {
         jetbrainsRuntime()
         bundledPlugins(listOf("com.jetbrains.restClient"))
         testFramework(TestFrameworkType.Bundled)
+
+        pluginModule(implementation(project(":azure-intellij-plugin-bicep")))
     }
 }
 

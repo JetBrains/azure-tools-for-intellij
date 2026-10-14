@@ -4,8 +4,9 @@ plugins {
 
 dependencies {
     intellijPlatform {
-        bundledModule("intellij.rider.rdclient.dotnet")
         bundledPlugin("org.jetbrains.plugins.textmate")
+        bundledModule("intellij.platform.lsp")
+        bundledModule("intellij.rider.rdclient.dotnet")
     }
 
     implementation(libs.serializationJson)

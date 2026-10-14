@@ -1,5 +1,9 @@
 <idea-plugin>
-  <depends>org.jetbrains.plugins.textmate</depends>
+  <dependencies>
+    <plugin id="org.jetbrains.plugins.textmate"/>
+    <module name="intellij.platform.lsp"/>
+    <module name="intellij.rider.rdclient.dotnet"/>
+  </dependencies>
   <resource-bundle>messages.BicepBundle</resource-bundle>
 
   <extensions defaultExtensionNs="com.intellij">
