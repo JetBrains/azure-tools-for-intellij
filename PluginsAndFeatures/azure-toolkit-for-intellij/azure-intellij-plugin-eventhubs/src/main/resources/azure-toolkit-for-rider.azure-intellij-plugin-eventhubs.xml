@@ -1,0 +1,18 @@
+<idea-plugin>
+    <dependencies>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-service-explorer"/>
+    </dependencies>
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.eventhubs.EventHubsNodeProvider"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.eventhubs.EventHubsActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.eventhubs.IntellijEventHubsActionsContributor"/>
+    </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+<!--        <toolWindow anchor="bottom"-->
+<!--                icon="/icons/Common/event_hubs.svg"-->
+<!--                factoryClass="com.microsoft.azure.toolkit.intellij.eventhubs.view.EventHubsToolWindowManager$EventHubsToolWindowFactory"-->
+<!--                id="Azure Event Hubs" canCloseContents="true"/>-->
+        <iconMapper mappingFile="azure-intellij-plugin-eventhubs-IconMappings.json"/>
+    </extensions>
+</idea-plugin>
