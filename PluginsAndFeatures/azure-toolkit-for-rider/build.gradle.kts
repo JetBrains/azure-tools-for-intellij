@@ -48,42 +48,40 @@ dependencies {
     implementation(libs.azureToolkitCommonLib)
     implementation(libs.azureToolkitIdeCommonLib)
 
-    implementation(project(path = ":azure-intellij-plugin-core"))
-    implementation(project(path = ":azure-intellij-plugin-lib"))
-    implementation(project(path = ":azure-intellij-plugin-lib-dotnet"))
-    implementation(project(path = ":azure-intellij-plugin-service-explorer"))
-    implementation(project(path = ":azure-intellij-plugin-service-explorer-dotnet"))
-    implementation(project(path = ":azure-intellij-resource-connector-lib"))
-    implementation(project(path = ":azure-intellij-plugin-arm"))
-    implementation(project(path = ":azure-intellij-plugin-appservice"))
-    implementation(project(path = ":azure-intellij-plugin-appservice-dotnet"))
-    implementation(project(path = ":azure-intellij-plugin-database"))
-    implementation(project(path = ":azure-intellij-plugin-database-dotnet"))
-    implementation(project(path = ":azure-intellij-plugin-cloud-shell"))
-    implementation(project(path = ":azure-intellij-plugin-redis"))
-    implementation(project(path = ":azure-intellij-plugin-redis-dotnet"))
-    implementation(project(path = ":azure-intellij-plugin-storage"))
-    implementation(project(path = ":azure-intellij-plugin-storage-dotnet"))
-    implementation(project(path = ":azure-intellij-plugin-keyvault"))
-    implementation(project(path = ":azure-intellij-plugin-keyvault-dotnet"))
-    implementation(project(path = ":azure-intellij-plugin-servicebus"))
-    implementation(project(path = ":azure-intellij-plugin-eventhubs"))
-    implementation(project(path = ":azure-intellij-plugin-vm"))
-    implementation(project(path = ":azure-intellij-plugin-cosmos"))
-    implementation(project(path = ":azure-intellij-plugin-cosmos-dotnet"))
-    implementation(project(path = ":azure-intellij-plugin-bicep"))
-
     testImplementation(libs.opentest4j)
     testImplementation(libs.junit)
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-core")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-lib")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-lib-dotnet")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-service-explorer")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-service-explorer-dotnet")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-resource-connector-lib")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-arm")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-appservice")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-appservice-dotnet")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-database")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-database-dotnet")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-cloud-shell")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-redis")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-redis-dotnet")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-storage")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-storage-dotnet")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-keyvault")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-keyvault-dotnet")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-servicebus")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-eventhubs")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-vm")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-cosmos")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-cosmos-dotnet")))
+        pluginComposedModule(implementation(project(path = ":azure-intellij-plugin-bicep")))
+
         rider(platformVersion) {
             useInstaller = false
             useCache = true
         }
-        jetbrainsRuntime()
-        bundledPlugins(listOf("com.jetbrains.restClient"))
         testFramework(TestFrameworkType.Bundled)
     }
 }
@@ -167,7 +165,7 @@ tasks {
     }
 
     test {
-        useTestNG()
+        useJUnitPlatform()
         testLogging {
             showStandardStreams = true
             exceptionFormat = TestExceptionFormat.FULL
