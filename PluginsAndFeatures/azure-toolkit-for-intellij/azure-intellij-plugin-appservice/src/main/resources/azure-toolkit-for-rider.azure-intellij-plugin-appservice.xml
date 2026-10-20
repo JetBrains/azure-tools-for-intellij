@@ -1,0 +1,23 @@
+<idea-plugin>
+    <dependencies>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-service-explorer"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-resource-connector-lib"/>
+        <plugin id="org.jetbrains.plugins.terminal"/>
+        <plugin id="com.jetbrains.restClient"/>
+    </dependencies>
+    <extensions defaultExtensionNs="com.microsoft.tooling.msservices.intellij.azure">
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.appservice.function.FunctionAppNodeProvider"/>
+        <explorerNodeProvider implementation="com.microsoft.azure.toolkit.ide.appservice.webapp.WebAppNodeProvider"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.appservice.AppServiceActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.appservice.webapp.WebAppActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.appservice.file.AppServiceFileActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.ide.appservice.function.FunctionAppActionsContributor"/>
+        <actions implementation="com.microsoft.azure.toolkit.intellij.appservice.AppServiceIntelliJActionsContributorForUltimate"/>
+<!--        <guidanceInputProvider implementation="com.microsoft.azure.toolkit.intellij.appservice.AppServiceInputProvider"/>-->
+    </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+<!--        <facetType implementation="com.microsoft.azure.toolkit.intellij.legacy.function.wizard.facet.FunctionsFacetType"/>-->
+        <iconMapper mappingFile="azure-intellij-plugin-appservice-IconMappings.json"/>
+    </extensions>
+</idea-plugin>

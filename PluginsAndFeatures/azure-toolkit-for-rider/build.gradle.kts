@@ -42,9 +42,6 @@ dependencies {
     implementation(libs.azureToolkitCommonLib)
     implementation(libs.azureToolkitIdeCommonLib)
 
-    implementation(project(path = ":azure-intellij-plugin-appservice"))
-    implementation(project(path = ":azure-intellij-plugin-appservice-dotnet"))
-
     testImplementation(libs.opentest4j)
     testImplementation(libs.junit)
 
@@ -55,7 +52,6 @@ dependencies {
             useCache = true
         }
         jetbrainsRuntime()
-        bundledPlugins(listOf("com.jetbrains.restClient"))
         testFramework(TestFrameworkType.Bundled)
 
         pluginModule(implementation(project(":azure-intellij-plugin-lib")))
@@ -65,6 +61,8 @@ dependencies {
         pluginModule(implementation(project(":azure-intellij-plugin-service-explorer-dotnet")))
         pluginModule(implementation(project(":azure-intellij-resource-connector-lib")))
         pluginModule(implementation(project(":azure-intellij-plugin-arm")))
+        pluginModule(implementation(project(":azure-intellij-plugin-appservice")))
+        pluginModule(implementation(project(":azure-intellij-plugin-appservice-dotnet")))
         pluginModule(implementation(project(":azure-intellij-plugin-bicep")))
         pluginModule(implementation(project(":azure-intellij-plugin-cloud-shell")))
         pluginModule(implementation(project(":azure-intellij-plugin-cosmos")))

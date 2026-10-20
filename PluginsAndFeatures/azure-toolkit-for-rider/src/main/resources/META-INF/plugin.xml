@@ -2,7 +2,7 @@
   ~ Copyright 2018-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the MIT license.
   -->
 
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" url="https://github.com/JetBrains/azure-tools-for-intellij">
+<idea-plugin url="https://github.com/JetBrains/azure-tools-for-intellij">
     <id>com.intellij.resharper.azure</id>
     <name>Azure Toolkit for Rider</name>
     <vendor url="https://www.jetbrains.com">JetBrains</vendor>
@@ -19,32 +19,31 @@
 </ul>
     ]]></description>
 
-    <xi:include href="/META-INF/azure-intellij-plugin-appservice.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <xi:include href="/META-INF/azure-intellij-plugin-appservice-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
-
     <content>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib-dotnet" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-core" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-service-explorer" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-service-explorer-dotnet" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-resource-connector-lib" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-arm" loading="embedded"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib" loading="required"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-lib-dotnet" loading="required"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-core" loading="required"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-service-explorer" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-service-explorer-dotnet" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-resource-connector-lib" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-arm" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-appservice" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-appservice-dotnet" loading="optional"/>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-bicep" loading="optional"/>
         <module name="azure-toolkit-for-rider.azure-intellij-plugin-cloud-shell" loading="optional"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-cosmos" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-cosmos-dotnet" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-database" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-database-dotnet" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-redis" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-redis-dotnet" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-storage" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-storage-dotnet" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-keyvault" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-keyvault-dotnet" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-servicebus" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-eventhubs" loading="embedded"/>
-        <module name="azure-toolkit-for-rider.azure-intellij-plugin-vm" loading="embedded"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-cosmos" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-cosmos-dotnet" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-database" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-database-dotnet" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-redis" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-redis-dotnet" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-storage" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-storage-dotnet" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-keyvault" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-keyvault-dotnet" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-servicebus" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-eventhubs" loading="optional"/>
+        <module name="azure-toolkit-for-rider.azure-intellij-plugin-vm" loading="optional"/>
     </content>
 
     <actions>
@@ -68,8 +67,6 @@
     </actions>
 
     <resource-bundle>messages.RiderAzureMessages</resource-bundle>
-
-    <depends>com.intellij.modules.rider</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <dependencySupport kind="dotnet" coordinate="Microsoft.NET.Sdk.Functions" displayName="Azure Toolkit"/>
