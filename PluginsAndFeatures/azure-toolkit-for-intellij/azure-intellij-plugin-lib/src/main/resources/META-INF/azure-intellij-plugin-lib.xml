@@ -23,8 +23,8 @@
 <!--                    id="Azure Streaming Log" canCloseContents="true"/>-->
         <webHelpProvider implementation="com.microsoft.azure.toolkit.intellij.common.help.AzureWebHelpProvider"/>
         <applicationService serviceImplementation="com.microsoft.azure.toolkit.intellij.common.settings.IntellijStore"/>
-        <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.common.feedback.MonkeySurveyEditorProvider"/>
-        <postStartupActivity implementation="com.microsoft.azure.toolkit.intellij.common.feedback.RateManager$WhenToPopup"/>
+<!--        <fileEditorProvider implementation="com.microsoft.azure.toolkit.intellij.common.feedback.MonkeySurveyEditorProvider"/>-->
+<!--        <postStartupActivity implementation="com.microsoft.azure.toolkit.intellij.common.feedback.RateManager$WhenToPopup"/>-->
         <registryKey key="azure.toolkit.test.mode.enabled" description="Test mode" restartRequired="true" defaultValue="false"/>
         <registryKey key="azure.toolkit.feedback.score.threshold" description="Score threshold to popup for rating" restartRequired="false" defaultValue="20"/>
         <iconMapper mappingFile="azure-intellij-plugin-lib-IconMappings.json"/>
