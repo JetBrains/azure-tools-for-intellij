@@ -19,6 +19,8 @@
 </ul>
     ]]></description>
 
+    <depends>com.intellij.modules.rider</depends>
+
     <xi:include href="/META-INF/azure-intellij-plugin-lib.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-core.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/azure-intellij-plugin-lib-dotnet.xml" xpointer="xpointer(/idea-plugin/*)"/>
@@ -67,8 +69,6 @@
     </actions>
 
     <resource-bundle>messages.RiderAzureMessages</resource-bundle>
-
-    <depends>com.intellij.modules.rider</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <dependencySupport kind="dotnet" coordinate="Microsoft.NET.Sdk.Functions" displayName="Azure Toolkit"/>

@@ -19,15 +19,15 @@ jedis = "3.6.3"
 junit = "4.13.2"
 
 # plugins
-kotlin = "2.3.10"
-changelog = "2.4.0"
-intelliJPlatform = "2.13.1"
+kotlin = "2.4.20"
+changelog = "2.5.0"
 aspectj = "9.4.0"
+intelliJPlatform = "2.19.0"
 
 [libraries]
 kotlinGradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
-intellijPlatformGradlePlugin = { group = "org.jetbrains.intellij.platform", name = "intellij-platform-gradle-plugin", version.ref = "intelliJPlatform" }
 aspectjGradlePlugin = { group = "io.freefair.gradle", name = "aspectj-plugin", version.ref = "aspectj" }
+intelliJPlatformGradlePlugin = { group = "org.jetbrains.intellij.platform", name = "intellij-platform-gradle-plugin", version.ref = "intelliJPlatform" }
 
 rdGen = { group = "com.jetbrains.rd", name = "rd-gen", version.ref = "rdGen" }
 opentest4j = { group = "org.opentest4j", name = "opentest4j", version.ref = "opentest4j" }
@@ -81,8 +81,8 @@ azureToolkitCosmosLib = { group = "com.microsoft.azure", name = "azure-toolkit-c
 azureToolkitIdeCosmosLib = { group = "com.microsoft.azure", name = "azure-toolkit-ide-cosmos-lib", version.ref = "azureToolkitLibs" }
 
 [plugins]
+intelliJPlatform = { id = "org.jetbrains.intellij.platform" }
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
-intelliJPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intelliJPlatform" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 aspectj = { id = "io.freefair.aspectj.post-compile-weaving", version.ref = "aspectj" }
