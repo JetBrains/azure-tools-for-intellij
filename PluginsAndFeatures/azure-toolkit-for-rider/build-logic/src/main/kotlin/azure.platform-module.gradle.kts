@@ -10,15 +10,6 @@ plugins {
 
 val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-
-    intellijPlatform {
-        defaultRepositories()
-    }
-}
-
 dependencies {
     implementation(platform(libs.findLibrary("nettyBom").get()))
     intellijPlatform {

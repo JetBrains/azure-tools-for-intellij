@@ -13,6 +13,6 @@ repositories {
 
 dependencies {
     implementation(libs.kotlinGradlePlugin)
-    implementation(libs.intellijPlatformGradlePlugin)
     implementation(libs.aspectjGradlePlugin)
+    implementation(libs.intelliJPlatformGradlePlugin)
 }
