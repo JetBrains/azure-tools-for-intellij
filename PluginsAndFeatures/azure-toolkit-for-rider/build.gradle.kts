@@ -4,14 +4,8 @@
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.changelog.Changelog
-import org.jetbrains.intellij.platform.gradle.Constants
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
-import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import kotlin.io.path.absolute
-import kotlin.io.path.isDirectory
-import kotlin.io.path.isRegularFile
 
 plugins {
     alias(libs.plugins.kotlin)
@@ -41,6 +35,7 @@ repositories {
 
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
+    implementation(platform(libs.nettyBom))
     implementation(libs.azureToolkitLibs)
     implementation(libs.azureToolkitIdeLibs)
     implementation(libs.azureToolkitHdinsightLibs)
