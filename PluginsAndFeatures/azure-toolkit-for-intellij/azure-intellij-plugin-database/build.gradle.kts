@@ -15,9 +15,9 @@ dependencies {
     implementation(libs.azureToolkitPostgreLib)
     implementation(libs.azureToolkitIdeCommonLib)
     implementation(libs.azureToolkitIdeDatabaseLib)
-    implementation("mysql:mysql-connector-java:8.0.29")
-    implementation("com.microsoft.sqlserver:mssql-jdbc:9.3.1.jre8-preview")
-    implementation("org.postgresql:postgresql:42.4.1")
+    implementation(libs.mysqlConnectorJava)
+    implementation(libs.mssqlJdbc)
+    implementation(libs.postgresql)
 }
 
 configurations {

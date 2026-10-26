@@ -15,6 +15,15 @@ annotations = "24.0.0"
 aspectjRuntime = "1.9.25"
 snakeyaml = "2.2"
 plexusArchiver = "4.2.7"
+dom4j = "2.1.3"
+jacksonDataformatYaml = "2.15.2"
+dotenvJava = "3.0.0"
+jsch = "0.1.55"
+plexusContainerDefault = "2.1.1"
+nvWebsocketClient = "2.14"
+mysqlConnectorJava = "8.0.29"
+mssqlJdbc = "9.3.1.jre8-preview"
+postgresql = "42.4.1"
 jedis = "3.6.3"
 junit = "4.13.2"
 
@@ -48,6 +57,15 @@ snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "snakeyaml" 
 plexusArchiver = { group = "org.codehaus.plexus", name = "plexus-archiver", version.ref = "plexusArchiver" }
 jedis = { group = "redis.clients", name = "jedis", version.ref = "jedis" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+dom4j = { group = "org.dom4j", name = "dom4j", version.ref = "dom4j" }
+jacksonDataformatYaml = { group = "com.fasterxml.jackson.dataformat", name = "jackson-dataformat-yaml", version.ref = "jacksonDataformatYaml" }
+dotenvJava = { group = "io.github.cdimascio", name = "dotenv-java", version.ref = "dotenvJava" }
+jsch = { group = "com.jcraft", name = "jsch", version.ref = "jsch" }
+plexusContainerDefault = { group = "org.codehaus.plexus", name = "plexus-container-default", version.ref = "plexusContainerDefault" }
+nvWebsocketClient = { group = "com.neovisionaries", name = "nv-websocket-client", version.ref = "nvWebsocketClient" }
+mysqlConnectorJava = { group = "mysql", name = "mysql-connector-java", version.ref = "mysqlConnectorJava" }
+mssqlJdbc = { group = "com.microsoft.sqlserver", name = "mssql-jdbc", version.ref = "mssqlJdbc" }
+postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
 
 azureToolkitLibs = { group = "com.microsoft.azure", name = "azure-toolkit-libs", version.ref = "azureToolkitLibs" }
 nettyBom = { group = "io.netty", name = "netty-bom", version.ref = "netty" }
