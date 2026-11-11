@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Update platform version to RD-2026.3
+
 ## [4.9.1] - 2026-11-03
 
 ### Changed
