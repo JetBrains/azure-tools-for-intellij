@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [4.9.1] - 2026-11-03
+
 ### Changed
 
 - Update platform version to RD-2026.3-EAP8-SNAPSHOT
@@ -514,7 +516,8 @@
 - Reimplement Azure Functions Core Tools integration
 - Reimplement Azure Functions templates
 
-[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.0...HEAD
+[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.1...HEAD
+[4.9.1]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.0...4.9.1
 [4.9.0]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.8.6...4.9.0
 [4.8.6]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.8.5...4.8.6
 [4.8.5]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.8.4...4.8.5
