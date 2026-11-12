@@ -38,8 +38,7 @@ class FunctionDeploymentSettingsEditor(
                 MutableCollectionComboBoxModel<PublishableProjectModel>(),
                 renderer = textListCellRenderer("") { it.projectName }
             )
-                .bindItems(viewModel.publishableProjects)
-                .bindSelectedItem(viewModel.selectedProject)
+                .bindItems(viewModel.publishableProjects, viewModel.selectedProject, viewModel::selectProject)
                 .align(Align.FILL)
         }
         row("Configuration:") {
@@ -49,6 +48,11 @@ class FunctionDeploymentSettingsEditor(
             )
                 .bindItems(viewModel.configurationAndPlatforms)
                 .bindSelectedItem(viewModel.selectedConfigurationAndPlatform)
+                .align(Align.FILL)
+        }
+        row("Target framework:") {
+            comboBox(MutableCollectionComboBoxModel<String>())
+                .bindItems(viewModel.targetFrameworks, viewModel.selectedTargetFramework)
                 .align(Align.FILL)
         }
         row {

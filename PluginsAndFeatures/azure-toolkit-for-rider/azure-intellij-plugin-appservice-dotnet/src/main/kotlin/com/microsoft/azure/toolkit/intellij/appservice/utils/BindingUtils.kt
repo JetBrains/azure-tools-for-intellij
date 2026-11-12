@@ -14,6 +14,8 @@ import com.intellij.util.ui.launchOnShow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import javax.swing.JToggleButton
 import javax.swing.JSpinner
 import javax.swing.event.ChangeEvent
@@ -135,7 +137,28 @@ fun <T : Any> Cell<ComboBox<T>>.bindSelectedItem(flow: MutableStateFlow<T?>): Ce
         bindSelectedItem(flow)
     }
 
+internal fun <T : Any> Cell<ComboBox<T>>.bindItems(
+    items: StateFlow<List<T>>,
+    selection: MutableStateFlow<T?>
+): Cell<ComboBox<T>> = bindItems(items, selection) { selection.value = it }
+
+internal fun <T : Any> Cell<ComboBox<T>>.bindItems(
+    items: StateFlow<List<T>>,
+    selection: StateFlow<T?>,
+    onSelected: (T?) -> Unit
+): Cell<ComboBox<T>> = applyToComponent {
+    bindSelectedItem(selection, onSelected, items)
+}
+
 fun <T : Any> ComboBox<T>.bindSelectedItem(flow: MutableStateFlow<T?>) {
+    bindSelectedItem(flow, { flow.value = it })
+}
+
+private fun <T : Any> ComboBox<T>.bindSelectedItem(
+    flow: StateFlow<T?>,
+    onSelected: (T?) -> Unit,
+    items: StateFlow<List<T>>? = null
+) {
     launchOnShow("ComboBox selection binding") {
         val listener = object : ListDataListener {
             var isActive = true
@@ -143,7 +166,7 @@ fun <T : Any> ComboBox<T>.bindSelectedItem(flow: MutableStateFlow<T?>) {
             override fun contentsChanged(e: ListDataEvent) {
                 if (isActive && e.index0 == -1 && e.index1 == -1) {
                     @Suppress("UNCHECKED_CAST")
-                    flow.value = (model.selectedItem as T?)
+                    onSelected(model.selectedItem as T?)
                 }
             }
 
@@ -153,10 +176,16 @@ fun <T : Any> ComboBox<T>.bindSelectedItem(flow: MutableStateFlow<T?>) {
         model.addListDataListener(listener)
 
         try {
-            flow.collect {
+            val updates =
+                if (items == null) flow.map { null to it }
+                else combine(items, flow) { values, selected -> values to selected }
+            updates.collect { (values, selected) ->
                 try {
                     listener.isActive = false
-                    selectedItem = it
+                    if (values != null) {
+                        (model as MutableCollectionComboBoxModel<T>).update(values)
+                    }
+                    selectedItem = selected
                 } finally {
                     listener.isActive = true
                 }
