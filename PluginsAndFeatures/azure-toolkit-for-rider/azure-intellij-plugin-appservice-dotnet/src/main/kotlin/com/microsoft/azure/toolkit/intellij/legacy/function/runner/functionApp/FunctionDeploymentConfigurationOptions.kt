@@ -26,6 +26,7 @@ class FunctionDeploymentConfigurationOptions : LocatableRunConfigurationOptions(
     var instanceSize by property(2048)
     var projectConfiguration by string()
     var projectPlatform by string()
+    var targetFramework by string()
     var publishableProjectPath by string()
     var openBrowser by property(false)
 }
