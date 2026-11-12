@@ -8,6 +8,7 @@ package com.microsoft.azure.toolkit.intellij.appservice.deployment
 
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.text.NaturalComparator
 import com.intellij.platform.util.coroutines.childScope
 import com.jetbrains.rider.model.PublishableProjectModel
 import com.jetbrains.rider.model.publishableProjectsModel
@@ -55,7 +56,13 @@ abstract class AbstractAppServiceDeploymentViewModel<TConfig : AppServiceConfig>
     protected val _publishableProjects = MutableStateFlow<List<PublishableProjectModel>>(emptyList())
     val publishableProjects: StateFlow<List<PublishableProjectModel>> = _publishableProjects.asStateFlow()
 
-    val selectedProject = MutableStateFlow<PublishableProjectModel?>(null)
+    private val _selectedProject = MutableStateFlow<PublishableProjectModel?>(null)
+    val selectedProject: StateFlow<PublishableProjectModel?> = _selectedProject.asStateFlow()
+
+    private val _targetFrameworks = MutableStateFlow<List<String>>(emptyList())
+    val targetFrameworks: StateFlow<List<String>> = _targetFrameworks.asStateFlow()
+
+    val selectedTargetFramework = MutableStateFlow<String?>(null)
 
     protected val _configurationAndPlatforms = MutableStateFlow<List<ConfigurationAndPlatform>>(emptyList())
     val configurationAndPlatforms: StateFlow<List<ConfigurationAndPlatform>> = _configurationAndPlatforms.asStateFlow()
@@ -67,7 +74,7 @@ abstract class AbstractAppServiceDeploymentViewModel<TConfig : AppServiceConfig>
     init {
         _publishableProjects.value = project.solution.publishableProjectsModel.publishableProjects.values
             .filter { publishableProjectFilter(it) }
-        selectedProject.value = _publishableProjects.value.firstOrNull()
+        selectProject(_publishableProjects.value.firstOrNull())
 
         val manager = SolutionConfigurationManager.tryGetInstance(project)
         _configurationAndPlatforms.value = manager?.solutionConfigurationsAndPlatforms.orEmpty()
@@ -137,6 +144,18 @@ abstract class AbstractAppServiceDeploymentViewModel<TConfig : AppServiceConfig>
             listOf(model) + current.filter { !isSameApp(it.config, model.config) }
         }
         _selectedAppService.value = config to null
+    }
+
+    fun selectProject(publishableProject: PublishableProjectModel?) {
+        val frameworks = publishableProject?.projectOutputs.orEmpty()
+            .map { it.tfmInMsbuildFormat }
+            .filter { it.isNotBlank() }
+            .distinct()
+            .sortedWith(NaturalComparator.INSTANCE)
+        selectedTargetFramework.value = selectedTargetFramework.value?.takeIf { it in frameworks }
+            ?: frameworks.firstOrNull()
+        _targetFrameworks.value = frameworks
+        _selectedProject.value = publishableProject
     }
 
     fun setOpenBrowserFlag(enabled: Boolean) {

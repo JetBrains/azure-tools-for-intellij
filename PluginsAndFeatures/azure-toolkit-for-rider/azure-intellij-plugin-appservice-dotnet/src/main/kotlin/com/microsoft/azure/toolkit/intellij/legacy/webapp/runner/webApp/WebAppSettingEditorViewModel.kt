@@ -71,8 +71,11 @@ class WebAppSettingEditorViewModel(project: Project, parentCs: CoroutineScope) :
         val publishableProject = _publishableProjects.value
             .firstOrNull { it.projectFilePath == state.publishableProjectPath }
         if (publishableProject != null) {
-            selectedProject.value = publishableProject
+            selectProject(publishableProject)
         }
+
+        selectedTargetFramework.value = state.targetFramework?.takeIf { it in targetFrameworks.value }
+            ?: targetFrameworks.value.firstOrNull()
 
         val config = state.projectConfiguration
         val platform = state.projectPlatform
@@ -112,6 +115,7 @@ class WebAppSettingEditorViewModel(project: Project, parentCs: CoroutineScope) :
             publishableProjectPath = projectPath
             projectConfiguration = cap?.configuration
             projectPlatform = cap?.platform
+            targetFramework = selectedTargetFramework.value
 
             openBrowser = openBrowserValue
         }
