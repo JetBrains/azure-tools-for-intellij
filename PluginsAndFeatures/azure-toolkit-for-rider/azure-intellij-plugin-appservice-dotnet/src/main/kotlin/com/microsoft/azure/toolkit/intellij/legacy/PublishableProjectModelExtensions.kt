@@ -7,7 +7,9 @@ package com.microsoft.azure.toolkit.intellij.legacy
 import com.azure.resourcemanager.appservice.models.FunctionRuntimeStack
 import com.azure.resourcemanager.appservice.models.NetFrameworkVersion
 import com.azure.resourcemanager.appservice.models.RuntimeStack
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.text.NaturalComparator
 import com.jetbrains.rider.azureFunctions.common.AzureFunctionsWorkerRuntime
 import com.jetbrains.rider.azureFunctions.localSettings.AzureFunctionsLocalSettingsService
 import com.jetbrains.rider.azureFunctions.localSettings.getWorkerRuntime
@@ -20,9 +22,56 @@ import com.microsoft.azure.toolkit.lib.appservice.model.OperatingSystem
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 
+private val LOG = logger<PublishableProjectModel>()
+
 private val netCoreAppVersionRegex = Regex("\\.NETCoreApp,Version=v([0-9]+(?:\\.[0-9])*)", RegexOption.IGNORE_CASE)
 private val netAppVersionRegex = Regex("net([0-9]+(?:\\.[0-9])*)", RegexOption.IGNORE_CASE)
 private val netFxAppVersionRegex = Regex("\\.NETFramework,Version=v([0-9](?:\\.[0-9])*)", RegexOption.IGNORE_CASE)
+
+/**
+ * Returns the target frameworks in MSBuild format (e.g. `net8.0`) that can be passed to `dotnet publish`.
+ * The list is sorted with [NaturalComparator], so the lowest target framework goes first.
+ * For .NET Framework projects the list is empty because `TargetFramework` is not passed to `WebPublish`.
+ */
+fun PublishableProjectModel.availableTargetFrameworks(): List<String> {
+    if (!isDotNetCore) return emptyList()
+
+    return projectOutputs
+        .map { it.tfmInMsbuildFormat }
+        .filter { it.isNotBlank() }
+        .distinct()
+        .sortedWith(NaturalComparator.INSTANCE)
+}
+
+/**
+ * Returns [saved] if it is one of the [availableTargetFrameworks], otherwise the lowest available target framework.
+ */
+fun PublishableProjectModel.resolveTargetFramework(saved: String?): String? {
+    val available = availableTargetFrameworks()
+    if (!saved.isNullOrEmpty() && saved in available) return saved
+
+    val fallback = available.firstOrNull()
+    if (!saved.isNullOrEmpty() && isDotNetCore) {
+        LOG.warn("Target framework '$saved' is not available for the project '$projectName', using '$fallback'")
+    }
+
+    return fallback
+}
+
+/**
+ * Returns the framework id (e.g. `.NETCoreApp,Version=v8.0`) of the target framework [tfm] in MSBuild format.
+ * If [tfm] is not specified or is not found among the project outputs,
+ * the current target framework of the project is used.
+ */
+fun PublishableProjectModel.frameworkIdFor(project: Project, tfm: String?): String? {
+    if (!tfm.isNullOrEmpty()) {
+        val frameworkId = projectOutputs.firstOrNull { it.tfmInMsbuildFormat == tfm }?.tfm
+        if (!frameworkId.isNullOrEmpty()) return frameworkId
+    }
+
+    val frameworks = project.solution.projectModelTasks.targetFrameworks[projectModelId]
+    return frameworks?.currentTargetFrameworkId?.valueOrNull?.framework?.id
+}
 
 fun PublishableProjectModel.getStackAndVersion(
     project: Project,
@@ -118,7 +167,7 @@ private fun getProjectDotNetVersion(
     publishableProject: PublishableProjectModel,
     targetFramework: String?
 ): String? {
-    val currentFramework = getCurrentFrameworkId(project, publishableProject, targetFramework) ?: return null
+    val currentFramework = publishableProject.frameworkIdFor(project, targetFramework) ?: return null
     return netAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value
         ?: netCoreAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value
 }
@@ -128,20 +177,6 @@ private fun getProjectNetFrameworkVersion(
     publishableProject: PublishableProjectModel,
     targetFramework: String?
 ): String? {
-    val currentFramework = getCurrentFrameworkId(project, publishableProject, targetFramework) ?: return null
+    val currentFramework = publishableProject.frameworkIdFor(project, targetFramework) ?: return null
     return netFxAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value
-}
-
-private fun getCurrentFrameworkId(
-    project: Project,
-    publishableProject: PublishableProjectModel,
-    targetFramework: String?
-): String? {
-    if (!targetFramework.isNullOrEmpty()) {
-        return publishableProject.projectOutputs.firstOrNull { it.tfmInMsbuildFormat == targetFramework }?.tfm
-            ?: targetFramework
-    }
-
-    val frameworks = project.solution.projectModelTasks.targetFrameworks[publishableProject.projectModelId]
-    return frameworks?.currentTargetFrameworkId?.valueOrNull?.framework?.id
 }

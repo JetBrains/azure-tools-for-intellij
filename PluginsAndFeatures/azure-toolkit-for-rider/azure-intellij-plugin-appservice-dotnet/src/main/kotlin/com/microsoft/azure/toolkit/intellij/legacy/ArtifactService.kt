@@ -44,7 +44,7 @@ class ArtifactService(private val project: Project) {
         if (!configuration.isNullOrEmpty() && !platform.isNullOrEmpty()) {
             updateStatusText("Using configuration: $configuration and platform: $platform")
         }
-        if (!targetFramework.isNullOrEmpty()) {
+        if (publishableProject.isDotNetCore && !targetFramework.isNullOrEmpty()) {
             updateStatusText("Using target framework: $targetFramework")
         }
         val artifactDirectoryResult = publishProjectToFolder(publishableProject, configuration, platform, targetFramework)
@@ -60,7 +60,7 @@ class ArtifactService(private val project: Project) {
      * @param publishableProject [PublishableProjectModel] contains information about the project to be published
      * @param configuration optional configuration to pass to MSBuild
      * @param platform optional platform to pass to MSBuild
-     * @param targetFramework optional target framework to pass to MSBuild
+     * @param targetFramework optional target framework to pass to MSBuild (ignored for .NET Framework projects)
      *
      * @return [File] to project content to be published
      */
@@ -82,7 +82,7 @@ class ArtifactService(private val project: Project) {
         if (!platform.isNullOrEmpty()) {
             extraProperties.add(CustomTargetExtraProperty("Platform", platform))
         }
-        if (!targetFramework.isNullOrEmpty()) {
+        if (publishableProject.isDotNetCore && !targetFramework.isNullOrEmpty()) {
             extraProperties.add(CustomTargetExtraProperty("TargetFramework", targetFramework))
         }
 

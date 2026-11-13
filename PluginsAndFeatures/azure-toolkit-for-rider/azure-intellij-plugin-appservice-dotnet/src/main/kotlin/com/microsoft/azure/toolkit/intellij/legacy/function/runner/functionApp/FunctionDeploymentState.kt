@@ -22,6 +22,7 @@ import com.microsoft.azure.toolkit.intellij.common.RunProcessHandler
 import com.microsoft.azure.toolkit.intellij.legacy.common.AzureDeploymentState
 import com.microsoft.azure.toolkit.intellij.legacy.getFunctionStack
 import com.microsoft.azure.toolkit.intellij.legacy.getStackAndVersion
+import com.microsoft.azure.toolkit.intellij.legacy.resolveTargetFramework
 import com.microsoft.azure.toolkit.intellij.legacy.utils.APPLICATION_SLOT_VALIDATION_MESSAGE
 import com.microsoft.azure.toolkit.intellij.legacy.utils.APPLICATION_VALIDATION_MESSAGE
 import com.microsoft.azure.toolkit.intellij.legacy.utils.RESOURCE_GROUP_VALIDATION_MESSAGE
@@ -63,12 +64,16 @@ class FunctionDeploymentState(
         val publishableProject = project.solution.publishableProjectsModel.publishableProjects.values
             .firstOrNull { it.projectFilePath == publishableProjectPath }
             ?: throw ExecutionException("Project is not defined")
+        val targetFramework = publishableProject.resolveTargetFramework(options.targetFramework)
+        if (publishableProject.isDotNetCore && !options.targetFramework.isNullOrEmpty() && options.targetFramework != targetFramework) {
+            processHandlerMessenger?.warning("Target framework '${options.targetFramework}' is not available, using '$targetFramework'")
+        }
 
         validateOptions(options)
 
         checkCanceled()
 
-        val config = createDotNetFunctionAppConfig(publishableProject, options)
+        val config = createDotNetFunctionAppConfig(publishableProject, options, targetFramework)
         val createTask = CreateDotNetFunctionAppTask(config, processHandlerMessenger)
         val deployTarget = createTask.execute()
 
@@ -85,7 +90,7 @@ class FunctionDeploymentState(
                 publishableProject,
                 options.projectConfiguration,
                 options.projectPlatform,
-                options.targetFramework,
+                targetFramework,
             ) { processHandlerMessenger?.info(it) }
             .getOrThrow()
 
@@ -124,7 +129,8 @@ class FunctionDeploymentState(
 
     private suspend fun createDotNetFunctionAppConfig(
         publishableProject: PublishableProjectModel,
-        options: FunctionDeploymentConfigurationOptions
+        options: FunctionDeploymentConfigurationOptions,
+        targetFramework: String?
     ) = DotNetFunctionAppConfig().apply {
         subscriptionId(options.subscriptionId)
         resourceGroup(options.resourceGroupName)
@@ -146,7 +152,7 @@ class FunctionDeploymentState(
         storageAccountResourceGroup(options.storageAccountResourceGroup)
         val os = OperatingSystem.fromString(options.operatingSystem)
         runtime = createRuntimeConfig(os)
-        val dotnetRuntimeConfig = createDotNetRuntimeConfig(publishableProject, os, options.targetFramework)
+        val dotnetRuntimeConfig = createDotNetRuntimeConfig(publishableProject, os, targetFramework)
         dotnetRuntime = dotnetRuntimeConfig
         flexConsumptionConfiguration = createFlexConsumptionConfiguration(options)
         appSettings(configureAppSettings(pricingTier, runtime, dotnetRuntimeConfig))

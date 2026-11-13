@@ -21,6 +21,7 @@ import com.microsoft.azure.toolkit.intellij.appservice.DotNetAppServiceDeployer
 import com.microsoft.azure.toolkit.intellij.common.RunProcessHandler
 import com.microsoft.azure.toolkit.intellij.legacy.common.AzureDeploymentState
 import com.microsoft.azure.toolkit.intellij.legacy.getStackAndVersion
+import com.microsoft.azure.toolkit.intellij.legacy.resolveTargetFramework
 import com.microsoft.azure.toolkit.intellij.legacy.utils.APPLICATION_SLOT_VALIDATION_MESSAGE
 import com.microsoft.azure.toolkit.intellij.legacy.utils.APPLICATION_VALIDATION_MESSAGE
 import com.microsoft.azure.toolkit.intellij.legacy.utils.RESOURCE_GROUP_VALIDATION_MESSAGE
@@ -55,12 +56,16 @@ class WebAppDeploymentState(
         val publishableProject = project.solution.publishableProjectsModel.publishableProjects.values
             .firstOrNull { it.projectFilePath == publishableProjectPath }
             ?: throw ExecutionException("Project is not defined")
+        val targetFramework = publishableProject.resolveTargetFramework(options.targetFramework)
+        if (publishableProject.isDotNetCore && !options.targetFramework.isNullOrEmpty() && options.targetFramework != targetFramework) {
+            processHandlerMessenger?.warning("Target framework '${options.targetFramework}' is not available, using '$targetFramework'")
+        }
 
         validateOptions(options)
 
         checkCanceled()
 
-        val config = createDotNetAppServiceConfig(publishableProject, options)
+        val config = createDotNetAppServiceConfig(publishableProject, options, targetFramework)
         val createTask = CreateDotNetWebAppTask(config, processHandlerMessenger)
         val deployTarget = createTask.execute()
 
@@ -77,7 +82,7 @@ class WebAppDeploymentState(
                 publishableProject,
                 options.projectConfiguration,
                 options.projectPlatform,
-                options.targetFramework,
+                targetFramework,
             ) { processHandlerMessenger?.info(it) }
             .getOrThrow()
 
@@ -116,7 +121,8 @@ class WebAppDeploymentState(
 
     private fun createDotNetAppServiceConfig(
         publishableProject: PublishableProjectModel,
-        options: WebAppConfigurationOptions
+        options: WebAppConfigurationOptions,
+        targetFramework: String?
     ) = DotNetAppServiceConfig().apply {
         subscriptionId(options.subscriptionId)
         resourceGroup(options.resourceGroupName)
@@ -136,7 +142,7 @@ class WebAppDeploymentState(
         deploymentSlotConfigurationSource(configurationSource)
         val os = OperatingSystem.fromString(options.operatingSystem)
         runtime = createRuntimeConfig(os)
-        dotnetRuntime = createDotNetRuntimeConfig(publishableProject, os, options.targetFramework)
+        dotnetRuntime = createDotNetRuntimeConfig(publishableProject, os, targetFramework)
     }
 
     private fun createRuntimeConfig(os: OperatingSystem) =

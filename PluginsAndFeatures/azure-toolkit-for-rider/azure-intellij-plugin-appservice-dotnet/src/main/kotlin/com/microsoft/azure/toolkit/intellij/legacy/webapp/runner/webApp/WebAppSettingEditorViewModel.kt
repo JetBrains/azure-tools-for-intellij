@@ -12,6 +12,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.jetbrains.rider.run.configurations.publishing.PublishRuntimeSettingsCoreHelper.ConfigurationAndPlatform
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AbstractAppServiceDeploymentViewModel
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDeploymentModel.RemoteAppServiceModel
+import com.microsoft.azure.toolkit.intellij.legacy.resolveTargetFramework
 import com.microsoft.azure.toolkit.lib.Azure
 import com.microsoft.azure.toolkit.lib.appservice.AppServiceAppBase
 import com.microsoft.azure.toolkit.lib.appservice.config.AppServiceConfig
@@ -74,8 +75,7 @@ class WebAppSettingEditorViewModel(project: Project, parentCs: CoroutineScope) :
             selectProject(publishableProject)
         }
 
-        selectedTargetFramework.value = state.targetFramework?.takeIf { it in targetFrameworks.value }
-            ?: targetFrameworks.value.firstOrNull()
+        selectedTargetFramework.value = selectedProject.value?.resolveTargetFramework(state.targetFramework)
 
         val config = state.projectConfiguration
         val platform = state.projectPlatform

@@ -8,7 +8,6 @@ package com.microsoft.azure.toolkit.intellij.appservice.deployment
 
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.NaturalComparator
 import com.intellij.platform.util.coroutines.childScope
 import com.jetbrains.rider.model.PublishableProjectModel
 import com.jetbrains.rider.model.publishableProjectsModel
@@ -18,6 +17,7 @@ import com.jetbrains.rider.run.configurations.publishing.PublishRuntimeSettingsC
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDeploymentModel.DraftAppServiceModel
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDeploymentModel.RemoteAppServiceModel
 import com.microsoft.azure.toolkit.intellij.appservice.utils.isSameApp
+import com.microsoft.azure.toolkit.intellij.legacy.availableTargetFrameworks
 import com.microsoft.azure.toolkit.lib.Azure
 import com.microsoft.azure.toolkit.lib.appservice.AzureAppService
 import com.microsoft.azure.toolkit.lib.appservice.config.AppServiceConfig
@@ -147,13 +147,10 @@ abstract class AbstractAppServiceDeploymentViewModel<TConfig : AppServiceConfig>
     }
 
     fun selectProject(publishableProject: PublishableProjectModel?) {
-        val frameworks = publishableProject?.projectOutputs.orEmpty()
-            .map { it.tfmInMsbuildFormat }
-            .filter { it.isNotBlank() }
-            .distinct()
-            .sortedWith(NaturalComparator.INSTANCE)
-        selectedTargetFramework.value = selectedTargetFramework.value?.takeIf { it in frameworks }
-            ?: frameworks.firstOrNull()
+        val frameworks = publishableProject?.availableTargetFrameworks().orEmpty()
+        // Keep the current selection when switching projects if the new project also targets this framework
+        selectedTargetFramework.value =
+            selectedTargetFramework.value?.takeIf { it in frameworks } ?: frameworks.firstOrNull()
         _targetFrameworks.value = frameworks
         _selectedProject.value = publishableProject
     }

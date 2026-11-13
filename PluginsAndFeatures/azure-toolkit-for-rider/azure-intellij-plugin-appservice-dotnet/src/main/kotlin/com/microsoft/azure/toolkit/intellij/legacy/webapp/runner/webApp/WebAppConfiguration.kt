@@ -10,11 +10,16 @@ import com.intellij.execution.Executor
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.LocatableConfigurationBase
 import com.intellij.execution.configurations.RuntimeConfigurationError
+import com.intellij.execution.configurations.RuntimeConfigurationWarning
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.platform.util.coroutines.childScope
+import com.jetbrains.rider.model.publishableProjectsModel
+import com.jetbrains.rider.projectView.solution
 import com.microsoft.azure.toolkit.intellij.AppServiceProjectService
+import com.microsoft.azure.toolkit.intellij.legacy.availableTargetFrameworks
+import com.microsoft.azure.toolkit.intellij.legacy.resolveTargetFramework
 import com.microsoft.azure.toolkit.intellij.legacy.utils.isAccountSignedIn
 import com.microsoft.azure.toolkit.lib.appservice.webapp.WebAppBase
 import kotlinx.coroutines.cancel
@@ -67,6 +72,20 @@ class WebAppConfiguration(private val project: Project, factory: ConfigurationFa
             if (isDeployToSlot) {
                 if (slotName.isNullOrEmpty()) throw RuntimeConfigurationError("Deployment slot name is not provided")
             }
+
+            checkTargetFramework(publishableProjectPath, targetFramework)
+        }
+    }
+
+    private fun checkTargetFramework(publishableProjectPath: String?, targetFramework: String?) {
+        if (targetFramework.isNullOrEmpty()) return
+        val publishableProject = project.solution.publishableProjectsModel.publishableProjects.values
+            .firstOrNull { it.projectFilePath == publishableProjectPath }
+            ?: return
+        if (!publishableProject.isDotNetCore) return
+        if (targetFramework !in publishableProject.availableTargetFrameworks()) {
+            val fallback = publishableProject.resolveTargetFramework(null)
+            throw RuntimeConfigurationWarning("Target framework '$targetFramework' is not available for the project, '$fallback' will be used")
         }
     }
 
