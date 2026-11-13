@@ -17,6 +17,8 @@ import com.jetbrains.rider.run.configurations.publishing.PublishRuntimeSettingsC
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDeploymentModel.DraftAppServiceModel
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDeploymentModel.RemoteAppServiceModel
 import com.microsoft.azure.toolkit.intellij.appservice.utils.isSameApp
+import com.microsoft.azure.toolkit.intellij.legacy.availableTargetFrameworks
+import com.microsoft.azure.toolkit.intellij.legacy.targetsNetFramework
 import com.microsoft.azure.toolkit.lib.Azure
 import com.microsoft.azure.toolkit.lib.appservice.AzureAppService
 import com.microsoft.azure.toolkit.lib.appservice.config.AppServiceConfig
@@ -30,7 +32,7 @@ import java.util.*
 import kotlin.coroutines.cancellation.CancellationException
 
 abstract class AbstractAppServiceDeploymentViewModel<TConfig : AppServiceConfig>(
-    project: Project,
+    private val project: Project,
     parentCs: CoroutineScope,
     publishableProjectFilter: (PublishableProjectModel) -> Boolean
 ) : AppServiceDeploymentViewModel<TConfig> {
@@ -55,7 +57,21 @@ abstract class AbstractAppServiceDeploymentViewModel<TConfig : AppServiceConfig>
     protected val _publishableProjects = MutableStateFlow<List<PublishableProjectModel>>(emptyList())
     val publishableProjects: StateFlow<List<PublishableProjectModel>> = _publishableProjects.asStateFlow()
 
-    val selectedProject = MutableStateFlow<PublishableProjectModel?>(null)
+    private val _selectedProject = MutableStateFlow<PublishableProjectModel?>(null)
+    val selectedProject: StateFlow<PublishableProjectModel?> = _selectedProject.asStateFlow()
+
+    private val _targetFrameworks = MutableStateFlow<List<String>>(emptyList())
+    val targetFrameworks: StateFlow<List<String>> = _targetFrameworks.asStateFlow()
+
+    private val _selectedTargetFramework = MutableStateFlow<String?>(null)
+    val selectedTargetFramework: StateFlow<String?> = _selectedTargetFramework.asStateFlow()
+
+    // Target framework is passed to MSBuild only for .NET (Core) projects, same as in Rider's Publish to Folder
+    private val _isTargetFrameworkVisible = MutableStateFlow(false)
+    val isTargetFrameworkVisible: StateFlow<Boolean> = _isTargetFrameworkVisible.asStateFlow()
+
+    private val _isNetFramework = MutableStateFlow(false)
+    open override val isNetFramework: StateFlow<Boolean> = _isNetFramework.asStateFlow()
 
     protected val _configurationAndPlatforms = MutableStateFlow<List<ConfigurationAndPlatform>>(emptyList())
     val configurationAndPlatforms: StateFlow<List<ConfigurationAndPlatform>> = _configurationAndPlatforms.asStateFlow()
@@ -67,7 +83,7 @@ abstract class AbstractAppServiceDeploymentViewModel<TConfig : AppServiceConfig>
     init {
         _publishableProjects.value = project.solution.publishableProjectsModel.publishableProjects.values
             .filter { publishableProjectFilter(it) }
-        selectedProject.value = _publishableProjects.value.firstOrNull()
+        selectProject(_publishableProjects.value.firstOrNull())
 
         val manager = SolutionConfigurationManager.tryGetInstance(project)
         _configurationAndPlatforms.value = manager?.solutionConfigurationsAndPlatforms.orEmpty()
@@ -137,6 +153,28 @@ abstract class AbstractAppServiceDeploymentViewModel<TConfig : AppServiceConfig>
             listOf(model) + current.filter { !isSameApp(it.config, model.config) }
         }
         _selectedAppService.value = config to null
+    }
+
+    fun selectProject(publishableProject: PublishableProjectModel?) {
+        val frameworks = publishableProject?.availableTargetFrameworks().orEmpty()
+        // Keep the current selection when switching projects if the new project also targets this framework
+        _selectedTargetFramework.value =
+            _selectedTargetFramework.value?.takeIf { it in frameworks } ?: frameworks.firstOrNull()
+        _targetFrameworks.value = frameworks
+        _isTargetFrameworkVisible.value = publishableProject?.isDotNetCore == true
+        _selectedProject.value = publishableProject
+        updateIsNetFramework()
+    }
+
+    fun selectTargetFramework(targetFramework: String?) {
+        _selectedTargetFramework.value = targetFramework
+        updateIsNetFramework()
+    }
+
+    private fun updateIsNetFramework() {
+        _isNetFramework.value = _selectedProject.value
+            ?.targetsNetFramework(project, _selectedTargetFramework.value)
+            ?: false
     }
 
     fun setOpenBrowserFlag(enabled: Boolean) {

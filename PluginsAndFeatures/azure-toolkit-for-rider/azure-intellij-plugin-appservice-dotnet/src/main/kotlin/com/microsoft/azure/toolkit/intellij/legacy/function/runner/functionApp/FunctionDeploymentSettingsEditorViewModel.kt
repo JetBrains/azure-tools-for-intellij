@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rider.run.configurations.publishing.PublishRuntimeSettingsCoreHelper.ConfigurationAndPlatform
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AbstractAppServiceDeploymentViewModel
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDeploymentModel.RemoteAppServiceModel
+import com.microsoft.azure.toolkit.intellij.legacy.resolveTargetFramework
 import com.microsoft.azure.toolkit.lib.Azure
 import com.microsoft.azure.toolkit.lib.appservice.AppServiceAppBase
 import com.microsoft.azure.toolkit.lib.appservice.config.FunctionAppConfig
@@ -21,10 +22,6 @@ import com.microsoft.azure.toolkit.lib.auth.AzureAccount
 import com.microsoft.azure.toolkit.lib.common.model.Region
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class FunctionDeploymentSettingsEditorViewModel(project: Project, parentCs: CoroutineScope) :
@@ -35,13 +32,6 @@ class FunctionDeploymentSettingsEditorViewModel(project: Project, parentCs: Coro
     ) {
     companion object {
         private val LOG = logger<FunctionDeploymentSettingsEditorViewModel>()
-    }
-
-    override val isNetFramework: StateFlow<Boolean> by lazy {
-        selectedProject.map { sp ->
-            if (sp == null) return@map false
-            !sp.isDotNetCore || sp.projectOutputs.all { it.tfmInMsbuildFormat == "net48" }
-        }.stateIn(cs, SharingStarted.Eagerly, false)
     }
 
     fun setConfigFromOptions(state: FunctionDeploymentConfigurationOptions) {
@@ -79,8 +69,10 @@ class FunctionDeploymentSettingsEditorViewModel(project: Project, parentCs: Coro
         val publishableProject = _publishableProjects.value
             .firstOrNull { it.projectFilePath == state.publishableProjectPath }
         if (publishableProject != null) {
-            selectedProject.value = publishableProject
+            selectProject(publishableProject)
         }
+
+        selectTargetFramework(selectedProject.value?.resolveTargetFramework(state.targetFramework))
 
         val config = state.projectConfiguration
         val platform = state.projectPlatform
@@ -125,6 +117,7 @@ class FunctionDeploymentSettingsEditorViewModel(project: Project, parentCs: Coro
             publishableProjectPath = projectPath
             projectConfiguration = cap?.configuration
             projectPlatform = cap?.platform
+            targetFramework = selectedTargetFramework.value
 
             openBrowser = openBrowserValue
         }

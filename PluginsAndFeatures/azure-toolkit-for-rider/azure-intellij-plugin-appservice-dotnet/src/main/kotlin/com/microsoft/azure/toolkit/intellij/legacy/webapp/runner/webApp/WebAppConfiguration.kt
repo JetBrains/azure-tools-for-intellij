@@ -15,6 +15,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.platform.util.coroutines.childScope
 import com.microsoft.azure.toolkit.intellij.AppServiceProjectService
+import com.microsoft.azure.toolkit.intellij.legacy.utils.checkTargetFramework
 import com.microsoft.azure.toolkit.intellij.legacy.utils.isAccountSignedIn
 import com.microsoft.azure.toolkit.lib.appservice.webapp.WebAppBase
 import kotlinx.coroutines.cancel
@@ -67,6 +68,8 @@ class WebAppConfiguration(private val project: Project, factory: ConfigurationFa
             if (isDeployToSlot) {
                 if (slotName.isNullOrEmpty()) throw RuntimeConfigurationError("Deployment slot name is not provided")
             }
+
+            checkTargetFramework(project, publishableProjectPath, targetFramework, operatingSystem)
         }
     }
 

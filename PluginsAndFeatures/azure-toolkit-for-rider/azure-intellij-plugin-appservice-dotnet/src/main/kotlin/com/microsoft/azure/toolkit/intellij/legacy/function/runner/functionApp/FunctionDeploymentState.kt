@@ -28,6 +28,7 @@ import com.microsoft.azure.toolkit.intellij.legacy.utils.RESOURCE_GROUP_VALIDATI
 import com.microsoft.azure.toolkit.intellij.legacy.utils.isValidApplicationName
 import com.microsoft.azure.toolkit.intellij.legacy.utils.isValidApplicationSlotName
 import com.microsoft.azure.toolkit.intellij.legacy.utils.isValidResourceGroupName
+import com.microsoft.azure.toolkit.intellij.legacy.utils.resolveDeploymentTargetFramework
 import com.microsoft.azure.toolkit.lib.Azure
 import com.microsoft.azure.toolkit.lib.appservice.config.RuntimeConfig
 import com.microsoft.azure.toolkit.lib.appservice.function.AzureFunctions
@@ -63,12 +64,18 @@ class FunctionDeploymentState(
         val publishableProject = project.solution.publishableProjectsModel.publishableProjects.values
             .firstOrNull { it.projectFilePath == publishableProjectPath }
             ?: throw ExecutionException("Project is not defined")
+        val targetFramework = publishableProject.resolveDeploymentTargetFramework(
+            project,
+            options.targetFramework,
+            OperatingSystem.fromString(options.operatingSystem),
+            processHandlerMessenger
+        )
 
         validateOptions(options)
 
         checkCanceled()
 
-        val config = createDotNetFunctionAppConfig(publishableProject, options)
+        val config = createDotNetFunctionAppConfig(publishableProject, options, targetFramework)
         val createTask = CreateDotNetFunctionAppTask(config, processHandlerMessenger)
         val deployTarget = createTask.execute()
 
@@ -85,6 +92,7 @@ class FunctionDeploymentState(
                 publishableProject,
                 options.projectConfiguration,
                 options.projectPlatform,
+                targetFramework,
             ) { processHandlerMessenger?.info(it) }
             .getOrThrow()
 
@@ -123,7 +131,8 @@ class FunctionDeploymentState(
 
     private suspend fun createDotNetFunctionAppConfig(
         publishableProject: PublishableProjectModel,
-        options: FunctionDeploymentConfigurationOptions
+        options: FunctionDeploymentConfigurationOptions,
+        targetFramework: String?
     ) = DotNetFunctionAppConfig().apply {
         subscriptionId(options.subscriptionId)
         resourceGroup(options.resourceGroupName)
@@ -145,7 +154,7 @@ class FunctionDeploymentState(
         storageAccountResourceGroup(options.storageAccountResourceGroup)
         val os = OperatingSystem.fromString(options.operatingSystem)
         runtime = createRuntimeConfig(os)
-        val dotnetRuntimeConfig = createDotNetRuntimeConfig(publishableProject, os)
+        val dotnetRuntimeConfig = createDotNetRuntimeConfig(publishableProject, os, targetFramework)
         dotnetRuntime = dotnetRuntimeConfig
         flexConsumptionConfiguration = createFlexConsumptionConfiguration(options)
         appSettings(configureAppSettings(pricingTier, runtime, dotnetRuntimeConfig))
@@ -156,16 +165,19 @@ class FunctionDeploymentState(
             this.os = os
         }
 
-    private suspend fun createDotNetRuntimeConfig(publishableProject: PublishableProjectModel, os: OperatingSystem) =
-        DotNetRuntimeConfig().apply {
-            os(os)
-            isDocker = false
-            val stackAndVersion = publishableProject.getStackAndVersion(project, os, true)
-            stack = stackAndVersion?.runtimeStack
-            dotnetVersion = stackAndVersion?.dotnetVersion
-            frameworkVersion = stackAndVersion?.frameworkVersion
-            functionStack = publishableProject.getFunctionStack(project, os)
-        }
+    private suspend fun createDotNetRuntimeConfig(
+        publishableProject: PublishableProjectModel,
+        os: OperatingSystem,
+        targetFramework: String?
+    ) = DotNetRuntimeConfig().apply {
+        os(os)
+        isDocker = false
+        val stackAndVersion = publishableProject.getStackAndVersion(project, os, true, targetFramework)
+        stack = stackAndVersion?.runtimeStack
+        dotnetVersion = stackAndVersion?.dotnetVersion
+        frameworkVersion = stackAndVersion?.frameworkVersion
+        functionStack = publishableProject.getFunctionStack(project, os, targetFramework)
+    }
 
     private fun createFlexConsumptionConfiguration(options: FunctionDeploymentConfigurationOptions) =
         FlexConsumptionConfiguration().apply {

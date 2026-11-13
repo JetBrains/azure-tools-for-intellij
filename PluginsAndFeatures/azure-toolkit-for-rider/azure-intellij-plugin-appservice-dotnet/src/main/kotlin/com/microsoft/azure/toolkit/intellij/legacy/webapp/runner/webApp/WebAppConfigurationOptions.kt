@@ -21,6 +21,7 @@ class WebAppConfigurationOptions : LocatableRunConfigurationOptions() {
     var slotConfigurationSource by string()
     var projectConfiguration by string()
     var projectPlatform by string()
+    var targetFramework by string()
     var publishableProjectPath by string()
     var openBrowser by property(false)
 }

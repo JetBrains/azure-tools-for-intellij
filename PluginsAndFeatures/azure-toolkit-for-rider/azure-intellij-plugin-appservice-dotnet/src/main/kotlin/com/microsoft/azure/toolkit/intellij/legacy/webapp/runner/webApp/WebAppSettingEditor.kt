@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.MutableCollectionComboBoxModel
 import com.intellij.ui.dsl.builder.Align
+import com.intellij.ui.dsl.builder.Row
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.listCellRenderer.textListCellRenderer
 import com.intellij.util.ui.launchOnShow
@@ -19,6 +20,7 @@ import com.jetbrains.rider.run.configurations.publishing.PublishRuntimeSettingsC
 import com.microsoft.azure.toolkit.intellij.appservice.utils.bindItems
 import com.microsoft.azure.toolkit.intellij.appservice.utils.bindSelected
 import com.microsoft.azure.toolkit.intellij.appservice.utils.bindSelectedItem
+import com.microsoft.azure.toolkit.intellij.appservice.utils.visibleIf
 import javax.swing.JPanel
 
 class WebAppSettingEditor(
@@ -32,14 +34,15 @@ class WebAppSettingEditor(
         Disposer.register(this, it)
     }
 
+    private lateinit var targetFrameworkRow: Row
+
     private val panel: JPanel = panel {
         row("Project:") {
             comboBox(
                 MutableCollectionComboBoxModel<PublishableProjectModel>(),
                 renderer = textListCellRenderer("") { it.projectName }
             )
-                .bindItems(viewModel.publishableProjects)
-                .bindSelectedItem(viewModel.selectedProject)
+                .bindItems(viewModel.publishableProjects, viewModel.selectedProject, viewModel::selectProject)
                 .align(Align.FILL)
         }
         row("Configuration:") {
@@ -49,6 +52,11 @@ class WebAppSettingEditor(
             )
                 .bindItems(viewModel.configurationAndPlatforms)
                 .bindSelectedItem(viewModel.selectedConfigurationAndPlatform)
+                .align(Align.FILL)
+        }
+        targetFrameworkRow = row("Target framework:") {
+            comboBox(MutableCollectionComboBoxModel<String>())
+                .bindItems(viewModel.targetFrameworks, viewModel.selectedTargetFramework, viewModel::selectTargetFramework)
                 .align(Align.FILL)
         }
         row {
@@ -61,6 +69,7 @@ class WebAppSettingEditor(
                 .bindSelected(viewModel.openBrowserAfterDeployment) { viewModel.setOpenBrowserFlag(it) }
         }
     }.also {
+        targetFrameworkRow.visibleIf(viewModel.isTargetFrameworkVisible, it)
         it.launchOnShow("WebAppSettingEditor state observer") {
             viewModel.selectedAppService.collect {
                 fireEditorStateChanged()

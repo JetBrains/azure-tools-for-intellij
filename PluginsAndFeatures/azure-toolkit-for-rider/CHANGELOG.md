@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- No option to choose a specific TFM in multitarget projects ([RIDER-130635](https://youtrack.jetbrains.com/issue/RIDER-130635))
+
+## [4.9.2] - 2026-11-11
+
 ### Changed
 
 - Update platform version to RD-2026.3
@@ -520,7 +526,8 @@
 - Reimplement Azure Functions Core Tools integration
 - Reimplement Azure Functions templates
 
-[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.1...HEAD
+[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.2...HEAD
+[4.9.2]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.1...4.9.2
 [4.9.1]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.0...4.9.1
 [4.9.0]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.8.6...4.9.0
 [4.8.6]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.8.5...4.8.6

@@ -46,6 +46,7 @@ class DotNetAppServiceDeployer(private val project: Project) {
         publishableProject: PublishableProjectModel,
         configuration: String?,
         platform: String?,
+        targetFramework: String?,
         updateStatusText: (String) -> Unit
     ): Result<Unit> {
         target.status = AzResource.Status.DEPLOYING
@@ -54,7 +55,7 @@ class DotNetAppServiceDeployer(private val project: Project) {
 
         val publishProjectResult = ArtifactService
             .getInstance(project)
-            .publishProjectToFolder(publishableProject, configuration, platform, updateStatusText)
+            .publishProjectToFolder(publishableProject, configuration, platform, targetFramework, updateStatusText)
             .onFailure {
                 return Result.failure(it)
             }
@@ -73,6 +74,7 @@ class DotNetAppServiceDeployer(private val project: Project) {
         publishableProject: PublishableProjectModel,
         configuration: String?,
         platform: String?,
+        targetFramework: String?,
         updateStatusText: (String) -> Unit
     ): Result<Unit> {
         target.status = AzResource.Status.DEPLOYING
@@ -81,7 +83,7 @@ class DotNetAppServiceDeployer(private val project: Project) {
 
         val publishProjectResult = ArtifactService
             .getInstance(project)
-            .publishProjectToFolder(publishableProject, configuration, platform, updateStatusText)
+            .publishProjectToFolder(publishableProject, configuration, platform, targetFramework, updateStatusText)
             .onFailure {
                 return Result.failure(it)
             }
