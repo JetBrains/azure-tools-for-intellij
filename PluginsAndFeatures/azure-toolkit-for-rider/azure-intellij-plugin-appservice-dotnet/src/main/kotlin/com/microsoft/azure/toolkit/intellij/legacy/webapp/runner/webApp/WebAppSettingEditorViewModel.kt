@@ -13,7 +13,6 @@ import com.jetbrains.rider.run.configurations.publishing.PublishRuntimeSettingsC
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AbstractAppServiceDeploymentViewModel
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDeploymentModel.RemoteAppServiceModel
 import com.microsoft.azure.toolkit.intellij.legacy.resolveTargetFramework
-import com.microsoft.azure.toolkit.intellij.legacy.targetsNetFramework
 import com.microsoft.azure.toolkit.lib.Azure
 import com.microsoft.azure.toolkit.lib.appservice.AppServiceAppBase
 import com.microsoft.azure.toolkit.lib.appservice.config.AppServiceConfig
@@ -25,10 +24,6 @@ import com.microsoft.azure.toolkit.lib.auth.AzureAccount
 import com.microsoft.azure.toolkit.lib.common.model.Region
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
@@ -40,12 +35,6 @@ class WebAppSettingEditorViewModel(project: Project, parentCs: CoroutineScope) :
     ) {
     companion object {
         private val LOG = logger<WebAppSettingEditorViewModel>()
-    }
-
-    override val isNetFramework: StateFlow<Boolean> by lazy {
-        combine(selectedProject, selectedTargetFramework) { sp, tfm ->
-            sp?.targetsNetFramework(project, tfm) ?: false
-        }.stateIn(cs, SharingStarted.Eagerly, false)
     }
 
     fun setConfigFromOptions(state: WebAppConfigurationOptions) {
@@ -75,7 +64,7 @@ class WebAppSettingEditorViewModel(project: Project, parentCs: CoroutineScope) :
             selectProject(publishableProject)
         }
 
-        selectedTargetFramework.value = selectedProject.value?.resolveTargetFramework(state.targetFramework)
+        selectTargetFramework(selectedProject.value?.resolveTargetFramework(state.targetFramework))
 
         val config = state.projectConfiguration
         val platform = state.projectPlatform

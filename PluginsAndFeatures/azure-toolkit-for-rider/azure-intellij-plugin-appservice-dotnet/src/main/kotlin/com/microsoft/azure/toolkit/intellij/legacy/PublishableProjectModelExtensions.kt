@@ -7,7 +7,6 @@ package com.microsoft.azure.toolkit.intellij.legacy
 import com.azure.resourcemanager.appservice.models.FunctionRuntimeStack
 import com.azure.resourcemanager.appservice.models.NetFrameworkVersion
 import com.azure.resourcemanager.appservice.models.RuntimeStack
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.NaturalComparator
 import com.jetbrains.rider.azureFunctions.common.AzureFunctionsWorkerRuntime
@@ -22,8 +21,6 @@ import com.jetbrains.rider.run.environment.MSBuildEvaluator
 import com.microsoft.azure.toolkit.lib.appservice.model.OperatingSystem
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
-
-private val LOG = logger<PublishableProjectModel>()
 
 private val netCoreAppVersionRegex = Regex("\\.NETCoreApp,Version=v([0-9]+(?:\\.[0-9])*)", RegexOption.IGNORE_CASE)
 private val netAppVersionRegex = Regex("net([0-9]+(?:\\.[0-9])*)", RegexOption.IGNORE_CASE)
@@ -51,13 +48,15 @@ fun PublishableProjectModel.resolveTargetFramework(saved: String?): String? {
     val available = availableTargetFrameworks()
     if (!saved.isNullOrEmpty() && saved in available) return saved
 
-    val fallback = available.firstOrNull()
-    if (!saved.isNullOrEmpty() && isDotNetCore) {
-        LOG.warn("Target framework '$saved' is not available for the project '$projectName', using '$fallback'")
-    }
-
-    return fallback
+    return available.firstOrNull()
 }
+
+/**
+ * Checks if the target framework [tfm] in MSBuild format can run on App Service with [operatingSystem].
+ * Linux App Service doesn't support .NET Framework.
+ */
+fun PublishableProjectModel.isSupportedOn(project: Project, tfm: String?, operatingSystem: OperatingSystem?): Boolean =
+    operatingSystem != OperatingSystem.LINUX || !targetsNetFramework(project, tfm)
 
 /**
  * Returns the framework id (e.g. `.NETCoreApp,Version=v8.0`) of the target framework [tfm] in MSBuild format.

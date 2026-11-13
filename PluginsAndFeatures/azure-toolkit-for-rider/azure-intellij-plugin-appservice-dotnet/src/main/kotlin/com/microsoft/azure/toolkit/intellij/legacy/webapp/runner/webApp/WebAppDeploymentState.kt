@@ -21,13 +21,13 @@ import com.microsoft.azure.toolkit.intellij.appservice.DotNetAppServiceDeployer
 import com.microsoft.azure.toolkit.intellij.common.RunProcessHandler
 import com.microsoft.azure.toolkit.intellij.legacy.common.AzureDeploymentState
 import com.microsoft.azure.toolkit.intellij.legacy.getStackAndVersion
-import com.microsoft.azure.toolkit.intellij.legacy.resolveTargetFramework
 import com.microsoft.azure.toolkit.intellij.legacy.utils.APPLICATION_SLOT_VALIDATION_MESSAGE
 import com.microsoft.azure.toolkit.intellij.legacy.utils.APPLICATION_VALIDATION_MESSAGE
 import com.microsoft.azure.toolkit.intellij.legacy.utils.RESOURCE_GROUP_VALIDATION_MESSAGE
 import com.microsoft.azure.toolkit.intellij.legacy.utils.isValidApplicationName
 import com.microsoft.azure.toolkit.intellij.legacy.utils.isValidApplicationSlotName
 import com.microsoft.azure.toolkit.intellij.legacy.utils.isValidResourceGroupName
+import com.microsoft.azure.toolkit.intellij.legacy.utils.resolveDeploymentTargetFramework
 import com.microsoft.azure.toolkit.lib.Azure
 import com.microsoft.azure.toolkit.lib.appservice.config.RuntimeConfig
 import com.microsoft.azure.toolkit.lib.appservice.model.OperatingSystem
@@ -56,10 +56,12 @@ class WebAppDeploymentState(
         val publishableProject = project.solution.publishableProjectsModel.publishableProjects.values
             .firstOrNull { it.projectFilePath == publishableProjectPath }
             ?: throw ExecutionException("Project is not defined")
-        val targetFramework = publishableProject.resolveTargetFramework(options.targetFramework)
-        if (publishableProject.isDotNetCore && !options.targetFramework.isNullOrEmpty() && options.targetFramework != targetFramework) {
-            processHandlerMessenger?.warning("Target framework '${options.targetFramework}' is not available, using '$targetFramework'")
-        }
+        val targetFramework = publishableProject.resolveDeploymentTargetFramework(
+            project,
+            options.targetFramework,
+            OperatingSystem.fromString(options.operatingSystem),
+            processHandlerMessenger
+        )
 
         validateOptions(options)
 

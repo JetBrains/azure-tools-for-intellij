@@ -56,7 +56,7 @@ class FunctionDeploymentSettingsEditor(
         }
         targetFrameworkRow = row("Target framework:") {
             comboBox(MutableCollectionComboBoxModel<String>())
-                .bindItems(viewModel.targetFrameworks, viewModel.selectedTargetFramework)
+                .bindItems(viewModel.targetFrameworks, viewModel.selectedTargetFramework, viewModel::selectTargetFramework)
                 .align(Align.FILL)
         }
         row {
