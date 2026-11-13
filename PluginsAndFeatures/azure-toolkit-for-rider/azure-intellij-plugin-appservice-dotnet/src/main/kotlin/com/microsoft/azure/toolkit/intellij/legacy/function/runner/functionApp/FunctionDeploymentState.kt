@@ -85,6 +85,7 @@ class FunctionDeploymentState(
                 publishableProject,
                 options.projectConfiguration,
                 options.projectPlatform,
+                options.targetFramework,
             ) { processHandlerMessenger?.info(it) }
             .getOrThrow()
 
@@ -145,7 +146,7 @@ class FunctionDeploymentState(
         storageAccountResourceGroup(options.storageAccountResourceGroup)
         val os = OperatingSystem.fromString(options.operatingSystem)
         runtime = createRuntimeConfig(os)
-        val dotnetRuntimeConfig = createDotNetRuntimeConfig(publishableProject, os)
+        val dotnetRuntimeConfig = createDotNetRuntimeConfig(publishableProject, os, options.targetFramework)
         dotnetRuntime = dotnetRuntimeConfig
         flexConsumptionConfiguration = createFlexConsumptionConfiguration(options)
         appSettings(configureAppSettings(pricingTier, runtime, dotnetRuntimeConfig))
@@ -156,16 +157,19 @@ class FunctionDeploymentState(
             this.os = os
         }
 
-    private suspend fun createDotNetRuntimeConfig(publishableProject: PublishableProjectModel, os: OperatingSystem) =
-        DotNetRuntimeConfig().apply {
-            os(os)
-            isDocker = false
-            val stackAndVersion = publishableProject.getStackAndVersion(project, os, true)
-            stack = stackAndVersion?.runtimeStack
-            dotnetVersion = stackAndVersion?.dotnetVersion
-            frameworkVersion = stackAndVersion?.frameworkVersion
-            functionStack = publishableProject.getFunctionStack(project, os)
-        }
+    private suspend fun createDotNetRuntimeConfig(
+        publishableProject: PublishableProjectModel,
+        os: OperatingSystem,
+        targetFramework: String?
+    ) = DotNetRuntimeConfig().apply {
+        os(os)
+        isDocker = false
+        val stackAndVersion = publishableProject.getStackAndVersion(project, os, true, targetFramework)
+        stack = stackAndVersion?.runtimeStack
+        dotnetVersion = stackAndVersion?.dotnetVersion
+        frameworkVersion = stackAndVersion?.frameworkVersion
+        functionStack = publishableProject.getFunctionStack(project, os, targetFramework)
+    }
 
     private fun createFlexConsumptionConfiguration(options: FunctionDeploymentConfigurationOptions) =
         FlexConsumptionConfiguration().apply {

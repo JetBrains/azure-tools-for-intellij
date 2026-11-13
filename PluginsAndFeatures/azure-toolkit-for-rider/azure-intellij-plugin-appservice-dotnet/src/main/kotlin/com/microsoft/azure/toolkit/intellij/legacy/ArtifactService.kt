@@ -36,6 +36,7 @@ class ArtifactService(private val project: Project) {
         publishableProject: PublishableProjectModel,
         configuration: String?,
         platform: String?,
+        targetFramework: String?,
         updateStatusText: (String) -> Unit
     ): Result<File> {
         updateStatusText("Publishing project ${publishableProject.projectName} to a folder...")
@@ -43,7 +44,10 @@ class ArtifactService(private val project: Project) {
         if (!configuration.isNullOrEmpty() && !platform.isNullOrEmpty()) {
             updateStatusText("Using configuration: $configuration and platform: $platform")
         }
-        val artifactDirectoryResult = publishProjectToFolder(publishableProject, configuration, platform)
+        if (!targetFramework.isNullOrEmpty()) {
+            updateStatusText("Using target framework: $targetFramework")
+        }
+        val artifactDirectoryResult = publishProjectToFolder(publishableProject, configuration, platform, targetFramework)
 
         return artifactDirectoryResult
     }
@@ -56,13 +60,15 @@ class ArtifactService(private val project: Project) {
      * @param publishableProject [PublishableProjectModel] contains information about the project to be published
      * @param configuration optional configuration to pass to MSBuild
      * @param platform optional platform to pass to MSBuild
+     * @param targetFramework optional target framework to pass to MSBuild
      *
      * @return [File] to project content to be published
      */
     private suspend fun publishProjectToFolder(
         publishableProject: PublishableProjectModel,
         configuration: String?,
-        platform: String?
+        platform: String?,
+        targetFramework: String?
     ): Result<File> {
         val publishService = MsBuildPublishingService.getInstance(project)
         val (tempDirMsBuildProperty, outPath) = publishService.getPublishToTempDirParameterAndPath()
@@ -75,6 +81,9 @@ class ArtifactService(private val project: Project) {
         }
         if (!platform.isNullOrEmpty()) {
             extraProperties.add(CustomTargetExtraProperty("Platform", platform))
+        }
+        if (!targetFramework.isNullOrEmpty()) {
+            extraProperties.add(CustomTargetExtraProperty("TargetFramework", targetFramework))
         }
 
         val buildStatus =

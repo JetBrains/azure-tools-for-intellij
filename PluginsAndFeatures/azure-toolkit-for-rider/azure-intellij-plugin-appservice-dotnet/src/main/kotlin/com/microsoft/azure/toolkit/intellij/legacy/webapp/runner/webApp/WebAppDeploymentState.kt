@@ -77,6 +77,7 @@ class WebAppDeploymentState(
                 publishableProject,
                 options.projectConfiguration,
                 options.projectPlatform,
+                options.targetFramework,
             ) { processHandlerMessenger?.info(it) }
             .getOrThrow()
 
@@ -135,7 +136,7 @@ class WebAppDeploymentState(
         deploymentSlotConfigurationSource(configurationSource)
         val os = OperatingSystem.fromString(options.operatingSystem)
         runtime = createRuntimeConfig(os)
-        dotnetRuntime = createDotNetRuntimeConfig(publishableProject, os)
+        dotnetRuntime = createDotNetRuntimeConfig(publishableProject, os, options.targetFramework)
     }
 
     private fun createRuntimeConfig(os: OperatingSystem) =
@@ -143,15 +144,18 @@ class WebAppDeploymentState(
             this.os = os
         }
 
-    private fun createDotNetRuntimeConfig(publishableProject: PublishableProjectModel, os: OperatingSystem) =
-        DotNetRuntimeConfig().apply {
-            os(os)
-            isDocker = false
-            val stackAndVersion = publishableProject.getStackAndVersion(project, os, false)
-            stack = stackAndVersion?.runtimeStack
-            dotnetVersion = stackAndVersion?.dotnetVersion
-            frameworkVersion = stackAndVersion?.frameworkVersion
-        }
+    private fun createDotNetRuntimeConfig(
+        publishableProject: PublishableProjectModel,
+        os: OperatingSystem,
+        targetFramework: String?
+    ) = DotNetRuntimeConfig().apply {
+        os(os)
+        isDocker = false
+        val stackAndVersion = publishableProject.getStackAndVersion(project, os, false, targetFramework)
+        stack = stackAndVersion?.runtimeStack
+        dotnetVersion = stackAndVersion?.dotnetVersion
+        frameworkVersion = stackAndVersion?.frameworkVersion
+    }
 
     override fun onSuccess(result: WebAppBase<*, *, *>, processHandler: RunProcessHandler) {
         val options = requireNotNull(webAppConfiguration.state)

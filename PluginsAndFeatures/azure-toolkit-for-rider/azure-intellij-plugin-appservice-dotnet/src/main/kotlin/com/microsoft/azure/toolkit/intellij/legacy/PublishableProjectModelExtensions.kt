@@ -27,12 +27,13 @@ private val netFxAppVersionRegex = Regex("\\.NETFramework,Version=v([0-9](?:\\.[
 fun PublishableProjectModel.getStackAndVersion(
     project: Project,
     operatingSystem: OperatingSystem,
-    isFunction: Boolean
+    isFunction: Boolean,
+    targetFramework: String? = null
 ): PublishableProjectRuntime? {
     if (operatingSystem == OperatingSystem.DOCKER) return null
 
     if (isDotNetCore) {
-        val dotnetVersion = getProjectDotNetVersion(project, this)
+        val dotnetVersion = getProjectDotNetVersion(project, this, targetFramework)
         if (operatingSystem == OperatingSystem.LINUX) {
             val stackName = if (isFunction) "DOTNET" else "DOTNETCORE"
             val stack =
@@ -48,7 +49,7 @@ fun PublishableProjectModel.getStackAndVersion(
             return PublishableProjectRuntime(null, null, version)
         }
     } else {
-        val netFrameworkVersion = getProjectNetFrameworkVersion(project, this)
+        val netFrameworkVersion = getProjectNetFrameworkVersion(project, this, targetFramework)
         val version =
             if (netFrameworkVersion == null)
                 NetFrameworkVersion.fromString("v3.5")
@@ -70,7 +71,8 @@ data class PublishableProjectRuntime(
 @Suppress("JetBrainsInternalApiUsage")
 suspend fun PublishableProjectModel.getFunctionStack(
     project: Project,
-    operatingSystem: OperatingSystem
+    operatingSystem: OperatingSystem,
+    targetFramework: String? = null
 ): FunctionRuntimeStack {
     val functionLocalSettings = AzureFunctionsLocalSettingsService
         .getInstance(project)
@@ -80,7 +82,7 @@ suspend fun PublishableProjectModel.getFunctionStack(
     val azureFunctionVersion = getAzureFunctionsVersionProjectProperty(path, null, project)
         ?.trimStart('v', 'V')
         ?: "4"
-    val dotnetVersion = getProjectDotNetVersion(project, this)
+    val dotnetVersion = getProjectDotNetVersion(project, this, targetFramework)
     return FunctionRuntimeStack(
         workerRuntime.value,
         functionRuntimeVersionFromProjectProperty(azureFunctionVersion),
@@ -111,18 +113,35 @@ private fun functionRuntimeVersionFromProjectProperty(azureFunctionVersion: Stri
     else -> "~4"
 }
 
-private fun getProjectDotNetVersion(project: Project, publishableProject: PublishableProjectModel): String? {
-    val currentFramework = getCurrentFrameworkId(project, publishableProject) ?: return null
+private fun getProjectDotNetVersion(
+    project: Project,
+    publishableProject: PublishableProjectModel,
+    targetFramework: String?
+): String? {
+    val currentFramework = getCurrentFrameworkId(project, publishableProject, targetFramework) ?: return null
     return netAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value
         ?: netCoreAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value
 }
 
-private fun getProjectNetFrameworkVersion(project: Project, publishableProject: PublishableProjectModel): String? {
-    val currentFramework = getCurrentFrameworkId(project, publishableProject) ?: return null
+private fun getProjectNetFrameworkVersion(
+    project: Project,
+    publishableProject: PublishableProjectModel,
+    targetFramework: String?
+): String? {
+    val currentFramework = getCurrentFrameworkId(project, publishableProject, targetFramework) ?: return null
     return netFxAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value
 }
 
-private fun getCurrentFrameworkId(project: Project, publishableProject: PublishableProjectModel): String? {
-    val targetFramework = project.solution.projectModelTasks.targetFrameworks[publishableProject.projectModelId]
-    return targetFramework?.currentTargetFrameworkId?.valueOrNull?.framework?.id
+private fun getCurrentFrameworkId(
+    project: Project,
+    publishableProject: PublishableProjectModel,
+    targetFramework: String?
+): String? {
+    if (!targetFramework.isNullOrEmpty()) {
+        return publishableProject.projectOutputs.firstOrNull { it.tfmInMsbuildFormat == targetFramework }?.tfm
+            ?: targetFramework
+    }
+
+    val frameworks = project.solution.projectModelTasks.targetFrameworks[publishableProject.projectModelId]
+    return frameworks?.currentTargetFrameworkId?.valueOrNull?.framework?.id
 }
