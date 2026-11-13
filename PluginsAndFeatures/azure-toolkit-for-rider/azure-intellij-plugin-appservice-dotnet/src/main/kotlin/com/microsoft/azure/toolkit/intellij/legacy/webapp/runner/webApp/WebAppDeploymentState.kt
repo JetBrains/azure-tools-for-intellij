@@ -19,6 +19,7 @@ import com.microsoft.azure.toolkit.intellij.appservice.webapp.CreateDotNetWebApp
 import com.microsoft.azure.toolkit.intellij.appservice.webapp.DotNetAppServiceConfig
 import com.microsoft.azure.toolkit.intellij.appservice.DotNetAppServiceDeployer
 import com.microsoft.azure.toolkit.intellij.common.RunProcessHandler
+import com.microsoft.azure.toolkit.intellij.common.withHttpConnectionErrorReporting
 import com.microsoft.azure.toolkit.intellij.legacy.common.AzureDeploymentState
 import com.microsoft.azure.toolkit.intellij.legacy.getStackAndVersion
 import com.microsoft.azure.toolkit.intellij.legacy.utils.APPLICATION_SLOT_VALIDATION_MESSAGE
@@ -77,16 +78,17 @@ class WebAppDeploymentState(
 
         checkCanceled()
 
-        DotNetAppServiceDeployer
-            .getInstance(project)
-            .deploy(
-                deployTarget,
-                publishableProject,
-                options.projectConfiguration,
-                options.projectPlatform,
-                targetFramework,
-            ) { processHandlerMessenger?.info(it) }
-            .getOrThrow()
+        withHttpConnectionErrorReporting(deployTarget.hostName, processHandlerMessenger) {
+            DotNetAppServiceDeployer
+                .getInstance(project)
+                .deploy(
+                    deployTarget,
+                    publishableProject,
+                    options.projectConfiguration,
+                    options.projectPlatform,
+                    targetFramework,
+                ) { processHandlerMessenger?.info(it) }
+        }.getOrThrow()
 
         return deployTarget
     }

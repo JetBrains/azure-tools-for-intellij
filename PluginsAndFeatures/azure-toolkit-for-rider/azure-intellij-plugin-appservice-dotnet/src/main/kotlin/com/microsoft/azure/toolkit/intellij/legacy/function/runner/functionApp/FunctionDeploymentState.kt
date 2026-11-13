@@ -19,6 +19,7 @@ import com.microsoft.azure.toolkit.intellij.appservice.functionapp.CreateDotNetF
 import com.microsoft.azure.toolkit.intellij.appservice.functionapp.DotNetFunctionAppConfig
 import com.microsoft.azure.toolkit.intellij.appservice.functionapp.DotNetFunctionAppDeploymentSlotDraft
 import com.microsoft.azure.toolkit.intellij.common.RunProcessHandler
+import com.microsoft.azure.toolkit.intellij.common.withHttpConnectionErrorReporting
 import com.microsoft.azure.toolkit.intellij.legacy.common.AzureDeploymentState
 import com.microsoft.azure.toolkit.intellij.legacy.getFunctionStack
 import com.microsoft.azure.toolkit.intellij.legacy.getStackAndVersion
@@ -85,16 +86,17 @@ class FunctionDeploymentState(
 
         checkCanceled()
 
-        DotNetAppServiceDeployer
-            .getInstance(project)
-            .deploy(
-                deployTarget,
-                publishableProject,
-                options.projectConfiguration,
-                options.projectPlatform,
-                targetFramework,
-            ) { processHandlerMessenger?.info(it) }
-            .getOrThrow()
+        withHttpConnectionErrorReporting(deployTarget.hostName, processHandlerMessenger) {
+            DotNetAppServiceDeployer
+                .getInstance(project)
+                .deploy(
+                    deployTarget,
+                    publishableProject,
+                    options.projectConfiguration,
+                    options.projectPlatform,
+                    targetFramework,
+                ) { processHandlerMessenger?.info(it) }
+        }.getOrThrow()
 
         return deployTarget
     }
