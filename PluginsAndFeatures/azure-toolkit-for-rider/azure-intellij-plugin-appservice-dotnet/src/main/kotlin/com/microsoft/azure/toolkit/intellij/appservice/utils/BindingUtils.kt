@@ -10,12 +10,15 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.MutableCollectionComboBoxModel
 import com.intellij.ui.dsl.builder.Cell
+import com.intellij.ui.dsl.builder.Row
+import com.intellij.ui.layout.ComponentPredicate
 import com.intellij.util.ui.launchOnShow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import javax.swing.JComponent
 import javax.swing.JToggleButton
 import javax.swing.JSpinner
 import javax.swing.event.ChangeEvent
@@ -118,6 +121,23 @@ private fun JToggleButton.bindSelected(isSelected: Flow<Boolean>, onSelected: (s
         }
     }
 }
+
+/**
+ * Binds the row visibility to [flow].
+ *
+ * The flow is collected while [anchor] is showing.
+ * [anchor] must not be a component of this row: a hidden row is not showing, so it would never become visible again.
+ */
+internal fun Row.visibleIf(flow: StateFlow<Boolean>, anchor: JComponent): Row =
+    visibleIf(object : ComponentPredicate() {
+        override fun invoke() = flow.value
+
+        override fun addListener(listener: (Boolean) -> Unit) {
+            anchor.launchOnShow("Row visibility binding") {
+                flow.collect { listener(it) }
+            }
+        }
+    })
 
 fun <T> Cell<ComboBox<T>>.bindItems(flow: StateFlow<List<T>>): Cell<ComboBox<T>> =
     applyToComponent {

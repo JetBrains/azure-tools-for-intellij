@@ -16,6 +16,7 @@ import com.jetbrains.rider.azureFunctions.localSettings.getWorkerRuntime
 import com.jetbrains.rider.model.PublishableProjectModel
 import com.jetbrains.rider.model.RdTargetFrameworkId
 import com.jetbrains.rider.model.projectModelTasks
+import com.jetbrains.rider.model.runnableProjectsModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.environment.MSBuildEvaluator
 import com.microsoft.azure.toolkit.lib.appservice.model.OperatingSystem
@@ -73,6 +74,35 @@ fun PublishableProjectModel.frameworkIdFor(project: Project, tfm: String?): Stri
     return frameworks?.currentTargetFrameworkId?.valueOrNull?.framework?.id
 }
 
+/**
+ * Checks if the target framework [tfm] in MSBuild format is a .NET Framework one.
+ * For example, `net48` in an SDK-style project targeting `net48;net8.0`.
+ */
+fun PublishableProjectModel.targetsNetFramework(project: Project, tfm: String?): Boolean =
+    isNetFrameworkId(frameworkIdFor(project, tfm))
+
+/**
+ * Checks if [frameworkId] (e.g. `.NETFramework,Version=v4.8`) is a .NET Framework one.
+ * If the framework id is unknown, falls back to [PublishableProjectModel.isDotNetCore].
+ */
+private fun PublishableProjectModel.isNetFrameworkId(frameworkId: String?): Boolean =
+    frameworkId?.startsWith(".NETFramework", ignoreCase = true) ?: !isDotNetCore
+
+/**
+ * Returns [RdTargetFrameworkId] of the target framework [tfm] in MSBuild format from the runnable projects model.
+ */
+private fun PublishableProjectModel.rdTargetFrameworkIdFor(project: Project, tfm: String?): RdTargetFrameworkId? {
+    if (tfm.isNullOrEmpty()) return null
+
+    val runnableProject = project.solution.runnableProjectsModel.projects.valueOrNull
+        ?.firstOrNull { it.projectFilePath == projectFilePath }
+        ?: return null
+
+    return runnableProject.projectOutputs
+        .firstOrNull { it.tfm?.shortName == tfm }
+        ?.tfm
+}
+
 fun PublishableProjectModel.getStackAndVersion(
     project: Project,
     operatingSystem: OperatingSystem,
@@ -81,8 +111,9 @@ fun PublishableProjectModel.getStackAndVersion(
 ): PublishableProjectRuntime? {
     if (operatingSystem == OperatingSystem.DOCKER) return null
 
-    if (isDotNetCore) {
-        val dotnetVersion = getProjectDotNetVersion(project, this, targetFramework)
+    val frameworkId = frameworkIdFor(project, targetFramework)
+    if (!isNetFrameworkId(frameworkId)) {
+        val dotnetVersion = getProjectDotNetVersion(frameworkId)
         if (operatingSystem == OperatingSystem.LINUX) {
             val stackName = if (isFunction) "DOTNET" else "DOTNETCORE"
             val stack =
@@ -98,7 +129,7 @@ fun PublishableProjectModel.getStackAndVersion(
             return PublishableProjectRuntime(null, null, version)
         }
     } else {
-        val netFrameworkVersion = getProjectNetFrameworkVersion(project, this, targetFramework)
+        val netFrameworkVersion = getProjectNetFrameworkVersion(frameworkId)
         val version =
             if (netFrameworkVersion == null)
                 NetFrameworkVersion.fromString("v3.5")
@@ -128,10 +159,11 @@ suspend fun PublishableProjectModel.getFunctionStack(
         .getLocalSettingsFor(this)
     val workerRuntime = functionLocalSettings?.getWorkerRuntime() ?: AzureFunctionsWorkerRuntime.DOTNET_ISOLATED
     val path = Path.of(this@getFunctionStack.projectFilePath)
-    val azureFunctionVersion = getAzureFunctionsVersionProjectProperty(path, null, project)
+    val projectTfm = rdTargetFrameworkIdFor(project, targetFramework)
+    val azureFunctionVersion = getAzureFunctionsVersionProjectProperty(path, projectTfm, project)
         ?.trimStart('v', 'V')
         ?: "4"
-    val dotnetVersion = getProjectDotNetVersion(project, this, targetFramework)
+    val dotnetVersion = getProjectDotNetVersion(frameworkIdFor(project, targetFramework))
     return FunctionRuntimeStack(
         workerRuntime.value,
         functionRuntimeVersionFromProjectProperty(azureFunctionVersion),
@@ -162,21 +194,13 @@ private fun functionRuntimeVersionFromProjectProperty(azureFunctionVersion: Stri
     else -> "~4"
 }
 
-private fun getProjectDotNetVersion(
-    project: Project,
-    publishableProject: PublishableProjectModel,
-    targetFramework: String?
-): String? {
-    val currentFramework = publishableProject.frameworkIdFor(project, targetFramework) ?: return null
-    return netAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value
-        ?: netCoreAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value
+private fun getProjectDotNetVersion(frameworkId: String?): String? {
+    if (frameworkId == null) return null
+    return netAppVersionRegex.find(frameworkId)?.groups?.get(1)?.value
+        ?: netCoreAppVersionRegex.find(frameworkId)?.groups?.get(1)?.value
 }
 
-private fun getProjectNetFrameworkVersion(
-    project: Project,
-    publishableProject: PublishableProjectModel,
-    targetFramework: String?
-): String? {
-    val currentFramework = publishableProject.frameworkIdFor(project, targetFramework) ?: return null
-    return netFxAppVersionRegex.find(currentFramework)?.groups?.get(1)?.value
+private fun getProjectNetFrameworkVersion(frameworkId: String?): String? {
+    if (frameworkId == null) return null
+    return netFxAppVersionRegex.find(frameworkId)?.groups?.get(1)?.value
 }

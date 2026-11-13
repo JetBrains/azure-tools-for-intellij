@@ -64,6 +64,10 @@ abstract class AbstractAppServiceDeploymentViewModel<TConfig : AppServiceConfig>
 
     val selectedTargetFramework = MutableStateFlow<String?>(null)
 
+    // Target framework is passed to MSBuild only for .NET (Core) projects, same as in Rider's Publish to Folder
+    private val _isTargetFrameworkVisible = MutableStateFlow(false)
+    val isTargetFrameworkVisible: StateFlow<Boolean> = _isTargetFrameworkVisible.asStateFlow()
+
     protected val _configurationAndPlatforms = MutableStateFlow<List<ConfigurationAndPlatform>>(emptyList())
     val configurationAndPlatforms: StateFlow<List<ConfigurationAndPlatform>> = _configurationAndPlatforms.asStateFlow()
 
@@ -152,6 +156,7 @@ abstract class AbstractAppServiceDeploymentViewModel<TConfig : AppServiceConfig>
         selectedTargetFramework.value =
             selectedTargetFramework.value?.takeIf { it in frameworks } ?: frameworks.firstOrNull()
         _targetFrameworks.value = frameworks
+        _isTargetFrameworkVisible.value = publishableProject?.isDotNetCore == true
         _selectedProject.value = publishableProject
     }
 

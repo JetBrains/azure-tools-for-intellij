@@ -10,6 +10,7 @@ import com.jetbrains.rider.run.configurations.publishing.PublishRuntimeSettingsC
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AbstractAppServiceDeploymentViewModel
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDeploymentModel.RemoteAppServiceModel
 import com.microsoft.azure.toolkit.intellij.legacy.resolveTargetFramework
+import com.microsoft.azure.toolkit.intellij.legacy.targetsNetFramework
 import com.microsoft.azure.toolkit.lib.Azure
 import com.microsoft.azure.toolkit.lib.appservice.AppServiceAppBase
 import com.microsoft.azure.toolkit.lib.appservice.config.FunctionAppConfig
@@ -24,7 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -39,9 +40,8 @@ class FunctionDeploymentSettingsEditorViewModel(project: Project, parentCs: Coro
     }
 
     override val isNetFramework: StateFlow<Boolean> by lazy {
-        selectedProject.map { sp ->
-            if (sp == null) return@map false
-            !sp.isDotNetCore || sp.projectOutputs.all { it.tfmInMsbuildFormat == "net48" }
+        combine(selectedProject, selectedTargetFramework) { sp, tfm ->
+            sp?.targetsNetFramework(project, tfm) ?: false
         }.stateIn(cs, SharingStarted.Eagerly, false)
     }
 
