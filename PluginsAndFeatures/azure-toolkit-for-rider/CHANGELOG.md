@@ -6,6 +6,12 @@
 
 ### Fixed
 
+- Remove static map of opened modules ([RIDER-145649](https://youtrack.jetbrains.com/issue/RIDER-145649), [RIDER-145648](https://youtrack.jetbrains.com/issue/RIDER-145648))
+
+## [4.9.3] - 2026-11-16
+
+### Fixed
+
 - No option to choose a specific TFM in multitarget projects ([RIDER-130635](https://youtrack.jetbrains.com/issue/RIDER-130635))
 
 ## [4.9.2] - 2026-11-11
@@ -526,7 +532,8 @@
 - Reimplement Azure Functions Core Tools integration
 - Reimplement Azure Functions templates
 
-[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.2...HEAD
+[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.3...HEAD
+[4.9.3]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.2...4.9.3
 [4.9.2]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.1...4.9.2
 [4.9.1]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.0...4.9.1
 [4.9.0]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.8.6...4.9.0

@@ -11,8 +11,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.roots.OrderEnumerator;
 import com.intellij.openapi.util.JDOMUtil;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.ConcurrencyUtil;
 import com.microsoft.azure.toolkit.intellij.common.runconfig.IWebAppRunConfiguration;
 import com.microsoft.azure.toolkit.intellij.connector.*;
 import com.microsoft.azure.toolkit.intellij.facet.AzureFacet;
@@ -49,7 +51,8 @@ public class AzureModule {
     static final String RESOURCES_FILE = "connections.resources.xml";
     static final String CONNECTIONS_FILE = "connections.xml";
 
-    private static final Map<Module, AzureModule> modules = new ConcurrentHashMap<>();
+    // Stored in the module's user data instead of a static map so that disposed modules (and their projects) can be collected
+    private static final Key<AzureModule> AZURE_MODULE_KEY = Key.create("azure.toolkit.dotazure.AzureModule");
     public static final String ATTR_DEFAULT_PROFILE = "defaultProfile";
     private final Map<String, Profile> profiles = new ConcurrentHashMap<>();
     @Getter
@@ -323,7 +326,7 @@ public class AzureModule {
 
     @Nonnull
     public static AzureModule from(@Nonnull Module module) {
-        return modules.computeIfAbsent(module, t -> new AzureModule(module));
+        return ConcurrencyUtil.computeIfAbsent(module, AZURE_MODULE_KEY, () -> new AzureModule(module));
     }
 
     @Nullable

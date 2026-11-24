@@ -20,6 +20,14 @@
         <defaultGoal>install</defaultGoal>
         <plugins>
             <plugin>
+                <!-- The winutils git clone in target contains read-only pack files that clean cannot delete on Windows otherwise -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <force>true</force>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
                 <version>4.8.1</version>
