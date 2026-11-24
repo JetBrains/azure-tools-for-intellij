@@ -31,7 +31,7 @@ junit = "4.13.2"
 kotlin = "2.4.20"
 changelog = "2.5.0"
 aspectj = "9.4.0"
-intelliJPlatform = "2.19.0"
+intelliJPlatform = "2.20.1"
 
 [libraries]
 kotlinGradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
