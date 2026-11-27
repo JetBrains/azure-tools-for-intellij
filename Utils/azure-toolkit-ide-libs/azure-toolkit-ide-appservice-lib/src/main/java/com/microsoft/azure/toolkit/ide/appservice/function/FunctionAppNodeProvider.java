@@ -26,7 +26,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class FunctionAppNodeProvider implements IExplorerNodeProvider {
     public static final AzureIconProvider<AppServiceAppBase<?, ?, ?>> FUNCTIONAPP_ICON_PROVIDER =
@@ -60,20 +63,16 @@ public class FunctionAppNodeProvider implements IExplorerNodeProvider {
                 .withActions(FunctionAppActionsContributor.SERVICE_ACTIONS)
                 .addChildren(AzureFunctions::functionApps, (d, p) -> this.createNode(d, p, manager));
         } else if (data instanceof FunctionApp function) {
-            final Node<FunctionApp> appNode = new AzResourceNode<>(function)
+            return new AzResourceNode<>(function)
                 .withIcon(FUNCTIONAPP_ICON_PROVIDER::getIcon)
                 .addInlineAction(ResourceCommonActionsContributor.PIN)
                 .addInlineAction(ResourceCommonActionsContributor.DEPLOY)
                 .withActions(FunctionAppActionsContributor.FUNCTION_APP_ACTIONS)
-                .addChildren(Arrays::asList, (app, webAppNode) -> new FunctionsNode(app));
-            if (!function.isContainerHostingFunctionApp()) {
-                appNode.addChild(AppServiceFileNode::getRootFileNodeForAppService, (d, p) -> this.createNode(d, p, manager));
-                if(!function.isFlexConsumptionApp()){
-                    appNode.addChild(AppServiceFileNode::getRootLogNodeForAppService, (d, p) -> this.createNode(d, p, manager))
-                            .addChild(FunctionApp::getDeploymentModule, (module, functionAppNode) -> createNode(module, functionAppNode, manager));
-                }
-            }
-            return appNode.addChild(app -> new AppSettingsNode(app.getValue()));
+                .addChildren(Arrays::asList, (app, webAppNode) -> new FunctionsNode(app))
+                // hosting-dependent children require loading the remote app and its plan,
+                // so they are resolved lazily when the function app node is expanded
+                .addChildren(FunctionAppNodeProvider::getHostingDependentChildren, (d, p) -> this.createNode(d, p, manager))
+                .addChild(app -> new AppSettingsNode(app.getValue()));
         } else if (data instanceof FunctionAppDeploymentSlotModule) {
             return new AzModuleNode<>((FunctionAppDeploymentSlotModule) data)
                 .withIcon(AzureIcons.WebApp.DEPLOYMENT_SLOT)
@@ -87,5 +86,19 @@ public class FunctionAppNodeProvider implements IExplorerNodeProvider {
             return new AppServiceFileNode((AppServiceFile) data);
         }
         return null;
+    }
+
+    @Nonnull
+    private static List<Object> getHostingDependentChildren(@Nonnull FunctionApp app) {
+        if (app.isContainerHostingFunctionApp()) {
+            return Collections.emptyList();
+        }
+        final List<Object> children = new ArrayList<>();
+        children.add(AppServiceFileNode.getRootFileNodeForAppService(app));
+        if (!app.isFlexConsumptionApp()) {
+            children.add(AppServiceFileNode.getRootLogNodeForAppService(app));
+            children.add(app.getDeploymentModule());
+        }
+        return children;
     }
 }
