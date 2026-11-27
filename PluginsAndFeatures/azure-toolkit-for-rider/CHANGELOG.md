@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [4.9.4] - 2026-11-25
+
 ### Fixed
 
 - Remove static map of opened modules ([RIDER-145649](https://youtrack.jetbrains.com/issue/RIDER-145649), [RIDER-145648](https://youtrack.jetbrains.com/issue/RIDER-145648))
@@ -532,7 +534,8 @@
 - Reimplement Azure Functions Core Tools integration
 - Reimplement Azure Functions templates
 
-[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.3...HEAD
+[Unreleased]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.4...HEAD
+[4.9.4]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.3...4.9.4
 [4.9.3]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.2...4.9.3
 [4.9.2]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.1...4.9.2
 [4.9.1]: https://github.com/JetBrains/azure-tools-for-intellij/compare/4.9.0...4.9.1
