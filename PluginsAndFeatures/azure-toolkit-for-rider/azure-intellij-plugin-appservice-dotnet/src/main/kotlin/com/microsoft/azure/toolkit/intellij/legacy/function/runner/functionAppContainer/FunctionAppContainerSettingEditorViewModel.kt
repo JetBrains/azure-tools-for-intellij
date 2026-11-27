@@ -7,6 +7,7 @@ package com.microsoft.azure.toolkit.intellij.legacy.function.runner.functionAppC
 import com.intellij.docker.registry.DockerRegistryManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.microsoft.azure.toolkit.intellij.appservice.AppServiceResourcePreloader
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AbstractAppServiceDeploymentViewModel
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDeploymentModel.RemoteAppServiceModel
 import com.microsoft.azure.toolkit.intellij.common.ContainerRegistryModel
@@ -130,18 +131,10 @@ internal class FunctionAppContainerSettingEditorViewModel(project: Project, pare
     private suspend fun loadRemoteResources() {
         LOG.trace("Loading function apps and app service plans from Azure")
 
+        val preloader = AppServiceResourcePreloader.getInstance()
         coroutineScope {
-            launch { loadAppServicePlans() }
-            launch { loadFunctionApps() }
-        }
-    }
-
-    private suspend fun loadFunctionApps() {
-        val functionApps = Azure.az(AzureFunctions::class.java).functionApps()
-        coroutineScope {
-            functionApps.forEach { functionApp ->
-                launch { functionApp.remote }
-            }
+            launch { preloader.preloadAppServicePlans() }
+            launch { preloader.preloadFunctionApps(withSlots = false) }
         }
     }
 

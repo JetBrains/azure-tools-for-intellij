@@ -4,6 +4,7 @@
 
 package com.microsoft.azure.toolkit.intellij.appservice
 
+import com.intellij.diagnostic.rethrowControlFlowException
 import com.intellij.execution.RunManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
@@ -14,9 +15,6 @@ import com.microsoft.azure.toolkit.intellij.legacy.function.runner.functionAppCo
 import com.microsoft.azure.toolkit.intellij.legacy.webapp.runner.webApp.WebAppConfiguration
 import com.microsoft.azure.toolkit.intellij.legacy.webapp.runner.webAppContainer.WebAppContainerConfiguration
 import com.microsoft.azure.toolkit.lib.Azure
-import com.microsoft.azure.toolkit.lib.appservice.AzureAppService
-import com.microsoft.azure.toolkit.lib.appservice.function.AzureFunctions
-import com.microsoft.azure.toolkit.lib.appservice.webapp.AzureWebApp
 import com.microsoft.azure.toolkit.lib.auth.AzureAccount
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -30,7 +28,7 @@ class LoadAppServicesActivity : ProjectActivity {
 
     override suspend fun execute(project: Project) {
         try {
-            val hasDeploymentConfigurations = RunManager.getInstance(project)
+            val hasDeploymentConfigurations = RunManager.getInstanceAsync(project)
                 .allConfigurationsList
                 .any {
                     it is WebAppConfiguration ||
@@ -60,56 +58,16 @@ class LoadAppServicesActivity : ProjectActivity {
 
             withBackgroundProgress(project, "Preloading Azure resources") {
                 LOG.trace("Loading Azure App Services")
+                val preloader = AppServiceResourcePreloader.getInstance()
                 coroutineScope {
-                    launch { loadAppServicePlans() }
-                    launch { loadWebApps() }
-                    launch { loadFunctionApps() }
+                    launch { preloader.preloadAppServicePlans() }
+                    launch { preloader.preloadWebApps(withSlots = true) }
+                    launch { preloader.preloadFunctionApps(withSlots = true) }
                 }
             }
-        } catch (_: Exception) {
-            //User isn't logged in, do nothing
-        }
-    }
-
-    private suspend fun loadAppServicePlans() {
-        LOG.trace("Loading Azure App Service plans")
-        val appServicePlans = Azure.az(AzureAppService::class.java).plans()
-        coroutineScope {
-            appServicePlans.forEach {
-                launch {
-                    it.remote
-                }
-            }
-        }
-    }
-
-    private suspend fun loadWebApps() {
-        LOG.trace("Loading Azure Web Apps")
-        val webApps = Azure.az(AzureWebApp::class.java).webApps()
-        coroutineScope {
-            webApps.forEach {
-                launch {
-                    it.remote
-                }
-                launch {
-                    it.slots().list()
-                }
-            }
-        }
-    }
-
-    private suspend fun loadFunctionApps() {
-        LOG.trace("Loading Azure Function Apps")
-        val functionApps = Azure.az(AzureFunctions::class.java).functionApps()
-        coroutineScope {
-            functionApps.forEach {
-                launch {
-                    it.remote
-                }
-                launch {
-                    it.slots().list()
-                }
-            }
+        } catch (e: Exception) {
+            rethrowControlFlowException(e)
+            LOG.debug("Unable to preload Azure App Services", e)
         }
     }
 }

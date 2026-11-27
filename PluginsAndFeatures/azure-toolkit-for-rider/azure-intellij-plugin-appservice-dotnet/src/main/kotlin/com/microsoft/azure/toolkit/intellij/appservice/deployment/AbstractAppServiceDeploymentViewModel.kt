@@ -6,6 +6,7 @@
 
 package com.microsoft.azure.toolkit.intellij.appservice.deployment
 
+import com.intellij.diagnostic.rethrowControlFlowException
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.platform.util.coroutines.childScope
@@ -19,17 +20,14 @@ import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDepl
 import com.microsoft.azure.toolkit.intellij.appservice.utils.isSameApp
 import com.microsoft.azure.toolkit.intellij.legacy.availableTargetFrameworks
 import com.microsoft.azure.toolkit.intellij.legacy.targetsNetFramework
-import com.microsoft.azure.toolkit.lib.Azure
-import com.microsoft.azure.toolkit.lib.appservice.AzureAppService
 import com.microsoft.azure.toolkit.lib.appservice.config.AppServiceConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
-import kotlin.coroutines.cancellation.CancellationException
 
 abstract class AbstractAppServiceDeploymentViewModel<TConfig : AppServiceConfig>(
     private val project: Project,
@@ -125,13 +123,14 @@ abstract class AbstractAppServiceDeploymentViewModel<TConfig : AppServiceConfig>
                 .collectLatest { refresh ->
                     _remoteAppServiceState.value = AppServiceLoadState.Loading
 
-                    if (refresh) invalidateAppCache()
                     try {
-                        val configs = loadListOfApps()
+                        val configs = withContext(Dispatchers.IO) {
+                            if (refresh) invalidateAppCache()
+                            loadListOfApps()
+                        }
                         _remoteAppServiceState.value = AppServiceLoadState.Loaded(configs)
-                    } catch (e: CancellationException) {
-                        throw e
                     } catch (e: Exception) {
+                        rethrowControlFlowException(e)
                         LOG.warn("Error while trying to load Azure web apps", e)
                         _remoteAppServiceState.value = AppServiceLoadState.Error(e.message ?: "Unknown error")
                     }
@@ -183,15 +182,4 @@ abstract class AbstractAppServiceDeploymentViewModel<TConfig : AppServiceConfig>
 
     protected abstract suspend fun loadListOfApps(): List<RemoteAppServiceModel<TConfig>>
     protected abstract fun invalidateAppCache()
-
-    protected suspend fun loadAppServicePlans() {
-        val appServicePlans = Azure.az(AzureAppService::class.java).plans()
-        coroutineScope {
-            appServicePlans.forEach {
-                launch {
-                    it.remote
-                }
-            }
-        }
-    }
 }

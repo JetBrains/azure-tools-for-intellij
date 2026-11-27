@@ -10,6 +10,7 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.jetbrains.rider.run.configurations.publishing.PublishRuntimeSettingsCoreHelper.ConfigurationAndPlatform
+import com.microsoft.azure.toolkit.intellij.appservice.AppServiceResourcePreloader
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AbstractAppServiceDeploymentViewModel
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDeploymentModel.RemoteAppServiceModel
 import com.microsoft.azure.toolkit.intellij.legacy.resolveTargetFramework
@@ -141,23 +142,10 @@ class WebAppSettingEditorViewModel(project: Project, parentCs: CoroutineScope) :
     private suspend fun loadRemoteResources() {
         LOG.trace("Loading web apps and app service plans from Azure")
 
+        val preloader = AppServiceResourcePreloader.getInstance()
         coroutineScope {
-            launch { loadAppServicePlans() }
-            launch { loadWebApps() }
-        }
-    }
-
-    private suspend fun loadWebApps() {
-        val webApps = Azure.az(AzureWebApp::class.java).webApps()
-        coroutineScope {
-            webApps.forEach {
-                launch {
-                    it.remote
-                }
-                launch {
-                    it.slots().list()
-                }
-            }
+            launch { preloader.preloadAppServicePlans() }
+            launch { preloader.preloadWebApps(withSlots = true) }
         }
     }
 

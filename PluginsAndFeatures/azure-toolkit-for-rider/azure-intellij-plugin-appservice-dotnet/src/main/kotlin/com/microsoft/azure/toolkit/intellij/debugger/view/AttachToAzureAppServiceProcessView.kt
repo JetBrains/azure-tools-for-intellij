@@ -15,20 +15,16 @@ import com.intellij.xdebugger.impl.ui.attach.dialog.AttachDialogState
 import com.intellij.xdebugger.impl.ui.attach.dialog.AttachHostItem
 import com.intellij.xdebugger.impl.ui.attach.dialog.AttachToProcessViewWithHosts
 import com.intellij.xdebugger.impl.ui.attach.dialog.items.columns.AttachDialogColumnsLayout
+import com.microsoft.azure.toolkit.intellij.appservice.AppServiceResourcePreloader
 import com.microsoft.azure.toolkit.intellij.debugger.AzureAttachDialogHostType
 import com.microsoft.azure.toolkit.intellij.debugger.attachHosts.AzureAttachHostFactory
 import com.microsoft.azure.toolkit.intellij.debugger.canBeDebugged
 import com.microsoft.azure.toolkit.lib.Azure
-import com.microsoft.azure.toolkit.lib.appservice.AzureAppService
 import com.microsoft.azure.toolkit.lib.appservice.AppServiceAppBase
 import com.microsoft.azure.toolkit.lib.appservice.function.AzureFunctions
-import com.microsoft.azure.toolkit.lib.appservice.function.FunctionApp
 import com.microsoft.azure.toolkit.lib.appservice.webapp.AzureWebApp
-import com.microsoft.azure.toolkit.lib.appservice.webapp.WebApp
 import com.microsoft.azure.toolkit.lib.auth.AzureAccount
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -62,13 +58,18 @@ class AttachToAzureAppServiceProcessView(
     override suspend fun getHosts(): List<AttachHostItem> {
         if (!Azure.az(AzureAccount::class.java).isLoggedIn) return emptyList()
 
-        return withContext(Dispatchers.IO) {
-            val appServicePlans = async { loadAppServicePlans() }
-            val functions = async { getAllFunctions() }
-            val webApps = async { getAllWebApps() }
+        val preloader = AppServiceResourcePreloader.getInstance()
+        coroutineScope {
+            launch { preloader.preloadAppServicePlans() }
+            launch { preloader.preloadFunctionApps(withSlots = false) }
+            launch { preloader.preloadWebApps(withSlots = false) }
+        }
 
-            appServicePlans.await()
-            awaitAll(functions, webApps).flatten().filter { it.canBeDebugged() }.toServiceItems()
+        return withContext(Dispatchers.IO) {
+            val functionApps = Azure.az(AzureFunctions::class.java).functionApps()
+            val webApps = Azure.az(AzureWebApp::class.java).webApps()
+            val apps: List<AppServiceAppBase<*, *, *>> = functionApps + webApps
+            apps.filter { it.canBeDebugged() }.toServiceItems()
         }
     }
 
@@ -92,37 +93,6 @@ class AttachToAzureAppServiceProcessView(
 
         val containerPresentationKey = host.toString()
         PropertiesComponent.getInstance(project).setValue(SELECTED_APP_SERVICE_KEY, containerPresentationKey)
-    }
-
-    private suspend fun getAllFunctions(): List<FunctionApp> {
-        val functionApps = Azure.az(AzureFunctions::class.java).functionApps()
-        coroutineScope {
-            functionApps.forEach {
-                launch { it.remote }
-                launch { it.slots().list() }
-            }
-        }
-        return functionApps
-    }
-
-    private suspend fun getAllWebApps(): List<WebApp> {
-        val webApps = Azure.az(AzureWebApp::class.java).webApps()
-        coroutineScope {
-            webApps.forEach {
-                launch { it.remote }
-                launch { it.slots().list() }
-            }
-        }
-        return webApps
-    }
-
-    private suspend fun loadAppServicePlans() {
-        val appServicePlans = Azure.az(AzureAppService::class.java).plans()
-        coroutineScope {
-            appServicePlans.forEach { appServicePlan ->
-                launch { appServicePlan.remote }
-            }
-        }
     }
 
     private fun List<AppServiceAppBase<*, *, *>>.toServiceItems(): List<AttachAzureAppServiceItem> {

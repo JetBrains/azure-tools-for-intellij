@@ -7,6 +7,7 @@ package com.microsoft.azure.toolkit.intellij.legacy.webapp.runner.webAppContaine
 import com.intellij.docker.registry.DockerRegistryManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.microsoft.azure.toolkit.intellij.appservice.AppServiceResourcePreloader
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AbstractAppServiceDeploymentViewModel
 import com.microsoft.azure.toolkit.intellij.appservice.deployment.AppServiceDeploymentModel.RemoteAppServiceModel
 import com.microsoft.azure.toolkit.intellij.common.ContainerRegistryModel
@@ -134,18 +135,10 @@ internal class WebAppContainerSettingEditorViewModel(project: Project, parentCs:
     private suspend fun loadRemoteResources() {
         LOG.trace("Loading web apps and app service plans from Azure")
 
+        val preloader = AppServiceResourcePreloader.getInstance()
         coroutineScope {
-            launch { loadAppServicePlans() }
-            launch { loadWebApps() }
-        }
-    }
-
-    private suspend fun loadWebApps() {
-        val webApps = Azure.az(AzureWebApp::class.java).webApps()
-        coroutineScope {
-            webApps.forEach { webApp ->
-                launch { webApp.remote }
-            }
+            launch { preloader.preloadAppServicePlans() }
+            launch { preloader.preloadWebApps(withSlots = false) }
         }
     }
 
