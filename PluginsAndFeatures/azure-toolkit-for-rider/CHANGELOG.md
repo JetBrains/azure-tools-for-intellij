@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Improve Azure resources loading performance
+
 ## [4.9.4] - 2026-11-25
 
 ### Fixed
